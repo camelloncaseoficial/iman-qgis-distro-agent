@@ -1,0 +1,35 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+
+# Tests / tooling
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+
+# QGIS / compiled resources
+*.qgz~
+*.qgs~
+resources_rc.py
+
+# Instalador / build (artefatos gerados)
+installer/dist/
+installer/Output/
+*.exe
+/dist/
+/build/
+
+# Dependências pesadas empacotadas (não versionar binários grandes)
+app/dependencies/
+
+# Editors / OS
+.idea/
+.vscode/
+*.swp
+.DS_Store
+Thumbs.db
