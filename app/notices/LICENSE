@@ -1,0 +1,47 @@
+IMAN Terra — Licença
+=====================
+
+IMAN Terra é uma experiência geoespacial desktop independente, powered by QGIS.
+Este projeto não é um produto oficial do QGIS e não é endossado pela QGIS.ORG.
+O QGIS é um sistema de informação geográfica livre e de código aberto, desenvolvido
+por QGIS.ORG e contribuidores (https://qgis.org). Créditos e avisos completos em
+THIRD_PARTY_NOTICES.md.
+
+--------------------------------------------------------------------------------
+1. CÓDIGO (plugin de marca, startup, launcher, scripts e configuração de perfil)
+--------------------------------------------------------------------------------
+
+Copyright (C) 2026 Instituto IMAN (Instituto de Monitoramento Ambiental e
+Desenvolvimento do Semiárido do Nordeste).
+
+Este programa é software livre: você pode redistribuí-lo e/ou modificá-lo sob os
+termos da Licença Pública Geral GNU (GNU GPL), conforme publicada pela Free Software
+Foundation, na versão 3 da Licença ou (a seu critério) qualquer versão posterior.
+
+Este programa é distribuído na expectativa de ser útil, mas SEM QUALQUER GARANTIA;
+sem mesmo a garantia implícita de COMERCIABILIDADE ou ADEQUAÇÃO A UM PROPÓSITO
+ESPECÍFICO. Consulte a Licença Pública Geral GNU para mais detalhes.
+
+Você deve ter recebido uma cópia da GNU GPL junto com este programa. Caso contrário,
+consulte <https://www.gnu.org/licenses/>.
+
+A escolha da GPL-3.0-or-later mantém compatibilidade com a licença do QGIS
+(GPL-2.0-or-later), com o qual estes componentes são distribuídos e operam.
+
+--------------------------------------------------------------------------------
+2. MARCA E ASSETS DO INSTITUTO IMAN
+--------------------------------------------------------------------------------
+
+Os nomes "IMAN" e "IMAN Terra", o logotipo do Instituto IMAN e demais assets de marca
+(ícones, cores institucionais, artes) são de titularidade do Instituto IMAN e
+constituem marca. NÃO são cobertos pela GPL acima e NÃO são licenciados para reuso,
+redistribuição ou obras derivadas sem autorização expressa e por escrito do Instituto
+IMAN. A licença de código (item 1) não concede qualquer direito sobre estas marcas.
+
+--------------------------------------------------------------------------------
+3. QGIS E TERCEIROS
+--------------------------------------------------------------------------------
+
+O QGIS e as bibliotecas de terceiros permanecem sob suas próprias licenças, com seus
+próprios detentores de direitos. Ver THIRD_PARTY_NOTICES.md. Nada nesta licença
+remove, oculta ou enfraquece os créditos, marcas ou licenças do QGIS ou de terceiros.
