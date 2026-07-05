@@ -1,0 +1,53 @@
+/* ==========================================================================
+   IMAN Terra - tema institucional (QSS). Opcao 1, no-fork.
+   Aplicado a janela principal pelo startup (iman_startup.py). Escopo honesto:
+   o no-fork tematiza a UI Qt (barras, menus, docks) mas NAO o splash nativo,
+   o icone do executavel nem o About nativo - esses sao limites da Opcao 2.
+   Cores: verde IMAN #00A858 (amostrado do logo). Fonte unica: brand.py /
+   docs/design-system.md (BL-4). STOP-AND-FLAG: paleta oficial na fatia /branding.
+   ========================================================================== */
+
+/* Barra de menu superior */
+QMenuBar {
+    background-color: #00753D;
+    color: #F4F8F5;
+}
+QMenuBar::item {
+    background: transparent;
+    padding: 4px 10px;
+}
+QMenuBar::item:selected {
+    background-color: #00A858;
+    color: #FFFFFF;
+}
+
+/* Menus abertos */
+QMenu {
+    background-color: #FFFFFF;
+    color: #14231C;
+    border: 1px solid #00A858;
+}
+QMenu::item:selected {
+    background-color: #00A858;
+    color: #FFFFFF;
+}
+
+/* Barra de status */
+QStatusBar {
+    background-color: #F4F8F5;
+    color: #00753D;
+}
+
+/* Titulos de paineis (docks) */
+QDockWidget::title {
+    background-color: #00753D;
+    color: #F4F8F5;
+    padding: 4px 8px;
+    font-weight: 600;
+}
+
+/* Abas */
+QTabBar::tab:selected {
+    color: #00753D;
+    border-bottom: 2px solid #00A858;
+}
