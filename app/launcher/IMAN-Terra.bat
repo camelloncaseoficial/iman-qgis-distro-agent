@@ -24,8 +24,12 @@ set "TEMPLATE=%APP_HOME%\profile-template\%PROFILE_NAME%"
 set "STARTUP=%APP_HOME%\startup\iman_startup.py"
 set "DEMO=%APP_HOME%\demo\welcome.qgz"
 
-REM -- Perfil ISOLADO em %APPDATA%\InstitutoIMAN\IMAN Terra\profiles -----------
-set "PROFILES_PATH=%APPDATA%\%PUBLISHER_DIR%\%PRODUCT_NAME%\profiles"
+REM -- Perfil ISOLADO em %APPDATA%\InstitutoIMAN\IMAN Terra -------------------
+REM IMPORTANTE: o QGIS ACRESCENTA "profiles\" ao valor de --profiles-path, logo
+REM ele le de <PROFILES_ROOT>\profiles\<perfil>. Passamos a RAIZ e copiamos o
+REM template para <PROFILES_ROOT>\profiles\<perfil>.
+set "PROFILES_ROOT=%APPDATA%\%PUBLISHER_DIR%\%PRODUCT_NAME%"
+set "PROFILE_DIR=%PROFILES_ROOT%\profiles\%PROFILE_NAME%"
 
 REM Exposto ao plugin para localizar o demo/docs (open_demo).
 set "IMAN_TERRA_HOME=%APP_HOME%"
@@ -53,15 +57,15 @@ if not defined QGIS_EXE (
 )
 
 REM -- Primeiro run: copia o template para o perfil isolado --------------------
-if not exist "%PROFILES_PATH%\%PROFILE_NAME%\QGIS\QGIS3.ini" (
+if not exist "%PROFILE_DIR%\QGIS\QGIS3.ini" (
   echo   [%PRODUCT_NAME%] Preparando o perfil isolado ^(primeiro uso^)...
-  if not exist "%PROFILES_PATH%" mkdir "%PROFILES_PATH%"
-  xcopy /E /I /Y /Q "%TEMPLATE%" "%PROFILES_PATH%\%PROFILE_NAME%" >nul
+  if not exist "%PROFILE_DIR%" mkdir "%PROFILE_DIR%"
+  xcopy /E /I /Y /Q "%TEMPLATE%" "%PROFILE_DIR%" >nul
 )
 
 REM -- Abre o QGIS com o perfil IMAN isolado -----------------------------------
 start "" "%QGIS_EXE%" ^
-  --profiles-path "%PROFILES_PATH%" ^
+  --profiles-path "%PROFILES_ROOT%" ^
   --profile "%PROFILE_NAME%" ^
   --code "%STARTUP%" ^
   --project "%DEMO%" ^
