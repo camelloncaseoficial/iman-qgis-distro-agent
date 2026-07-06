@@ -1,53 +1,137 @@
 /* ==========================================================================
-   IMAN Terra - tema institucional (QSS). Opcao 1, no-fork.
-   Aplicado a janela principal pelo startup (iman_startup.py). Escopo honesto:
-   o no-fork tematiza a UI Qt (barras, menus, docks) mas NAO o splash nativo,
-   o icone do executavel nem o About nativo - esses sao limites da Opcao 2.
-   Cores: verde IMAN #00A858 (amostrado do logo). Fonte unica: brand.py /
-   docs/design-system.md (BL-4). STOP-AND-FLAG: paleta oficial na fatia /branding.
+   IMAN Terra - tema institucional (QSS) - versao "imersiva". Opcao 1, no-fork.
+   Aplicado (anexado) a janela principal pelo startup (iman_startup.py). Recolore
+   a "chrome" da UI Qt (menus, toolbars, headers, selecao, abas, botoes) no verde
+   IMAN, MANTENDO areas de conteudo (arvore de camadas, tabelas de atributos)
+   claras para nao prejudicar a legibilidade.
+   Limite honesto: NAO troca o splash nativo de boot nem os icones de ACAO da
+   toolbar do QGIS (core C++) - isso e Opcao 2 (fork).
+   Cores: verde IMAN #00A858 (fonte unica: brand.py / docs/design-system.md, BL-4).
+   STOP-AND-FLAG: paleta oficial completa na fatia /branding.
    ========================================================================== */
 
-/* Barra de menu superior */
+/* ---- Barra de menus superior ---- */
 QMenuBar {
     background-color: #00753D;
     color: #F4F8F5;
+    border: none;
 }
-QMenuBar::item {
-    background: transparent;
-    padding: 4px 10px;
-}
-QMenuBar::item:selected {
-    background-color: #00A858;
-    color: #FFFFFF;
-}
+QMenuBar::item { background: transparent; padding: 5px 11px; }
+QMenuBar::item:selected { background-color: #00A858; color: #FFFFFF; }
+QMenuBar::item:pressed { background-color: #00A858; color: #FFFFFF; }
 
-/* Menus abertos */
+/* ---- Menus abertos ---- */
 QMenu {
     background-color: #FFFFFF;
     color: #14231C;
     border: 1px solid #00A858;
 }
-QMenu::item:selected {
-    background-color: #00A858;
-    color: #FFFFFF;
-}
+QMenu::item { padding: 5px 24px 5px 22px; }
+QMenu::item:selected { background-color: #00A858; color: #FFFFFF; }
+QMenu::separator { height: 1px; background: #D6E7DD; margin: 4px 8px; }
 
-/* Barra de status */
-QStatusBar {
-    background-color: #F4F8F5;
-    color: #00753D;
+/* ---- Toolbars (fundo claro esverdeado; icones do QGIS ficam legiveis) ---- */
+QToolBar {
+    background-color: #E8F3EC;
+    border: none;
+    border-bottom: 1px solid #CFE6D8;
+    spacing: 2px;
+    padding: 2px;
 }
+QToolBar::separator { background: #CFE6D8; width: 1px; margin: 3px 4px; }
+QToolButton {
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    padding: 2px;
+}
+QToolButton:hover { background-color: #CDE9D8; border: 1px solid #00A858; }
+QToolButton:checked, QToolButton:pressed {
+    background-color: #A9DCBF; border: 1px solid #00753D;
+}
+QToolButton::menu-button { border: none; }
 
-/* Titulos de paineis (docks) */
+/* ---- Status bar ---- */
+QStatusBar { background-color: #E8F3EC; color: #00753D; }
+QStatusBar::item { border: none; }
+
+/* ---- Docks / paineis ---- */
+QDockWidget { titlebar-close-icon: none; }
 QDockWidget::title {
     background-color: #00753D;
     color: #F4F8F5;
-    padding: 4px 8px;
+    padding: 5px 8px;
+    font-weight: 600;
+}
+QDockWidget > QWidget { background-color: #FFFFFF; }
+
+/* ---- Arvore/lista (camadas, navegador): conteudo CLARO, selecao verde ---- */
+QTreeView, QListView, QTableView {
+    background-color: #FFFFFF;
+    color: #14231C;
+    alternate-background-color: #F4F8F5;
+    selection-background-color: #00A858;
+    selection-color: #FFFFFF;
+}
+QTreeView::item:hover, QListView::item:hover { background-color: #E8F3EC; }
+QTreeView::item:selected, QListView::item:selected {
+    background-color: #00A858; color: #FFFFFF;
+}
+QHeaderView::section {
+    background-color: #00753D;
+    color: #F4F8F5;
+    padding: 4px 6px;
+    border: none;
+    border-right: 1px solid #E8F3EC;
+}
+
+/* ---- Abas ---- */
+QTabBar::tab {
+    background: #E8F3EC;
+    color: #14231C;
+    padding: 5px 12px;
+    border: 1px solid #CFE6D8;
+    border-bottom: none;
+}
+QTabBar::tab:selected {
+    background: #FFFFFF;
+    color: #00753D;
+    border-bottom: 2px solid #00A858;
+    font-weight: 600;
+}
+QTabBar::tab:hover { background: #CDE9D8; }
+
+/* ---- Botoes padrao ---- */
+QPushButton {
+    background-color: #FFFFFF;
+    color: #00753D;
+    border: 1px solid #00A858;
+    border-radius: 5px;
+    padding: 4px 12px;
+}
+QPushButton:hover { background-color: #E8F3EC; }
+QPushButton:pressed { background-color: #CDE9D8; }
+QPushButton:default { background-color: #00A858; color: #FFFFFF; border: 1px solid #00753D; }
+QPushButton:default:hover { background-color: #00753D; }
+
+/* ---- GroupBox ---- */
+QGroupBox {
+    border: 1px solid #CFE6D8;
+    border-radius: 5px;
+    margin-top: 8px;
+}
+QGroupBox::title {
+    subcontrol-origin: margin;
+    left: 8px;
+    color: #00753D;
     font-weight: 600;
 }
 
-/* Abas */
-QTabBar::tab:selected {
-    color: #00753D;
-    border-bottom: 2px solid #00A858;
-}
+/* ---- Scrollbars discretas ---- */
+QScrollBar:vertical { background: #F4F8F5; width: 12px; margin: 0; }
+QScrollBar::handle:vertical { background: #A9DCBF; border-radius: 5px; min-height: 24px; }
+QScrollBar::handle:vertical:hover { background: #00A858; }
+QScrollBar:horizontal { background: #F4F8F5; height: 12px; margin: 0; }
+QScrollBar::handle:horizontal { background: #A9DCBF; border-radius: 5px; min-width: 24px; }
+QScrollBar::handle:horizontal:hover { background: #00A858; }
+QScrollBar::add-line, QScrollBar::sub-line { background: none; border: none; }
