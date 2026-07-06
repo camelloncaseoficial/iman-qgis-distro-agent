@@ -67,9 +67,12 @@ não empacota o QGIS; o launcher orienta se o QGIS estiver ausente.
 1. `py_compile` do plugin + startup — OK.
 2. Smoke estático headless (PyQGIS): constantes de marca, import do plugin, `welcome.qgz` lê com
    **CRS EPSG:4674**, `QGIS3.ini` com autoload + pt-BR + CRS — **ALL PASS**.
-3. Smoke GUI: abrir o QGIS com o perfil isolado (`--profiles-path` **temporário**, perfil do usuário
-   intacto) — título evolui `QGIS3` → `Untitled Project — QGIS` → **`IMAN Terra — powered by QGIS`**
-   (final, persistente). Perfil isolado + startup + demo carregam.
+3. Smoke GUI **verificado por screenshot** (perfil isolado em `--profiles-path` **temporário**,
+   perfil do usuário intacto): título `IMAN Terra — powered by QGIS`, **ícone da janela = emblema
+   IMAN**, **barra de menus e títulos de painel verdes** (tema), **plugin de marca ativo** (dock de
+   boas-vindas com logo), **CRS EPSG:4674**, interface **pt-BR**, camada OSM do demo.
+   > Convenção crítica do `--profiles-path`: o QGIS lê de `<root>\profiles\<perfil>`; passar o valor
+   > já com `\profiles` no fim causa perfil vazio (bug encontrado e corrigido no launcher).
 4. Instalador compila com sucesso (`.exe` em `installer/dist/`).
 
 **Lacuna declarada (BL-7 — verdade em VM limpa):** o ciclo **instalar → abrir → perfil/branding/
@@ -86,12 +89,17 @@ disponível). Passos numerados para reproduzir:
 
 ## Limites conhecidos do no-fork (Opção 2, futuro — declarados, não hackeados)
 
-| Alcançado nesta fatia (sem fork) | Só com fork (Opção 2) |
+| Alcançado nesta fatia (sem fork, verificado por screenshot) | Só com fork (Opção 2) |
 |---|---|
-| Título da janela (startup + plugin) | Splash screen nativo |
-| Tema/cores (QSS) | Ícone do `qgis-bin.exe` |
+| Título da janela (startup + plugin) | **Splash nativo de boot** ("QGIS x.y Bratislava LTR") |
+| **Ícone da janela/taskbar** (emblema IMAN) | **Ícones de ação da toolbar** do QGIS |
+| Tema/cores da UI (menubar/menus/status/docks/abas) | Ícone do executável `qgis-bin.exe` |
 | Plugin de marca (menu/toolbar/painel/Sobre) | About dialog nativo |
-| Ícone + nome do atalho e do instalador | Nome interno da aplicação |
+| Ícone + nome do atalho e do instalador; CRS/idioma | Nome interno da aplicação |
+
+> O ícone da janela e o tema são aplicados em runtime pelo startup/plugin. O **splash nativo** e os
+> **ícones de ação** da toolbar são do core do QGIS (C++) e permanecem — trocá-los exige fork (Opção 2),
+> documentado como limite, **não** contornado por hack frágil (ex.: um 2º splash sobreposto).
 
 ## Créditos
 
