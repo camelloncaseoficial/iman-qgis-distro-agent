@@ -20,15 +20,21 @@ Fatos não óbvios do ambiente onde a distro é montada/verificada. Confirmados 
   (NÃO em Program Files — winget instalou em AppData\Local\Programs).
 - Build: `ISCC.exe installer\iman-terra.iss` → `installer/dist/*.exe`.
 
-## Marca real do IMAN (arte já no repo — feed da fatia /branding)
+## Marca oficial do IMAN (drop do sponsor 2026-07-06, ingerido na fatia 002)
 
-- Logo/arte institucional real em `docs/IMAN_fundo_branco.jpeg`,
-  `docs/IMAN_fundo_verde.jpeg`, `docs/Splash.png` (já credita QGIS), `docs/icons/`.
-- **Verde IMAN amostrado do logo = `#00A858`** (bem mais vivo que o placeholder antigo
-  `#1F6F5C`). Paleta provisória em `docs/design-system.md` / `brand.py` (`COLOR_*`).
-  STOP-AND-FLAG: hex exato e paleta completa oficiais aguardam o manual (`IMAN.cdr`).
-- Assets do produto gerados dessa arte em `app/assets/` (logo, `.ico` 16–256 do
-  emblema folha+globo). PIL disponível no `python` do sistema para gerar `.ico`.
+- Fonte única de asset em **`app/assets/`** (não mais solta em `docs/`): masters
+  `splash-iman-terra.svg` (vetor, fonte da paleta), `iman-symbol.png` (símbolo),
+  `logo-iman.png`, `backgrounds/bg-iman-{branco,verde}.jpeg`. Proveniência e receita de
+  regeneração em `app/assets/README.md`. (`docs/icons/` = favicons web, fora de escopo.)
+- **Paleta OFICIAL travada** (fatia 002), extraída do SVG e reconciliada — `design-system.md`
+  == `brand.py`: `primary #00A85A`, `primary-deep #0D5138`, `ink/text #041C16`,
+  `accent #2CA8E0`, `mint #5FE0A0`, `warm #C56A2F`, `surface #F2F8F3`. Placeholders `#1F6F5C…`
+  e a amostra de JPEG `#00A858` foram eliminados. STOP-AND-FLAG: o manual `IMAN.cdr`, se
+  chegar, prevalece sobre o SVG (arte derivada).
+- Ícones (`.ico` 16–256, `icon-iman-terra.png`, `resources/icon.png`) **regerados do símbolo
+  oficial**, transparentes; wizard do instalador (`wizard-large/small.png`) idem. PIL
+  (Pillow) disponível no `python` do sistema. Sem rasterizador de SVG (cairosvg/inkscape/
+  rsvg/magick ausentes) — o PNG do splash veio do raster oficial hi-res, não do SVG.
 
 ## Git / GitHub
 
