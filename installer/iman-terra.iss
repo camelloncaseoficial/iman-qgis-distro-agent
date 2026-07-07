@@ -32,6 +32,11 @@ UninstallDisplayIcon={app}\assets\icon-iman-terra.ico
 UninstallDisplayName={#ProductName}
 LicenseFile=..\app\notices\LICENSE
 WizardStyle=modern
+; Imagens de marca do wizard (Inno 6 aceita PNG). Simbolo oficial folha+globo.
+; O splash NATIVO de boot do QGIS continua sendo limite da Opcao 2 (fork) - aqui
+; a arte oficial entra so na superficie que o no-fork alcanca (wizard do instalador).
+WizardImageFile=..\app\assets\wizard-large.png
+WizardSmallImageFile=..\app\assets\wizard-small.png
 Compression=lzma2
 SolidCompression=yes
 ArchitecturesInstallIn64BitMode=x64compatible
