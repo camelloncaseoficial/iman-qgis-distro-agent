@@ -21,19 +21,33 @@ ORG_FULL = ("Instituto de Monitoramento Ambiental e Desenvolvimento "
             "do Semiárido do Nordeste")
 VERSION = "0.1.0"
 
-# --- Paleta (amostrada do logo institucional real — verde IMAN #00A858) --------
-# STOP-AND-FLAG: hex exato e paleta completa aguardam o manual de marca oficial
-# (IMAN.cdr). Estes valores foram AMOSTRADOS de docs/IMAN_fundo_branco.jpeg e são
-# provisórios; a fatia /branding os confirma. Ver docs/design-system.md.
-COLOR_PRIMARY = "#00A858"    # verde IMAN (marca / destaque)
-COLOR_SECONDARY = "#00753D"  # verde escuro (apoio) — derivado
-COLOR_ACCENT = "#1C86C9"     # azul do globo do emblema (ação / links) — amostrado
-COLOR_SURFACE = "#F4F8F5"    # fundo de painel (verde muito claro)
-COLOR_TEXT = "#14231C"       # texto principal (quase preto esverdeado)
+# --- Paleta oficial (travada da arte oficial) ----------------------------------
+# Reconciliada 2026-07-07 (fatia 002) a partir do master vetorial oficial
+# `app/assets/splash-iman-terra.svg` (drop do sponsor 2026-07-06). ESPELHA a tabela
+# de docs/design-system.md (BL-4): as duas fontes DEVEM bater, valor a valor.
+# STOP-AND-FLAG (autoridade final): o SVG é arte DERIVADA (splash), não o manual de
+# marca. Se/quando o `IMAN.cdr`/manual oficial chegar, ele PREVALECE — travar o que
+# temos, sem inventar cores fora da arte. Nota: `brand.text` foi reconciliado para
+# `#041C16` (wordmark real do SVG); o `#0F1F18` proposto no briefing 002 não consta
+# na arte, então usa-se o valor de fato presente.
+COLOR_PRIMARY = "#00A85A"       # brand.primary — verde-marca / destaque (SVG)
+COLOR_PRIMARY_DEEP = "#0D5138"  # brand.primary-deep — verde de apoio / chrome escura (SVG)
+COLOR_INK = "#041C16"           # brand.ink — verde quase-preto / fundos escuros do splash (SVG)
+COLOR_ACCENT = "#2CA8E0"        # brand.accent — azul do globo / ação / links (SVG)
+COLOR_MINT = "#5FE0A0"          # brand.mint — realce / highlight (SVG)
+COLOR_WARM = "#C56A2F"          # brand.warm — accent quente (terracota) (SVG)
+COLOR_SURFACE = "#F2F8F3"       # brand.surface — fundo de painel claro (SVG)
+COLOR_TEXT = "#041C16"          # brand.text — texto sobre claro (= ink; wordmark do SVG)
+# Alias de compatibilidade: código legado usa COLOR_SECONDARY (= primary-deep).
+COLOR_SECONDARY = COLOR_PRIMARY_DEEP
 
-# --- Links (placeholders sinalizados — confirmar na fatia /branding) -----------
+# --- Links (STOP-AND-FLAG mantido — domínio NÃO confirmado nesta fatia) ---------
+# Dono da resposta: arquiteto (PPSA) + crew do site institucional (iman-web-frontend).
+# Pergunta explícita: o domínio oficial é `institutoiman.org.br`? Há URL de docs
+# pública distinta? Enquanto não confirmado, mantém-se este palpite sinalizado — não
+# se cunha decisão de produto aqui (a crew consome D-IDs, não os cria).
 URL_SITE = "https://institutoiman.org.br"   # STOP-AND-FLAG: confirmar domínio oficial
-URL_DOCS = "https://institutoiman.org.br"   # STOP-AND-FLAG: doc pública futura
+URL_DOCS = "https://institutoiman.org.br"   # STOP-AND-FLAG: confirmar URL de docs pública
 
 # --- Crédito ao QGIS (BL-1/BL-2) — verbatim de docs/BRANDING_AND_LICENSE.md -----
 # NUNCA remover, ocultar ou enfraquecer. Usado no "Sobre", boas-vindas e notices.
