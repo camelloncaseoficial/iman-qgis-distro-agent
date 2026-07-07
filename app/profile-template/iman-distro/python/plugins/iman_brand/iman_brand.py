@@ -114,15 +114,17 @@ class ImanBrandPlugin:
         layout.setContentsMargins(16, 16, 16, 16)
         layout.setSpacing(12)
 
-        # Logo institucional (arte própria do IMAN).
-        logo_path = _res("logo.png")
-        if os.path.exists(logo_path):
-            logo = QLabel()
-            pix = QPixmap(logo_path)
+        # Banner do splash oficial (arte que já credita o QGIS — BL-1). É o mesmo
+        # master que a Opção 2 (fork) usará como splash nativo de boot (DA-2);
+        # aqui, no no-fork, entra só como banner honesto do painel (BL-5).
+        banner_path = _res("splash.png")
+        if os.path.exists(banner_path):
+            banner = QLabel()
+            pix = QPixmap(banner_path)
             if not pix.isNull():
-                logo.setPixmap(pix.scaledToWidth(230, Qt.SmoothTransformation))
-            logo.setAlignment(Qt.AlignCenter)
-            layout.addWidget(logo)
+                banner.setPixmap(pix.scaledToWidth(248, Qt.SmoothTransformation))
+            banner.setAlignment(Qt.AlignCenter)
+            layout.addWidget(banner)
 
         title = QLabel(brand.PRODUCT_NAME)
         title.setObjectName("ImanTitle")
@@ -197,25 +199,30 @@ class ImanBrandPlugin:
         return line
 
     def _dock_qss(self):
+        # Legibilidade (fatia 002): o verde vivo `primary` (#00A85A) fica em FILLS/
+        # bordas (bloco), nunca como texto sobre claro — sobre `surface` daria ~2.9:1.
+        # Todo TEXTO usa `primary-deep`/`ink` (~9:1 sobre surface). O botão primário
+        # usa fundo `primary-deep` com texto branco (~8:1), não verde vivo (~3.1:1).
         return """
         QWidget#ImanTerraWelcome {{ background: {surface}; color: {text}; }}
         QLabel {{ color: {text}; }}
-        QLabel#ImanTitle {{ font-size: 20px; font-weight: 700; color: {primary}; }}
-        QLabel#ImanSubtitle {{ font-size: 12px; color: {secondary}; }}
-        QLabel#ImanCredits {{ font-size: 10px; }}
+        QLabel#ImanTitle {{ font-size: 20px; font-weight: 700; color: {deep}; }}
+        QLabel#ImanSubtitle {{ font-size: 12px; color: {deep}; }}
+        QLabel#ImanCredits {{ font-size: 10px; color: {text}; }}
         QPushButton {{
             padding: 6px 10px; border-radius: 6px;
-            border: 1px solid {primary}; color: {secondary}; background: white;
+            border: 1px solid {primary}; color: {deep}; background: white;
         }}
         QPushButton:hover {{ background: {surface}; }}
         QPushButton#ImanPrimaryBtn {{
-            background: {primary}; color: white; border: 1px solid {primary};
+            background: {deep}; color: white; border: 1px solid {deep};
             font-weight: 600;
         }}
-        QPushButton#ImanPrimaryBtn:hover {{ background: {secondary}; }}
+        QPushButton#ImanPrimaryBtn:hover {{ background: {ink}; }}
         """.format(
             surface=brand.COLOR_SURFACE, text=brand.COLOR_TEXT,
-            primary=brand.COLOR_PRIMARY, secondary=brand.COLOR_SECONDARY,
+            primary=brand.COLOR_PRIMARY, deep=brand.COLOR_PRIMARY_DEEP,
+            ink=brand.COLOR_INK,
         )
 
     # ---------------------------------------------------------------- actions
@@ -267,7 +274,7 @@ class ImanBrandPlugin:
             "(Opção 1). Limites conhecidos do no-fork — splash nativo, ícone do "
             "executável, About nativo e nome interno — são resolvidos só na "
             "Opção 2 (fork), documentados como limite.</p>" % (
-                brand.COLOR_PRIMARY, brand.PRODUCT_NAME, brand.PRODUCT_SUBTITLE,
+                brand.COLOR_PRIMARY_DEEP, brand.PRODUCT_NAME, brand.PRODUCT_SUBTITLE,
                 brand.PUBLISHER, brand.ORG_FULL,
                 brand.COLOR_SECONDARY,
                 brand.CREDITS_QGIS.replace("\n", "<br>"),

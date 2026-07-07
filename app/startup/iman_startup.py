@@ -63,15 +63,16 @@ def _read_qss(brand):
             pass
     if brand is not None:
         # Fallback mínimo derivado das constantes (caso o .qss não venha no perfil).
+        # Cores vêm da fonte única brand.py (paleta oficial travada, BL-4).
+        light = brand.COLOR_SURFACE  # near-white sobre o verde profundo
         return (
-            "QMenuBar { background-color: %s; color: #F4F8F5; }\n"
-            "QMenuBar::item:selected { background-color: %s; color: #FFFFFF; }\n"
-            "QStatusBar { background-color: #F4F8F5; color: %s; }\n"
-            "QDockWidget::title { background-color: %s; color: #F4F8F5; "
-            "padding: 4px 8px; font-weight: 600; }\n"
-            % (brand.COLOR_SECONDARY, brand.COLOR_PRIMARY,
-               brand.COLOR_SECONDARY, brand.COLOR_SECONDARY)
-        )
+            "QMenuBar {{ background-color: {deep}; color: {light}; }}\n"
+            "QMenuBar::item:selected {{ background-color: {primary}; color: #FFFFFF; }}\n"
+            "QStatusBar {{ background-color: {light}; color: {deep}; }}\n"
+            "QDockWidget::title {{ background-color: {deep}; color: {light}; "
+            "padding: 4px 8px; font-weight: 600; }}\n"
+        ).format(deep=brand.COLOR_PRIMARY_DEEP, primary=brand.COLOR_PRIMARY,
+                 light=light)
     return ""
 
 
