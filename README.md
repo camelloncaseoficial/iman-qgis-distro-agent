@@ -45,7 +45,7 @@ app/
 │   ├── QGIS/iman-theme.qss          # tema institucional (QSS)
 │   └── python/plugins/iman_brand/   # plugin de marca (menu/toolbar/dock de boas-vindas/Sobre)
 ├── demo/welcome.qgz                 # projeto demo (CRS 4674 + basemap OSM)
-├── assets/                          # logo/ícone/.ico/splash (arte IMAN real)
+├── assets/                          # identidade oficial: símbolo/splash SVG/.ico/wizard (ver assets/README.md)
 └── notices/                         # LICENSE, THIRD_PARTY_NOTICES.md, SOURCE_CODE.md
 installer/iman-terra.iss             # Inno Setup (saída: installer/dist/*.exe)
 ```

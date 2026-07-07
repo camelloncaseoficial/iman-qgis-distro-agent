@@ -24,7 +24,7 @@ iman-qgis-distro-agent/
 │   │       ├── project_templates/
 │   │       └── symbology-style.db
 │   ├── demo/                # welcome.qgz
-│   ├── assets/              # logo, ícone .ico, splash-preview (fonte única de marca)
+│   ├── assets/              # símbolo/logo/.ico/splash oficial (fonte única de marca; ver assets/README.md)
 │   └── notices/             # LICENSE, THIRD_PARTY_NOTICES.md, SOURCE_CODE.md
 ├── installer/               # *.iss (Inno Setup) + dist/
 ├── docs/                    # esta doc, branding/licença, design system, guias
