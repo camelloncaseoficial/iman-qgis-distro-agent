@@ -1,0 +1,18 @@
+# Plugin de marca leve — IMAN Terra (powered by QGIS)
+# Fonte única de marca: docs/design-system.md e brand.py (BL-4).
+# Os campos name/description/about espelham essa fonte — trocar o produto = editar lá + aqui.
+[general]
+name=IMAN Terra — Marca
+qgisMinimumVersion=3.28
+description=Camada de experiência institucional do IMAN Terra (menu, painel de boas-vindas e créditos), powered by QGIS. Não é um produto oficial do QGIS.
+about=IMAN Terra é uma experiência geoespacial desktop independente, powered by QGIS. O QGIS é um SIG livre e de código aberto, desenvolvido por QGIS.ORG e contribuidores. Este projeto não é um produto oficial do QGIS e não é endossado pela QGIS.ORG.
+version=0.1.0
+author=Instituto IMAN
+email=contato@institutoiman.org.br
+tags=iman,branding,institucional,boas-vindas
+category=Plugins
+icon=resources/icon.png
+experimental=False
+deprecated=False
+server=False
+hasProcessingProvider=False

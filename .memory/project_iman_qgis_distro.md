@@ -43,6 +43,15 @@ monetização — o REURB é a capacidade-core do mercado das ~35 prefeituras (S
 - Suporte multiplataforma completo (foco Windows primeiro).
 - Instalação silenciosa não testada; atualizador automático complexo.
 
+## Estado de execução
+
+- **Fatia 1 (fundação) — ENTREGUE** em `feat/001-fundacao`, PR **#1** aberto contra `main`
+  (2026-07-05, aguardando decisão de merge do sponsor). Scaffold `app/`+`installer/`, perfil
+  isolado `iman-distro` (pt-BR, CRS 4674, autoload), plugin `iman_brand`, startup, launcher,
+  `welcome.qgz`, instalador `.iss` (compila para `.exe`), notices. Smoke local S1/S2 OK
+  (título GUI `IMAN Terra — powered by QGIS` verificado). **Pendente: BL-7 em VM limpa.**
+- Verde IMAN real **#00A858** amostrado do logo; paleta provisória (ver `reference_build_environment`).
+
 ## STOP-AND-FLAGs
 
 - ~~Nome de produto pendente~~ → **RESOLVIDO: `IMAN Terra`** (2026-07-05). Marca em fonte única.

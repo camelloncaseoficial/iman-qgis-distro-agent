@@ -27,5 +27,7 @@ Branding institucional IMAN sobre o QGIS LTR, *powered by QGIS*, o mais fundo qu
 ## Regras invioladas
 
 - Nome de produto e todo texto de marca vêm de fonte única (BL-4) — nada de string de marca espalhada.
+  Ao mexer no nome visível, seguir **`docs/RENAME_CHECKLIST.md`** (enumera toda superfície que espelha
+  `PRODUCT_NAME`: código, `.iss`, `.bat`, prosa dos notices e nomes de arquivo).
 - Nunca remover créditos do QGIS nem sugerir autoria/endorsement (BL-1/BL-2).
 - Não recompilar o QGIS para efeito visual: o que exige fork fica documentado para a Opção 2 (BL-5).

@@ -1,0 +1,139 @@
+/* ==========================================================================
+   IMAN Terra - tema institucional (QSS) - versao "imersiva". Opcao 1, no-fork.
+   Aplicado (anexado) a janela principal pelo startup (iman_startup.py). Recolore
+   a "chrome" da UI Qt (menus, toolbars, headers, selecao, abas, botoes) no verde
+   IMAN, MANTENDO areas de conteudo (arvore de camadas, tabelas de atributos)
+   claras para nao prejudicar a legibilidade.
+   Limite honesto: NAO troca o splash nativo de boot nem os icones de ACAO da
+   toolbar do QGIS (core C++) - isso e Opcao 2 (fork).
+   Paleta OFICIAL travada (fonte unica: brand.py / docs/design-system.md, BL-4),
+   reconciliada do master vetorial app/assets/splash-iman-terra.svg (fatia 002):
+     primary #00A85A | primary-deep #0D5138 | ink/text #041C16 | surface #F2F8F3
+   Tints de UI (hover/alt-row: #E8F3EC #CDE9D8 #A9DCBF #CFE6D8) sao DERIVADOS.
+   ========================================================================== */
+
+/* ---- Barra de menus superior ---- */
+QMenuBar {
+    background-color: #0D5138;
+    color: #F2F8F3;
+    border: none;
+}
+QMenuBar::item { background: transparent; padding: 5px 11px; }
+QMenuBar::item:selected { background-color: #00A85A; color: #FFFFFF; }
+QMenuBar::item:pressed { background-color: #00A85A; color: #FFFFFF; }
+
+/* ---- Menus abertos ---- */
+QMenu {
+    background-color: #FFFFFF;
+    color: #041C16;
+    border: 1px solid #00A85A;
+}
+QMenu::item { padding: 5px 24px 5px 22px; }
+QMenu::item:selected { background-color: #00A85A; color: #FFFFFF; }
+QMenu::separator { height: 1px; background: #D6E7DD; margin: 4px 8px; }
+
+/* ---- Toolbars (fundo claro esverdeado; icones do QGIS ficam legiveis) ---- */
+QToolBar {
+    background-color: #E8F3EC;
+    border: none;
+    border-bottom: 1px solid #CFE6D8;
+    spacing: 2px;
+    padding: 2px;
+}
+QToolBar::separator { background: #CFE6D8; width: 1px; margin: 3px 4px; }
+QToolButton {
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    padding: 2px;
+}
+QToolButton:hover { background-color: #CDE9D8; border: 1px solid #00A85A; }
+QToolButton:checked, QToolButton:pressed {
+    background-color: #A9DCBF; border: 1px solid #0D5138;
+}
+QToolButton::menu-button { border: none; }
+
+/* ---- Status bar ---- */
+QStatusBar { background-color: #E8F3EC; color: #0D5138; }
+QStatusBar::item { border: none; }
+
+/* ---- Docks / paineis ---- */
+QDockWidget { titlebar-close-icon: none; }
+QDockWidget::title {
+    background-color: #0D5138;
+    color: #F2F8F3;
+    padding: 5px 8px;
+    font-weight: 600;
+}
+QDockWidget > QWidget { background-color: #FFFFFF; }
+
+/* ---- Arvore/lista (camadas, navegador): conteudo CLARO, selecao verde ---- */
+QTreeView, QListView, QTableView {
+    background-color: #FFFFFF;
+    color: #041C16;
+    alternate-background-color: #F2F8F3;
+    selection-background-color: #00A85A;
+    selection-color: #FFFFFF;
+}
+QTreeView::item:hover, QListView::item:hover { background-color: #E8F3EC; }
+QTreeView::item:selected, QListView::item:selected {
+    background-color: #00A85A; color: #FFFFFF;
+}
+QHeaderView::section {
+    background-color: #0D5138;
+    color: #F2F8F3;
+    padding: 4px 6px;
+    border: none;
+    border-right: 1px solid #E8F3EC;
+}
+
+/* ---- Abas ---- */
+QTabBar::tab {
+    background: #E8F3EC;
+    color: #041C16;
+    padding: 5px 12px;
+    border: 1px solid #CFE6D8;
+    border-bottom: none;
+}
+QTabBar::tab:selected {
+    background: #FFFFFF;
+    color: #0D5138;
+    border-bottom: 2px solid #00A85A;
+    font-weight: 600;
+}
+QTabBar::tab:hover { background: #CDE9D8; }
+
+/* ---- Botoes padrao ---- */
+QPushButton {
+    background-color: #FFFFFF;
+    color: #0D5138;
+    border: 1px solid #00A85A;
+    border-radius: 5px;
+    padding: 4px 12px;
+}
+QPushButton:hover { background-color: #E8F3EC; }
+QPushButton:pressed { background-color: #CDE9D8; }
+QPushButton:default { background-color: #00A85A; color: #FFFFFF; border: 1px solid #0D5138; }
+QPushButton:default:hover { background-color: #0D5138; }
+
+/* ---- GroupBox ---- */
+QGroupBox {
+    border: 1px solid #CFE6D8;
+    border-radius: 5px;
+    margin-top: 8px;
+}
+QGroupBox::title {
+    subcontrol-origin: margin;
+    left: 8px;
+    color: #0D5138;
+    font-weight: 600;
+}
+
+/* ---- Scrollbars discretas ---- */
+QScrollBar:vertical { background: #F2F8F3; width: 12px; margin: 0; }
+QScrollBar::handle:vertical { background: #A9DCBF; border-radius: 5px; min-height: 24px; }
+QScrollBar::handle:vertical:hover { background: #00A85A; }
+QScrollBar:horizontal { background: #F2F8F3; height: 12px; margin: 0; }
+QScrollBar::handle:horizontal { background: #A9DCBF; border-radius: 5px; min-width: 24px; }
+QScrollBar::handle:horizontal:hover { background: #00A85A; }
+QScrollBar::add-line, QScrollBar::sub-line { background: none; border: none; }
