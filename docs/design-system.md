@@ -18,24 +18,32 @@ não caça a strings espalhadas.
 > `IMAN Terra` venceu `IMAN GIS` após `/critique` + `/signature-experience` (nomeia a promessa
 > territorial, não a engrenagem; "powered by QGIS" credita o motor). Ver D-IMAN-025.
 
-## Cores (placeholders — substituir pela paleta oficial do IMAN)
+## Cores (amostradas do logo IMAN real — provisórias até o manual de marca)
 
-| Token | Uso | Placeholder |
-|---|---|---|
-| `brand.primary` | Marca / destaque | `#1F6F5C` |
-| `brand.secondary` | Apoio | `#0E3D34` |
-| `brand.accent` | Ação / links | `#E4A11B` |
-| `brand.surface` | Fundo de painel | `#F5F7F6` |
-| `brand.text` | Texto principal | `#1A2422` |
+| Token | Uso | Valor | Origem |
+|---|---|---|---|
+| `brand.primary` | Marca / destaque | `#00A858` | verde IMAN amostrado de `docs/IMAN_fundo_branco.jpeg` |
+| `brand.secondary` | Apoio | `#00753D` | derivado (verde escuro) |
+| `brand.accent` | Ação / links | `#1C86C9` | azul do globo do emblema (amostrado) |
+| `brand.surface` | Fundo de painel | `#F4F8F5` | verde muito claro |
+| `brand.text` | Texto principal | `#14231C` | quase preto esverdeado |
 
-> A paleta oficial do IMAN entra na primeira fatia de `/branding` (fonte: `IMAN.cdr`/manual de marca).
-> Enquanto isso, os placeholders permitem montar o tema sem travar a fatia.
+> **STOP-AND-FLAG:** estes valores foram **amostrados da arte do logo** presente no repo — são
+> mais fiéis que os placeholders antigos (`#1F6F5C`), mas o **hex exato e a paleta completa oficiais**
+> ainda dependem do manual de marca do Instituto (`IMAN.cdr`) e entram na fatia `/branding`.
+> Espelhados em código por `brand.py` (constantes `COLOR_*`) — fonte única (BL-4).
 
 ## Assets (em `app/assets/`)
 
-- `logo-iman.svg` — logo institucional.
-- `icon-<produto>.ico` — ícone do atalho/instalador (multi-resolução).
-- `splash-preview.png` — preview de splash (nativo só na Opção 2).
+Gerados a partir da **arte institucional real** do IMAN presente no repo (`docs/IMAN_*.jpeg`,
+`docs/Splash.png`) — não são placeholders genéricos:
+
+- `logo-iman.png` — logo institucional (arte própria IMAN).
+- `icon-iman-terra.png` / `icon-iman-terra.ico` — ícone do atalho/instalador (emblema folha+globo,
+  multi-resolução: 16/24/32/48/64/128/256).
+- `splash-preview.png` — preview de splash (arte que já credita o QGIS; splash **nativo** só na Opção 2).
+
+> Cópias em `app/profile-template/iman-distro/python/plugins/iman_brand/resources/` (icon/logo do plugin).
 
 ## Tipografia & espaçamento
 

@@ -4,9 +4,14 @@
 
 - Perfis do usuário ficam em `%AppData%\Roaming\QGIS\QGIS3\profiles\`.
 - A distro usa perfil **isolado** (não o do usuário): carregar via
-  `qgis-ltr-bin.exe --profile <perfil> --profiles-path "%APPDATA%\InstitutoIMAN\<Produto>\profiles"`.
-- O perfil-template versionado vive em `app/profile-template/<perfil>/` e é copiado para o
-  profiles-path no primeiro run (launcher/instalador) — `xcopy /E /I /Y`.
+  `qgis-ltr-bin.exe --profile <perfil> --profiles-path "%APPDATA%\InstitutoIMAN\<Produto>"`.
+- **ATENÇÃO (bug real na fatia 1, corrigido):** o QGIS **acrescenta `profiles\`** ao valor de
+  `--profiles-path`. Ou seja, `--profiles-path X --profile Y` lê de **`X\profiles\Y`**. Passar
+  `...\<Produto>\profiles` faz o QGIS procurar em `...\profiles\profiles\Y` → **perfil vazio**
+  (plugin não carrega, tema/CRS não aplicam). Correto: `--profiles-path "...\<Produto>"` e o perfil
+  copiado para `...\<Produto>\profiles\<perfil>`.
+- O perfil-template versionado vive em `app/profile-template/<perfil>/` e é copiado para
+  `<profiles-root>\profiles\<perfil>` no primeiro run (launcher/instalador) — `xcopy /E /I /Y`.
 - Startup script via `--code <script.py>`; projeto demo via `--project welcome.qgz`;
   `--noversioncheck` para não poluir a primeira abertura.
 
@@ -28,13 +33,17 @@
 
 ## Limites do no-fork (só a Opção 2 / fork resolve)
 
-- Splash screen nativo do QGIS.
+- Splash screen **nativo** de boot do QGIS ("QGIS x.y Bratislava LTR") — mostrado pelo C++
+  antes do Python; não dá para trocar sem fork (nem via `--code`). Não fazer 2º splash flash (hack).
+- **Ícones de ação da toolbar** do QGIS (baked no core).
 - Ícone real do executável (`qgis-bin.exe`).
 - About dialog nativo.
 - Nome interno da aplicação.
 
-Alcançável **sem** fork: título da janela (startup), tema/cores (QSS), plugin de marca
-(menu/toolbar/painel), ícone+nome do atalho e do instalador, demo, notices.
+Alcançável **sem** fork (verificado por screenshot na fatia 1): título da janela (startup),
+**ícone da janela/taskbar** (`mainWindow().setWindowIcon`, no startup), tema/cores da UI Qt
+(QSS anexado ao stylesheet do QGIS: menubar/menus/status/títulos de dock/abas), plugin de marca
+(menu/toolbar/painel), ícone+nome do atalho e do instalador, demo, CRS/idioma, notices.
 
 ## Referência de contexto
 
