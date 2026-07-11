@@ -1,0 +1,37 @@
+{
+  "sondas": "I(runtime)/III/IV",
+  "I_icon": {
+    "AppUserModelID_set": true,
+    "window_icon_set": true,
+    "icon_path": "D:\\_projetos\\iman-webgeo\\iman-qgis-distro-agent\\app\\assets\\icon-iman-terra.png",
+    "bucket": "RUNTIME (janela/taskbar) — no-fork"
+  },
+  "III_about": {
+    "native_about_action_present": true,
+    "own_about_added": true,
+    "bucket": "RUNTIME (no-fork) — próprio coexiste com o nativo (BL-1/BL-2)"
+  },
+  "IV_name": {
+    "before": {
+      "applicationName": "QGIS3",
+      "organizationName": "QGIS",
+      "applicationDisplayName": "QGIS3"
+    },
+    "after_runtime_set": {
+      "applicationName": "QGIS3",
+      "organizationName": "QGIS",
+      "applicationDisplayName": "IMAN Terra"
+    },
+    "runtime_influenciavel": {
+      "AppUserModelID": "SIM (identidade de taskbar/pin no Windows)",
+      "applicationDisplayName": "SIM (mas uso interno; pouco/nada visível)"
+    },
+    "cpp_baked_irredutivel": [
+      "applicationName='QGIS' (base do caminho de QSettings — já contornado pelo perfil isolado)",
+      "organizationName ('QGIS')",
+      "diálogo/executável do crash reporter (mostra 'QGIS')",
+      "nome da classe de janela nativa / applicationName no nível do processo"
+    ],
+    "bucket": "IRREDUTÍVEL (payoff ~zero — técnico municipal não vê)"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "sonda": "II - splash nativo de boot",
+  "mecanismo_fonte": "QGIS 3.40 src/app/main.cpp: QPixmap(QgsCustomization::instance()->splashPath()+'splash.png'); QgsCustomization::splashPath() le a chave '/Customization/splashpath' de QGISCUSTOMIZATION3.ini SE customizacao habilitada (UI/Customization/enabled=true).",
+  "splash_default": ":/images/splash/splash.png (resource Qt COMPILADO no binario; sem copia em disco)",
+  "controle_sem_customizacao": "splash nativo QGIS 3.40 Bratislava (evidence/sonda_ii_native_default_splash.png)",
+  "tratamento_com_customizacao": "splash IMAN Terra renderizado pelo QSplashScreen NATIVO (evidence/sonda_ii_native_iman_splash.png)",
+  "config_usada": {
+    "QGIS3.ini": "[UI] Customization\enabled=true",
+    "QGISCUSTOMIZATION3.ini": "[Customization] splashpath=<dir com splash.png>"
+  },
+  "janela_principal_intacta_com_customizacao": true,
+  "veredito": "RUNTIME/CONFIG (no-fork) - re-brandavel via customizacao do perfil, sem patch de binario nem fork",
+  "nota": "Sem regras de widget na customizacao => nenhum efeito alem do splash (UI intacta, provado em evidence/boot_frames2/f_16.png)."
+}

@@ -1,0 +1,19 @@
+{
+  "splashPath()": ":/images/splash/",
+  "pkgDataPath()": "C:/OSGeo4W/apps/qgis-ltr/.",
+  "splashPath_candidates": {
+    ":/images/splash/splash.png": {
+      "qt_resource_exists": true
+    },
+    ":/images/splash/splashscreen.png": {
+      "qt_resource_exists": false
+    }
+  },
+  "qt_resources": {
+    ":/images/splash/splashscreen.png": false,
+    ":/images/splash/splash.png": true,
+    ":/images/splash/": true,
+    ":/images/qgis-icon-60x60.png": false
+  },
+  "disk_splash_files_under_pkgDataPath": []
+}
