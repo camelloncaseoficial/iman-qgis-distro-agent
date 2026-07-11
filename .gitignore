@@ -33,3 +33,9 @@ app/dependencies/
 *.swp
 .DS_Store
 Thumbs.db
+
+# Drop bruto do redesign (sponsor) - fontes leves versionadas a parte; brutos nao
+docs/# IMAN Terra Interface Redesign.zip
+docs/ChatGPT Image*.png
+docs/uploads/
+docs/.thumbnail
