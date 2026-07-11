@@ -20,7 +20,70 @@ não caça a strings espalhadas.
 > `IMAN Terra` venceu `IMAN GIS` após `/critique` + `/signature-experience` (nomeia a promessa
 > territorial, não a engrenagem; "powered by QGIS" credita o motor). Ver D-IMAN-025.
 
-## Cores (paleta oficial travada — reconciliada do master vetorial, 2026-07-07)
+## Cores — paleta IMAN Terra (redesign D-IMAN-026 · ATIVA · 2026-07-11)
+
+**Fonte única da identidade em vigor** (BL-4). Decidida em **D-IMAN-026** a partir do
+redesign da janela principal (`docs/TerraWindow.dc.html` + `docs/IMAN Terra.dc.html`,
+drop do sponsor 2026-07-10). **Supera, valor a valor,** a paleta que o gate #002 travou do
+`splash-iman-terra.svg` (logo abaixo, marcada OBSOLETA). O espelho desta tabela em código,
+para as UIs do **spike #003**, é `spike/003-frameless-dashboard/tokens.py` (as duas fontes
+batem — BL-4).
+
+### Tema claro (institucional)
+
+| Token | Hex | Uso |
+|---|---|---|
+| `brand` | `#103D29` | verde profundo — chrome (title bar / status bar) |
+| `brand-2` | `#1E7A4D` | verde institucional — marca / estado ativo |
+| `accent` | `#2B8FD6` | azul dados / água — acento, links, raster |
+| `moss` | `#6E9160` | verde musgo — apoio |
+| `earth` | `#8A7A55` | terra — terroso (símbolos de limite) |
+| `bg` | `#EBEEE8` | base neutra da área de trabalho |
+| `panel` | `#FFFFFF` | painel / cartão |
+| `panel-2` | `#F5F7F2` | painel secundário / campo |
+| `border` | `#E2E5DE` | borda |
+| `border-strong` | `#D0D5C9` | borda forte / scrollbar |
+| `text` | `#1A231D` | texto principal |
+| `text-muted` | `#5E6A61` | texto secundário |
+| `text-faint` | `#95A093` | texto terciário / meta |
+| `hover` | `#EFF2EC` | hover neutro |
+| `active-bg` | `#E4F0E8` | fundo de item ativo |
+| `active-fg` | `#155F3D` | texto de item ativo |
+| `chrome` / `chrome-fg` | `#103D29` / `#EAF3EC` | chrome escura + texto sobre ela |
+
+### Tema escuro (trabalho prolongado / imagem de satélite)
+
+| Token | Hex |  | Token | Hex |
+|---|---|---|---|---|
+| `bg` | `#0E1A14` |  | `text` | `#E7EEE9` |
+| `panel` | `#15241D` |  | `text-muted` | `#93A69B` |
+| `panel-2` | `#111F19` |  | `text-faint` | `#617468` |
+| `border` | `#243830` |  | `brand-2` | `#3DA76B` |
+| `border-strong` | `#2E463A` |  | `accent` | `#4BA3DC` |
+| `chrome` | `#0A2016` |  | `moss` | `#7FA271` |
+
+> **`mint` e `warm`/terracota SAÍRAM** da identidade — não têm equivalente no comp;
+> reintroduzir só com nova arte que os justifique (D-IMAN-026).
+
+> **Fonte / ícones / CRS do redesign:** fonte do **SISTEMA** (o comp puxa Google Fonts —
+> fere local-first; no MVP não se bundla fonte); iconografia própria da **fatia #008** (o
+> comp usa traços placeholder); CRS **SIRGAS 2000 / UTM** (EPSG:31984 no Ceará), **nunca
+> EPSG:4326** (o comp mostra 4326, impróprio p/ área/cadastro).
+
+> **STOP-AND-FLAG — estado de implementação (honesto, BL-5):** esta paleta é a identidade
+> **decidida**, mas ainda **NÃO promovida** para produção. Hoje ela pinta só as UIs do
+> **spike #003** (`tokens.py`). A produção — `brand.py` (`COLOR_*`), o QSS
+> `app/profile-template/iman-distro/QGIS/iman-theme.qss` e **toda a arte** de `app/assets/`
+> (SVG master, símbolo, `.ico`, wizard, splash) — ainda carrega a paleta VELHA (#00A85A…),
+> logo está **STALE**. A promoção (brand.py + QSS + **re-derivação da arte**) é **fatia de
+> branding própria**, fora do escopo do spike (D-IMAN-026). Autoridade final segue o
+> `IMAN.cdr`/manual se chegar (regra abaixo permanece viva).
+
+## Cores — paleta 002 (OBSOLETA · superada por D-IMAN-026 · mantida como registro)
+
+> ⚠️ **OBSOLETA (D-IMAN-026, 2026-07-11).** Esta é a paleta travada no gate #002; o sponsor
+> a substituiu pela paleta do redesign (acima). Permanece documentada porque `brand.py`, o
+> QSS e a arte de `app/assets/` **ainda a usam** (STALE, declarado) até a fatia de promoção.
 
 Extraída **diretamente** do master vetorial oficial `app/assets/splash-iman-terra.svg`
 (drop do sponsor 2026-07-06). Esta tabela **é idêntica**, valor a valor, às constantes
@@ -83,3 +146,15 @@ receita de regeneração). Nada de raster de trabalho solto em `docs/`.
 Este design system governa o que o **no-fork** alcança (tema QSS, plugin, título, ícone de atalho/
 instalador). Splash nativo, ícone do executável, About e nome interno → Opção 2 (ver
 `docs/distro-architecture.md`).
+
+**Spike #003 (D-IMAN-026) — árbitro do BL-5, arqueado por evidência em
+`spike/003-frameless-dashboard/REPORT.md`:**
+- **Title bar frameless de marca → só Opção 2 (fork).** O `FramelessWindowHint` sozinho é
+  estável, mas é inerte; a única forma no-fork de hospedar uma barra de marca acima do menu
+  (`setMenuWidget`, reparentando o `menuBar` do QGIS) **corrompe o teardown e crasha** com
+  access violation (0xC0000005). BL-5 proíbe shippar o hack.
+- **Dashboard/home no lugar do canvas-vazio → viável no-fork (com ressalvas).**
+  `takeCentralWidget` + `QStackedWidget` sobrevive ao ciclo abrir/fechar projeto sem
+  tela-fantasma, mantém docks/Locator e fecha limpo; depende de comandar o contrato de
+  central widget que o QGIS possui (guardrails) — candidato a fatia real.
+- **Home como DOCK do plugin de marca → robusto no-fork (rede de segurança, entregue).**
