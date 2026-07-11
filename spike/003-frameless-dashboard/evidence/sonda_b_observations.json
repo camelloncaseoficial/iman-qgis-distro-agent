@@ -1,0 +1,64 @@
+{
+  "sonda": "B",
+  "steps": [
+    {
+      "step": "pre",
+      "central_before": "QWidget",
+      "mapCanvas_not_none": true,
+      "size": [
+        100,
+        30
+      ],
+      "isVisible": false
+    },
+    {
+      "step": "takeCentralWidget",
+      "returned": "QWidget",
+      "canvas_is_mapCanvas": false
+    },
+    {
+      "step": "stacked_installed",
+      "note": "ok",
+      "current": "home",
+      "canvas_alive": {
+        "mapCanvas_not_none": true,
+        "size": [
+          100,
+          30
+        ],
+        "isVisible": false
+      },
+      "visible_docks_count": 2,
+      "has_layers_dock": true
+    },
+    {
+      "step": "opened_project",
+      "demo_found": true,
+      "opened": true,
+      "current": "canvas",
+      "canvas_alive": {
+        "mapCanvas_not_none": true,
+        "size": [
+          483,
+          254
+        ],
+        "isVisible": true
+      }
+    },
+    {
+      "step": "closed_to_home",
+      "current": "home",
+      "canvas_alive": {
+        "mapCanvas_not_none": true,
+        "size": [
+          483,
+          254
+        ],
+        "isVisible": false
+      },
+      "visible_docks_count": 2,
+      "has_layers_dock": true
+    }
+  ],
+  "notes": "Ghost/tela-fantasma e integridade de layout são avaliados por inspeção visual dos 3 screenshots (home -> canvas -> home). O exit code do processo (capturado pelo run) atesta se o wrap do central widget desestabiliza o teardown do QGIS."
+}

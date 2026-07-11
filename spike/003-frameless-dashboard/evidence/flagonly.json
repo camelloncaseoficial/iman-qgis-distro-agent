@@ -1,0 +1,4 @@
+{
+  "variant": "frameless flag ONLY (no titlebar reparent)",
+  "flags_frameless": true
+}

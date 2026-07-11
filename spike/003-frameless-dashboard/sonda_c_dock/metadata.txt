@@ -1,0 +1,8 @@
+[general]
+name=IMAN Terra — Home (spike #003)
+qgisMinimumVersion=3.22
+description=Home/dashboard de onboarding IMAN Terra como dock (Sonda C do spike de de-risk). Powered by QGIS.
+version=0.1.0-spike
+author=Instituto IMAN
+about=Sonda C do spike #003 (D-IMAN-026): a home do redesign como DOCK do plugin de marca — rede de segurança no-fork. IMAN Terra é independente, powered by QGIS; não é produto oficial do QGIS nem endossado pela QGIS.ORG.
+experimental=True

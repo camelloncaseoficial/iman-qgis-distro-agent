@@ -22,6 +22,12 @@ ORG_FULL = ("Instituto de Monitoramento Ambiental e Desenvolvimento "
 VERSION = "0.1.0"
 
 # --- Paleta oficial (travada da arte oficial) ----------------------------------
+# STOP-AND-FLAG (D-IMAN-026, 2026-07-11): esta paleta foi SUPERADA pela paleta do
+# redesign "IMAN Terra" (docs/design-system.md, seção ATIVA). Estes COLOR_* seguem
+# aqui — e a arte de app/assets/ segue derivada deles — como STALE declarado, até a
+# fatia de promoção (brand.py + QSS + re-derivação da arte). O spike #003 NÃO troca
+# estes valores (evitar produção meio-tematizada). Paleta nova só nas UIs do spike
+# (spike/003-frameless-dashboard/tokens.py). Ver design-system.md e o REPORT do spike.
 # Reconciliada 2026-07-07 (fatia 002) a partir do master vetorial oficial
 # `app/assets/splash-iman-terra.svg` (drop do sponsor 2026-07-06). ESPELHA a tabela
 # de docs/design-system.md (BL-4): as duas fontes DEVEM bater, valor a valor.

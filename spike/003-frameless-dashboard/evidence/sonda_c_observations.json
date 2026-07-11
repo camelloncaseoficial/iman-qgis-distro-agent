@@ -1,0 +1,19 @@
+{
+  "sonda": "C",
+  "steps": [
+    {
+      "step": "loaded",
+      "dock_found": true,
+      "dock_visible": true,
+      "windowTitle": "IMAN Terra — powered by QGIS",
+      "plugin_loaded": true,
+      "dock_floating": true
+    },
+    {
+      "step": "after_new_project",
+      "dock_still_present": true,
+      "dock_visible": true,
+      "windowTitle": "IMAN Terra — powered by QGIS"
+    }
+  ]
+}
