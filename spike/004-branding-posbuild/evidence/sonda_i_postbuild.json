@@ -1,0 +1,48 @@
+{
+  "sonda": "I - post-build PE icon patch",
+  "src_exe": "C:\\OSGeo4W\\bin\\qgis-ltr-bin.exe",
+  "out_exe": "D:/_projetos/iman-webgeo/iman-qgis-distro-agent/spike/004-branding-posbuild\\dist\\iman-terra-bin.exe",
+  "src_sha256": "7c9a350129040ec25e7469834d598d46b554b13a161fc58e717c921d9d8ef653",
+  "copy_sha256_before_patch": "7c9a350129040ec25e7469834d598d46b554b13a161fc58e717c921d9d8ef653",
+  "group_language": 1033,
+  "ico_images": [
+    [
+      16,
+      16,
+      32
+    ],
+    [
+      24,
+      24,
+      32
+    ],
+    [
+      32,
+      32,
+      32
+    ],
+    [
+      48,
+      48,
+      32
+    ],
+    [
+      64,
+      64,
+      32
+    ],
+    [
+      128,
+      128,
+      32
+    ],
+    [
+      256,
+      256,
+      32
+    ]
+  ],
+  "copy_sha256_after_patch": "a00229fb6351d2f8040e3a1ef7a7676f865933f15b1c28e9a9c7a504fabf845b",
+  "patched_changed_hash": true,
+  "bucket": "POST-BUILD deterministico (packaging legitimo, nao-fragil)"
+}

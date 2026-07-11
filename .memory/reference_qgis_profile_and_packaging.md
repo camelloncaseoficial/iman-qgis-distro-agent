@@ -33,8 +33,13 @@
 
 ## Limites do no-fork (só a Opção 2 / fork resolve)
 
-- Splash screen **nativo** de boot do QGIS ("QGIS x.y Bratislava LTR") — mostrado pelo C++
-  antes do Python; não dá para trocar sem fork (nem via `--code`). Não fazer 2º splash flash (hack).
+- ~~Splash screen nativo de boot — só com fork~~ **CORRIGIDO pelo spike #004 (D-IMAN-027):**
+  o splash nativo **É re-brandável no-fork** via customização do perfil. O QGIS lê
+  `QgsCustomization::splashPath()` + `"splash.png"` de `<perfil>/QGIS/QGISCUSTOMIZATION3.ini`
+  (`[Customization] splashpath=<dir>/`) com `UI/Customization/enabled=true` no `QGIS3.ini`.
+  O QSplashScreen **nativo** renderiza a imagem IMAN (comprovado por screenshot de boot).
+  Não é hack/2º-splash: é o próprio splash nativo apontado para o asset do perfil isolado.
+  Ver `spike/004-branding-posbuild/REPORT.md`.
 - **Ícones de ação da toolbar** do QGIS (baked no core).
 - Ícone real do executável (`qgis-bin.exe`).
 - About dialog nativo.

@@ -1,0 +1,16 @@
+{
+  "sonda": "I - execucao do binario patchado (atribuicao)",
+  "patch_valido": {
+    "hash_mudou": "7c9a35...->a00229... (sonda_i_postbuild.json)",
+    "icone_extraido_do_PE_patchado": "IMAN (evidence/sonda_i_postbuild_extracted_icon.png) vs controle QGIS (sonda_i_postbuild_control_qgis_icon.png)",
+    "PE_estruturalmente_valido": "UpdateResource/EndUpdateResource retornaram sucesso; Windows carregou o PE como data-module e leu o icone (ExtractAssociatedIcon) -> PE integro"
+  },
+  "execucao_do_copy_patchado": {
+    "resultado": "copia RENOMEADA (iman-terra-bin.exe) NAO inicia",
+    "controle": "copia UNPATCHED tambem renomeada TAMBEM nao inicia -> a falha e do RENAME, nao do patch",
+    "causa": "o bootstrap qgis-ltr-bin.exe resolve o ambiente pelo proprio nome/local; renomear/relocar quebra o boot",
+    "implicacao": "o patch de icone do .exe so e EXECUTAVEL num QGIS BUNDLADO onde o binario mantem o nome qgis-ltr-bin.exe no seu bin. Em no-fork puro, sobrescrever o exe do usuario fere BL-3 -> nao se executa a copia patchada aqui"
+  },
+  "BL3_original_intacto": "sha256 qgis-ltr-bin.exe = 7c9a350129040ec25e7469834d598d46b554b13a161fc58e717c921d9d8ef653 (verificado antes/depois)",
+  "veredito": "POST-BUILD deterministico e valido; POREM so aplicavel a distribuicao BUNDLADA (installer-full/fork). Em Opcao 1 no-fork o icone do .exe fica QGIS (BL-3); atalho (fatia #001) e janela/taskbar (runtime) ja sao IMAN -> superficie visivel coberta. Valor incremental do patch do .exe ~baixo."
+}
