@@ -39,3 +39,6 @@ docs/# IMAN Terra Interface Redesign.zip
 docs/ChatGPT Image*.png
 docs/uploads/
 docs/.thumbnail
+
+# Binario QGIS patchado do spike #004 (nao versionar binario GPL modificado)
+spike/**/dist/

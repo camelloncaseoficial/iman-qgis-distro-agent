@@ -57,8 +57,23 @@ nome interno). Documentado em `docs/BUILD_WINDOWS.md`/`RELEASE_PROCESS.md` quand
 
 | Alcançável sem fork | Só com fork (Opção 2) |
 |---|---|
-| Título da janela (startup) | Splash screen nativo |
-| Tema/cores (QSS do perfil) | Ícone do `qgis-bin.exe` |
-| Plugin de marca (menu/toolbar/painel) | About dialog nativo |
-| Ícone + nome do atalho e do instalador | Nome interno da aplicação |
-| Projeto demo, templates, notices | Remoção/alteração de core |
+| Título da janela (startup) | Nome interno da app (applicationName/org, crash reporter, classe de janela) |
+| Tema/cores (QSS do perfil) | Remoção/alteração de lógica de core |
+| Plugin de marca (menu/toolbar/painel) | — |
+| Ícone + nome do atalho e do instalador | — |
+| Ícone da janela/taskbar (startup, runtime) | — |
+| **Splash NATIVO de boot** (customização do perfil) | — |
+| About próprio (plugin, coexiste com o nativo) | — |
+| Projeto demo, templates, notices | — |
+
+> **Atualização — spike #004 (D-IMAN-027), com evidência em
+> `spike/004-branding-posbuild/REPORT.md`:** o **splash nativo de boot** SAIU da coluna
+> "só com fork". O QGIS resolve o splash por `QgsCustomization::splashPath()` +
+> `"splash.png"`, lido de `<perfil>/QGIS/QGISCUSTOMIZATION3.ini` (`[Customization]
+> splashpath=…`) com `UI/Customization/enabled=true` — ou seja, **re-brandável por
+> config do perfil isolado, no-fork** (comprovado: o QSplashScreen NATIVO renderiza o
+> splash IMAN). O **ícone do arquivo `qgis-bin.exe`** é patch pós-build determinístico
+> (Win32 `UpdateResource`) — mas só aplicável a um QGIS **bundlado** (BL-3 proíbe tocar o
+> exe do usuário no no-fork) e de baixo valor (atalho + janela/taskbar já são IMAN). O
+> **About** tem substituto no-fork (diálogo próprio). Resta irredutível só o **nome
+> interno** (payoff ~zero). **Conclusão: o source-fork não se justifica pela evidência.**
