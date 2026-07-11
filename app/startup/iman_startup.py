@@ -16,6 +16,7 @@ documentados como limite, não contornados por hack frágil (ex.: um 2º splash 
 Roda no perfil isolado `iman-distro` — não toca o perfil do usuário (BL-3) — e não
 se apresenta como QGIS oficial (BL-1/BL-2).
 """
+import ctypes
 import os
 
 from qgis.core import QgsApplication
@@ -109,19 +110,39 @@ def _apply_window_icon(win):
             win.setWindowIcon(icon)
 
 
+def _set_app_user_model_id():
+    """Identidade de taskbar/pin no Windows (agrupa a janela sob a marca IMAN,
+    nao sob o QGIS). No-fork, runtime. Falha silenciosa fora do Windows."""
+    try:
+        ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(
+            "InstitutoIMAN.IMANTerra.Distro.1")
+    except Exception:
+        pass
+
+
 def main():
     if iface is None:
         return
     win = iface.mainWindow()
     brand = _brand()
+    title = brand.WINDOW_TITLE if brand else "IMAN Terra — powered by QGIS"
 
-    win.setWindowTitle(brand.WINDOW_TITLE if brand else "IMAN Terra — powered by QGIS")
-    _apply_window_icon(win)
+    _set_app_user_model_id()
 
+    def apply_identity():
+        # Titulo + icone da janela/taskbar. O QGIS reescreve titulo/icone TARDE no
+        # boot (achado dos spikes #004/#005), entao reaplicamos algumas vezes.
+        win.setWindowTitle(title)
+        _apply_window_icon(win)
+
+    apply_identity()
     qss = _read_qss(brand)
     _apply_theme(win, qss)
-    # Reaplica depois que a UI do QGIS assenta (evita clobber do tema nativo).
-    QTimer.singleShot(1500, lambda: _apply_theme(win, qss))
+
+    # Reaplica identidade + tema depois que a UI do QGIS assenta (evita clobber).
+    for delay in (800, 1500, 2500, 4000):
+        QTimer.singleShot(delay, apply_identity)
+        QTimer.singleShot(delay, lambda: _apply_theme(win, qss))
 
 
 main()

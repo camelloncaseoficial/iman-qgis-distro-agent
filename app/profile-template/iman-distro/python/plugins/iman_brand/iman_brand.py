@@ -62,8 +62,9 @@ class ImanBrandPlugin:
             tip="Abrir o site do Instituto IMAN",
         )
         self._add_action(
-            icon, "Sobre", self.show_about,
-            tip="Sobre o %s (créditos do QGIS)" % brand.PRODUCT_NAME,
+            icon, "Sobre o %s" % brand.PRODUCT_NAME, self.show_about,
+            tip="Sobre o %s (créditos do QGIS; o About nativo do QGIS segue "
+                "disponível em Ajuda ▸ Sobre)" % brand.PRODUCT_NAME,
         )
 
         # Título da janela (belt-and-suspenders com o startup script). O QGIS
@@ -271,9 +272,10 @@ class ImanBrandPlugin:
             "<hr>"
             "<p style='color:%s'>%s</p>"
             "<p style='font-size:10px;color:%s'>Versão %s · sem fork do QGIS "
-            "(Opção 1). Limites conhecidos do no-fork — splash nativo, ícone do "
-            "executável, About nativo e nome interno — são resolvidos só na "
-            "Opção 2 (fork), documentados como limite.</p>" % (
+            "(Opção 1). Splash de marca, tema, ícone da janela e este \"Sobre\" "
+            "são entregues <b>sem recompilar</b> o QGIS. Limites remanescentes "
+            "(baixo valor, documentados) — ícone do arquivo executável e nome "
+            "interno do processo — só numa distribuição bundlada/Opção 2.</p>" % (
                 brand.COLOR_PRIMARY_DEEP, brand.PRODUCT_NAME, brand.PRODUCT_SUBTITLE,
                 brand.PUBLISHER, brand.ORG_FULL,
                 brand.COLOR_SECONDARY,
