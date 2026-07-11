@@ -63,6 +63,16 @@ if not exist "%PROFILE_DIR%\QGIS\QGIS3.ini" (
   xcopy /E /I /Y /Q "%TEMPLATE%" "%PROFILE_DIR%" >nul
 )
 
+REM -- Splash NATIVO de marca (mecanismo no-fork do spike #004) ----------------
+REM O QGIS mostra QgsCustomization::splashPath()+"splash.png" no boot. Apontamos
+REM o splashpath (ABSOLUTO, por-instalacao) para a pasta QGIS\ do perfil, que
+REM contem o splash.png re-derivado. Reescrito a cada run (idempotente) para
+REM sobreviver a uma eventual reescrita da customizacao pelo QGIS. So o splash -
+REM nenhuma regra de widget (nao mexe na UI). BL-3: tudo no perfil isolado.
+set "SPLASH_DIR=%PROFILE_DIR:\=/%/QGIS/"
+> "%PROFILE_DIR%\QGIS\QGISCUSTOMIZATION3.ini" echo [Customization]
+>> "%PROFILE_DIR%\QGIS\QGISCUSTOMIZATION3.ini" echo splashpath=%SPLASH_DIR%
+
 REM -- Abre o QGIS com o perfil IMAN isolado -----------------------------------
 start "" "%QGIS_EXE%" ^
   --profiles-path "%PROFILES_ROOT%" ^

@@ -21,30 +21,33 @@ ORG_FULL = ("Instituto de Monitoramento Ambiental e Desenvolvimento "
             "do Semiárido do Nordeste")
 VERSION = "0.1.0"
 
-# --- Paleta oficial (travada da arte oficial) ----------------------------------
-# STOP-AND-FLAG (D-IMAN-026, 2026-07-11): esta paleta foi SUPERADA pela paleta do
-# redesign "IMAN Terra" (docs/design-system.md, seção ATIVA). Estes COLOR_* seguem
-# aqui — e a arte de app/assets/ segue derivada deles — como STALE declarado, até a
-# fatia de promoção (brand.py + QSS + re-derivação da arte). O spike #003 NÃO troca
-# estes valores (evitar produção meio-tematizada). Paleta nova só nas UIs do spike
-# (spike/003-frameless-dashboard/tokens.py). Ver design-system.md e o REPORT do spike.
-# Reconciliada 2026-07-07 (fatia 002) a partir do master vetorial oficial
-# `app/assets/splash-iman-terra.svg` (drop do sponsor 2026-07-06). ESPELHA a tabela
-# de docs/design-system.md (BL-4): as duas fontes DEVEM bater, valor a valor.
-# STOP-AND-FLAG (autoridade final): o SVG é arte DERIVADA (splash), não o manual de
-# marca. Se/quando o `IMAN.cdr`/manual oficial chegar, ele PREVALECE — travar o que
-# temos, sem inventar cores fora da arte. Nota: `brand.text` foi reconciliado para
-# `#041C16` (wordmark real do SVG); o `#0F1F18` proposto no briefing 002 não consta
-# na arte, então usa-se o valor de fato presente.
-COLOR_PRIMARY = "#00A85A"       # brand.primary — verde-marca / destaque (SVG)
-COLOR_PRIMARY_DEEP = "#0D5138"  # brand.primary-deep — verde de apoio / chrome escura (SVG)
-COLOR_INK = "#041C16"           # brand.ink — verde quase-preto / fundos escuros do splash (SVG)
-COLOR_ACCENT = "#2CA8E0"        # brand.accent — azul do globo / ação / links (SVG)
-COLOR_MINT = "#5FE0A0"          # brand.mint — realce / highlight (SVG)
-COLOR_WARM = "#C56A2F"          # brand.warm — accent quente (terracota) (SVG)
-COLOR_SURFACE = "#F2F8F3"       # brand.surface — fundo de painel claro (SVG)
-COLOR_TEXT = "#041C16"          # brand.text — texto sobre claro (= ink; wordmark do SVG)
-# Alias de compatibilidade: código legado usa COLOR_SECONDARY (= primary-deep).
+# --- Paleta IMAN Terra (redesign D-IMAN-026 · ATIVA · INTERIM) ------------------
+# PROMOVIDA na fatia #005 (feat/003-identidade-nofork): estes COLOR_* espelham,
+# valor a valor, a tabela ATIVA de docs/design-system.md e spike/003 tokens.py
+# (fonte única, BL-4). A arte de app/assets/ foi RE-DERIVADA p/ esta paleta (deixa
+# de ser STALE). INTERIM: sobreponível pelo `IMAN.cdr`/manual se chegar (autoridade
+# final). Constantes legadas (COLOR_PRIMARY/…/MINT/WARM) mantêm o NOME por compat e
+# são re-apontadas ao PAPEL novo; `mint`/`warm` saíram da identidade (viram realce/earth).
+COLOR_PRIMARY = "#1E7A4D"       # brand-2 — verde-marca / destaque / estado ativo
+COLOR_PRIMARY_DEEP = "#103D29"  # brand — chrome escura (menubar/status/títulos de dock)
+COLOR_INK = "#0E1A14"           # fundo escuro (bg dark do splash)
+COLOR_ACCENT = "#2B8FD6"        # accent — azul dados/água / ação / links
+COLOR_MINT = "#82D3A6"          # (legado) realce — mint saiu da identidade (D-IMAN-026)
+COLOR_WARM = "#8A7A55"          # (legado) earth — warm/terracota saiu da identidade
+COLOR_MOSS = "#6E9160"          # moss — apoio
+COLOR_EARTH = "#8A7A55"         # earth — terroso (símbolos de limite)
+COLOR_BG = "#EBEEE8"            # base neutra da área de trabalho
+COLOR_PANEL = "#FFFFFF"         # painel / cartão
+COLOR_PANEL_2 = "#F5F7F2"       # painel secundário / campo / linha alternada
+COLOR_SURFACE = "#F5F7F2"       # (legado) = panel-2 (fundo de painel claro)
+COLOR_BORDER = "#E2E5DE"        # borda
+COLOR_TEXT = "#1A231D"          # texto principal sobre claro
+COLOR_TEXT_MUTED = "#5E6A61"    # texto secundário
+COLOR_TEXT_FAINT = "#95A093"    # texto terciário / meta
+COLOR_HOVER = "#EFF2EC"         # hover neutro
+COLOR_ACTIVE_BG = "#E4F0E8"     # fundo de item ativo
+COLOR_ACTIVE_FG = "#155F3D"     # texto de item ativo
+# Alias de compatibilidade: código legado usa COLOR_SECONDARY (= primary-deep/brand).
 COLOR_SECONDARY = COLOR_PRIMARY_DEEP
 
 # --- Links (STOP-AND-FLAG mantido — domínio NÃO confirmado nesta fatia) ---------

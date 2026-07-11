@@ -70,20 +70,22 @@ batem — BL-4).
 > comp usa traços placeholder); CRS **SIRGAS 2000 / UTM** (EPSG:31984 no Ceará), **nunca
 > EPSG:4326** (o comp mostra 4326, impróprio p/ área/cadastro).
 
-> **STOP-AND-FLAG — estado de implementação (honesto, BL-5):** esta paleta é a identidade
-> **decidida**, mas ainda **NÃO promovida** para produção. Hoje ela pinta só as UIs do
-> **spike #003** (`tokens.py`). A produção — `brand.py` (`COLOR_*`), o QSS
-> `app/profile-template/iman-distro/QGIS/iman-theme.qss` e **toda a arte** de `app/assets/`
-> (SVG master, símbolo, `.ico`, wizard, splash) — ainda carrega a paleta VELHA (#00A85A…),
-> logo está **STALE**. A promoção (brand.py + QSS + **re-derivação da arte**) é **fatia de
-> branding própria**, fora do escopo do spike (D-IMAN-026). Autoridade final segue o
-> `IMAN.cdr`/manual se chegar (regra abaixo permanece viva).
+> **Estado de implementação (PROMOVIDA na fatia #005, `feat/003-identidade-nofork`):** esta
+> paleta agora é a de **produção**. `brand.py` (`COLOR_*`), o QSS
+> `app/profile-template/iman-distro/QGIS/iman-theme.qss` e as UIs do plugin foram promovidos;
+> a arte de `app/assets/` foi **RE-DERIVADA** para esta paleta (splash re-rasterizado +
+> copy REURB/Ceará; wizard/banner na paleta nova) — **deixa de ser STALE**. Reprodutível por
+> `app/assets/derive-interim-palette.py` + `rasterize-splash.py` + `regenerate-brand-derivatives.py`.
+> **INTERIM (STOP-AND-FLAG):** o mapa OLD→NEW é do arquiteto (D-IMAN-026); o **símbolo**
+> (`iman-symbol.png`, raster sem master vetorial) **não** foi re-colorido — espera o `IMAN.cdr`,
+> que, chegando, **prevalece** sobre tudo (autoridade final, regra abaixo permanece viva).
 
 ## Cores — paleta 002 (OBSOLETA · superada por D-IMAN-026 · mantida como registro)
 
 > ⚠️ **OBSOLETA (D-IMAN-026, 2026-07-11).** Esta é a paleta travada no gate #002; o sponsor
-> a substituiu pela paleta do redesign (acima). Permanece documentada porque `brand.py`, o
-> QSS e a arte de `app/assets/` **ainda a usam** (STALE, declarado) até a fatia de promoção.
+> a substituiu pela paleta do redesign (acima). Desde a **fatia #005**, `brand.py`, o QSS e
+> a arte de `app/assets/` **já NÃO a usam** (foram promovidos/re-derivados). Mantida só como
+> registro histórico dos valores antigos.
 
 Extraída **diretamente** do master vetorial oficial `app/assets/splash-iman-terra.svg`
 (drop do sponsor 2026-07-06). Esta tabela **é idêntica**, valor a valor, às constantes
