@@ -1,24 +1,30 @@
 # -*- coding: utf-8 -*-
-"""IMAN Terra — plugin de marca leve.
+"""IMAN Terra — plugin de marca.
 
 Camada de experiência institucional sobre o QGIS LTR (Opção 1, no-fork):
-menu próprio, toolbar, painel (dock) de boas-vindas e ação "Sobre" com os
-créditos do QGIS. Usa apenas APIs públicas do QGIS/Qt (BL-6). Toda a marca vem
-de `brand.py` (fonte única, BL-4). Nada aqui se apresenta como QGIS oficial
-(BL-1/BL-2).
+- **Home no MIOLO** (fatia #006): no lugar do canvas-vazio, uma home de boas-vindas
+  (REURB/Ceará) via `takeCentralWidget()` + `QStackedWidget([canvas, home])` — o
+  caminho ROBUSTO provado na Sonda B do spike #003. Guardrail defensivo re-instala o
+  stack se o QGIS/outro plugin reivindicar o central widget; se o central
+  desestabilizar, cai para um DOCK flutuante amplo (Sonda C, também robusto) —
+  declarado, nunca silencioso.
+- Menu próprio, toolbar, ação "Sobre o IMAN Terra" (mantendo o About nativo).
+
+APIs públicas do QGIS/Qt (BL-6). Marca da fonte única `brand.py` (BL-4). Nada aqui
+se apresenta como QGIS oficial (BL-1/BL-2).
 """
 import os
 import webbrowser
 
-from qgis.PyQt.QtCore import Qt
+from qgis.PyQt.QtCore import Qt, QUrl, QTimer, QSize
 from qgis.PyQt.QtGui import QIcon, QPixmap, QDesktopServices
-from qgis.PyQt.QtCore import QUrl
 from qgis.PyQt.QtWidgets import (
-    QAction, QDockWidget, QWidget, QVBoxLayout, QHBoxLayout, QLabel,
-    QPushButton, QFrame, QScrollArea, QMessageBox, QSizePolicy,
+    QAction, QDockWidget, QWidget, QVBoxLayout, QStackedWidget, QMessageBox,
+    QToolButton, QMenu, QToolBar,
 )
 
 from . import brand
+from . import dashboard
 
 _DIR = os.path.dirname(__file__)
 _RES = os.path.join(_DIR, "resources")
@@ -29,56 +35,110 @@ def _res(name):
 
 
 class ImanBrandPlugin:
-    """Plugin de marca: registra menu/toolbar/dock e a ação Sobre."""
-
     def __init__(self, iface):
         self.iface = iface
         self.actions = []
         self.menu = brand.PRODUCT_NAME
         self.toolbar = None
+        # host da home
+        self.mode = None          # "central" | "dock"
+        self.stack = None
+        self.canvas_page = None   # container central original do QGIS (idx 0)
+        self.home_page = None     # home (idx 1)
         self.dock = None
+        self._guard = None
+        self._reinstalls = 0
+        self._hidden_toolbars = []
 
     # ------------------------------------------------------------------ setup
     def initGui(self):
         self.toolbar = self.iface.addToolBar(brand.PRODUCT_NAME)
         self.toolbar.setObjectName("ImanTerraToolbar")
-
         icon = QIcon(_res("icon.png"))
 
-        self._add_action(
-            icon, "Boas-vindas", self.show_welcome,
-            tip="Abrir o painel de boas-vindas do %s" % brand.PRODUCT_NAME,
-        )
-        self._add_action(
-            icon, "Abrir projeto demo", self.open_demo,
-            tip="Abrir o projeto de demonstração welcome.qgz",
-        )
-        self._add_action(
-            icon, "Documentação", self.open_docs,
-            tip="Abrir a documentação do %s" % brand.PRODUCT_NAME,
-        )
-        self._add_action(
-            icon, "Site do Instituto IMAN", self.open_site,
-            tip="Abrir o site do Instituto IMAN",
-        )
-        self._add_action(
-            icon, "Sobre o %s" % brand.PRODUCT_NAME, self.show_about,
-            tip="Sobre o %s (créditos do QGIS; o About nativo do QGIS segue "
-                "disponível em Ajuda ▸ Sobre)" % brand.PRODUCT_NAME,
-        )
+        # Ações (vão para o menu Complementos ▸ IMAN Terra e para o dropdown).
+        self._add_action(icon, "Início", self.show_home,
+                         tip="Mostrar a home do %s" % brand.PRODUCT_NAME)
+        self._add_action(icon, "Abrir projeto demo", self.open_demo,
+                         tip="Abrir o projeto de demonstração welcome.qgz")
+        self._add_action(icon, "Documentação", self.open_docs,
+                         tip="Abrir a documentação do %s" % brand.PRODUCT_NAME)
+        self._add_action(icon, "Site do Instituto IMAN", self.open_site,
+                         tip="Abrir o site do Instituto IMAN")
+        self._add_action(icon, "Sobre o %s" % brand.PRODUCT_NAME, self.show_about,
+                         tip="Sobre o %s (créditos do QGIS; o About nativo segue "
+                             "em Ajuda ▸ Sobre)" % brand.PRODUCT_NAME)
 
-        # Título da janela (belt-and-suspenders com o startup script). O QGIS
-        # reescreve o título ao abrir/criar projeto (limite do no-fork), então
-        # reaplicamos nos sinais de projeto para que o branding persista.
+        # UM botão de marca proeminente na toolbar (comp: dropdown "Complementos
+        # IMAN"), no lugar de 5 ícones repetidos.
+        self._build_menu_button(icon)
+
         self._apply_title()
+        for sig, slot in (("projectRead", self._on_project_read),
+                          ("newProjectCreated", self._on_new_project)):
+            try:
+                getattr(self.iface, sig).connect(slot)
+            except Exception:
+                pass
+
+        # Instala a home no centro depois que o startup do QGIS assenta; declutter
+        # das toolbars nativas ruidosas + banner de versão (Fase 3).
+        QTimer.singleShot(900, self._install_center)
+        QTimer.singleShot(1600, self._declutter_toolbars)
+        QTimer.singleShot(2200, self._version_banner)
+
+    def _build_menu_button(self, icon):
+        btn = QToolButton(self.iface.mainWindow())
+        btn.setObjectName("ImanTerraMenuBtn")
+        btn.setIcon(icon)
+        btn.setText(" %s " % brand.PRODUCT_NAME)
+        btn.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
+        btn.setPopupMode(QToolButton.InstantPopup)
+        btn.setIconSize(QSize(18, 18))
+        btn.setCursor(Qt.PointingHandCursor)
+        menu = QMenu(btn)
+        for a in self.actions:
+            menu.addAction(a)
+        btn.setMenu(menu)
+        btn.setStyleSheet(
+            "QToolButton#ImanTerraMenuBtn{background:%s;color:#FFFFFF;border:none;"
+            "border-radius:8px;padding:5px 10px;font-weight:600;}"
+            "QToolButton#ImanTerraMenuBtn:hover{background:%s;}"
+            "QToolButton#ImanTerraMenuBtn::menu-indicator{image:none;width:0;}"
+            % (brand.COLOR_PRIMARY, brand.COLOR_PRIMARY_DEEP))
+        self.toolbar.addWidget(btn)
+        self._menu_button = btn
+
+    def _declutter_toolbars(self):
+        """Densidade minimalista do comp: oculta toolbars nativas ruidosas, deixa as
+        essenciais (arquivo, navegação, atributos, fonte de dados, digitalização —
+        cadastro precisa dela — e a de marca). Reversível em Exibir ▸ Barras."""
+        keep = {
+            "mFileToolBar", "mMapNavToolBar", "mAttributesToolBar",
+            "mDataSourceManagerToolBar", "mDigitizeToolBar",
+            "mAdvancedDigitizeToolBar", "mShapeDigitizeToolBar",
+            "ImanTerraToolbar",
+        }
         try:
-            self.iface.projectRead.connect(self._apply_title)
-            self.iface.newProjectCreated.connect(self._apply_title)
+            for tb in self.iface.mainWindow().findChildren(QToolBar):
+                name = tb.objectName()
+                if name and name not in keep and tb.isVisible():
+                    tb.hide()
+                    self._hidden_toolbars.append(tb)
         except Exception:
             pass
 
-        # Painel de boas-vindas visível na primeira carga.
-        self.show_welcome()
+    def _version_banner(self):
+        try:
+            bar = self.iface.messageBar()
+            bar.pushMessage(
+                brand.PRODUCT_NAME,
+                "Versão %s — plataforma geoespacial institucional, powered by QGIS. "
+                "Comece pela home (Complementos ▸ %s ▸ Início)."
+                % (brand.VERSION, brand.PRODUCT_NAME),
+                level=0, duration=9)
+        except Exception:
+            pass
 
     def _apply_title(self):
         try:
@@ -92,149 +152,139 @@ class ImanBrandPlugin:
         if tip:
             action.setStatusTip(tip)
             action.setToolTip(tip)
-        self.toolbar.addAction(action)
         self.iface.addPluginToMenu(self.menu, action)
         self.actions.append(action)
         return action
 
-    # --------------------------------------------------------------- welcome
-    def show_welcome(self):
-        if self.dock is None:
-            self.dock = self._build_dock()
-            self.iface.addDockWidget(Qt.RightDockWidgetArea, self.dock)
-        self.dock.show()
-        self.dock.raise_()
+    # -------------------------------------------------------- home no centro
+    def _install_center(self):
+        """ALVO: home no miolo (Sonda B). Fallback declarado: dock (Sonda C)."""
+        try:
+            win = self.iface.mainWindow()
+            central = win.takeCentralWidget()   # container central do QGIS (sem deletar)
+            if central is None:
+                raise RuntimeError("takeCentralWidget devolveu None")
+            stack = QStackedWidget()
+            stack.addWidget(central)                       # idx 0 = canvas/welcome do QGIS
+            home = dashboard.build_home(self.iface)        # idx 1 = home IMAN
+            stack.addWidget(home)
+            win.setCentralWidget(stack)
+            self.stack, self.canvas_page, self.home_page = stack, central, home
+            self.mode = "central"
+            self._show_home()                              # sem projeto -> home
+            # Guardrail: reasserção defensiva do contrato de central widget.
+            self._guard = QTimer(win)
+            self._guard.timeout.connect(self._reassert)
+            self._guard.start(2000)
+        except Exception as e:
+            self._install_dock_fallback("erro ao instalar no centro: %s" % e)
+
+    def _reassert(self):
+        """Guardrail: detecta se o contrato de central widget foi quebrado por
+        terceiro (QGIS/outro plugin chamou setCentralWidget) e, nesse caso, cai para
+        o DOCK robusto — SEM re-embrulhar o central. Re-embrulhar é inseguro: um
+        setCentralWidget de terceiro já deletou o container do canvas, e tentar
+        reconstruir por cima corrompe o heap. O dock é a recuperação segura e
+        declarada (Sonda C). Em uso normal, o QGIS NÃO reivindica o central (spike
+        #003), então o guard fica quieto."""
+        if self.mode != "central":
+            return
+        reclaimed = False
+        try:
+            if self.iface.mainWindow().centralWidget() is not self.stack:
+                reclaimed = True
+        except Exception:
+            reclaimed = True  # self.stack já foi deletado pelo terceiro
+        if reclaimed:
+            self._reinstalls += 1
+            try:
+                self._guard.stop()
+            except Exception:
+                pass
+            self.mode = None
+            self.stack = self.home_page = self.canvas_page = None
+            self._install_dock_fallback("central widget reivindicado por terceiro")
+
+    def _show_home(self):
+        if self.mode == "central" and self.stack is not None and self.home_page is not None:
+            try:
+                self.stack.setCurrentWidget(self.home_page)
+            except Exception:
+                pass
+
+    def _show_canvas(self):
+        if self.mode == "central" and self.stack is not None and self.canvas_page is not None:
+            try:
+                self.stack.setCurrentWidget(self.canvas_page)
+            except Exception:
+                pass
+
+    def _on_project_read(self):
+        # projeto aberto (com conteúdo) -> o canvas assume o miolo
+        self._apply_title()
+        self._show_canvas()
+
+    def _on_new_project(self):
+        # File ▸ Novo (projeto vazio) -> a home volta ao miolo
+        self._apply_title()
+        self._show_home()
+
+    # ------------------------------------------- fallback: dock (Sonda C)
+    def _install_dock_fallback(self, reason):
+        if self.mode == "dock":
+            return
+        try:
+            QgsMessageLog = __import__("qgis.core", fromlist=["QgsMessageLog"]).QgsMessageLog
+            QgsMessageLog.logMessage("Home no centro indisponível (%s); usando dock." % reason,
+                                     "IMAN Terra")
+        except Exception:
+            pass
+        # restaura o canvas do QGIS ao miolo (tira-o do stack ANTES de trocar o
+        # central, senão o delete do stack levaria o canvas junto)
+        try:
+            win = self.iface.mainWindow()
+            if self.canvas_page is not None and win.centralWidget() is self.stack:
+                self.stack.removeWidget(self.canvas_page)
+                win.setCentralWidget(self.canvas_page)
+        except Exception:
+            pass
+        self.mode = "dock"
+        self.stack = self.home_page = self.canvas_page = None
+        self._build_dock()
 
     def _build_dock(self):
-        dock = QDockWidget(brand.PRODUCT_NAME, self.iface.mainWindow())
-        dock.setObjectName("ImanTerraWelcomeDock")
-
-        inner = QWidget()
-        inner.setObjectName("ImanTerraWelcome")
-        layout = QVBoxLayout(inner)
-        layout.setContentsMargins(16, 16, 16, 16)
-        layout.setSpacing(12)
-
-        # Banner do splash oficial (arte que já credita o QGIS — BL-1). É o mesmo
-        # master que a Opção 2 (fork) usará como splash nativo de boot (DA-2);
-        # aqui, no no-fork, entra só como banner honesto do painel (BL-5).
-        banner_path = _res("splash.png")
-        if os.path.exists(banner_path):
-            banner = QLabel()
-            pix = QPixmap(banner_path)
-            if not pix.isNull():
-                banner.setPixmap(pix.scaledToWidth(248, Qt.SmoothTransformation))
-            banner.setAlignment(Qt.AlignCenter)
-            layout.addWidget(banner)
-
-        title = QLabel(brand.PRODUCT_NAME)
-        title.setObjectName("ImanTitle")
-        title.setAlignment(Qt.AlignCenter)
-        layout.addWidget(title)
-
-        subtitle = QLabel(brand.PRODUCT_SUBTITLE)
-        subtitle.setObjectName("ImanSubtitle")
-        subtitle.setWordWrap(True)
-        subtitle.setAlignment(Qt.AlignCenter)
-        layout.addWidget(subtitle)
-
-        layout.addWidget(self._divider())
-
-        steps = QLabel(
-            "<b>Primeiros passos</b>"
-            "<ol style='margin-left:-18px'>"
-            "<li>Abra o <b>projeto demo</b> para ver um mapa de exemplo.</li>"
-            "<li>Explore o menu <b>%s</b> na barra de menus.</li>"
-            "<li>Consulte a <b>documentação</b> e o site do Instituto.</li>"
-            "</ol>" % brand.PRODUCT_NAME
-        )
-        steps.setWordWrap(True)
-        layout.addWidget(steps)
-
-        btn_demo = QPushButton("Abrir projeto demo")
-        btn_demo.setObjectName("ImanPrimaryBtn")
-        btn_demo.clicked.connect(self.open_demo)
-        layout.addWidget(btn_demo)
-
-        row = QHBoxLayout()
-        btn_docs = QPushButton("Documentação")
-        btn_docs.clicked.connect(self.open_docs)
-        btn_site = QPushButton("Site IMAN")
-        btn_site.clicked.connect(self.open_site)
-        row.addWidget(btn_docs)
-        row.addWidget(btn_site)
-        layout.addLayout(row)
-
-        layout.addStretch(1)
-        layout.addWidget(self._divider())
-
-        credits = QLabel(
-            "<span style='color:%s'>%s</span>" % (
-                brand.COLOR_SECONDARY,
-                brand.CREDITS_QGIS.replace("\n", "<br>"),
-            )
-        )
-        credits.setObjectName("ImanCredits")
-        credits.setWordWrap(True)
-        layout.addWidget(credits)
-
-        btn_about = QPushButton("Sobre / créditos do QGIS")
-        btn_about.clicked.connect(self.show_about)
-        layout.addWidget(btn_about)
-
-        inner.setStyleSheet(self._dock_qss())
-
-        scroll = QScrollArea()
-        scroll.setWidgetResizable(True)
-        scroll.setWidget(inner)
-        scroll.setFrameShape(QFrame.NoFrame)
-        dock.setWidget(scroll)
-        dock.setMinimumWidth(280)
-        return dock
-
-    def _divider(self):
-        line = QFrame()
-        line.setFrameShape(QFrame.HLine)
-        line.setFrameShadow(QFrame.Sunken)
-        line.setStyleSheet("color:%s;" % brand.COLOR_SURFACE)
-        return line
-
-    def _dock_qss(self):
-        # Legibilidade (fatia 002): o verde vivo `primary` (#00A85A) fica em FILLS/
-        # bordas (bloco), nunca como texto sobre claro — sobre `surface` daria ~2.9:1.
-        # Todo TEXTO usa `primary-deep`/`ink` (~9:1 sobre surface). O botão primário
-        # usa fundo `primary-deep` com texto branco (~8:1), não verde vivo (~3.1:1).
-        return """
-        QWidget#ImanTerraWelcome {{ background: {surface}; color: {text}; }}
-        QLabel {{ color: {text}; }}
-        QLabel#ImanTitle {{ font-size: 20px; font-weight: 700; color: {deep}; }}
-        QLabel#ImanSubtitle {{ font-size: 12px; color: {deep}; }}
-        QLabel#ImanCredits {{ font-size: 10px; color: {text}; }}
-        QPushButton {{
-            padding: 6px 10px; border-radius: 6px;
-            border: 1px solid {primary}; color: {deep}; background: white;
-        }}
-        QPushButton:hover {{ background: {surface}; }}
-        QPushButton#ImanPrimaryBtn {{
-            background: {deep}; color: white; border: 1px solid {deep};
-            font-weight: 600;
-        }}
-        QPushButton#ImanPrimaryBtn:hover {{ background: {ink}; }}
-        """.format(
-            surface=brand.COLOR_SURFACE, text=brand.COLOR_TEXT,
-            primary=brand.COLOR_PRIMARY, deep=brand.COLOR_PRIMARY_DEEP,
-            ink=brand.COLOR_INK,
-        )
+        if self.dock is not None:
+            self.dock.show(); self.dock.raise_(); return
+        dock = QDockWidget("IMAN Terra — Início", self.iface.mainWindow())
+        dock.setObjectName("ImanTerraHomeDock")
+        holder = QWidget()
+        lay = QVBoxLayout(holder)
+        lay.setContentsMargins(0, 0, 0, 0)
+        lay.addWidget(dashboard.build_home(self.iface))
+        dock.setWidget(holder)
+        dock.setMinimumWidth(560)
+        self.iface.addDockWidget(Qt.RightDockWidgetArea, dock)
+        dock.setFloating(True)
+        dock.resize(940, 640)
+        try:
+            c = self.iface.mainWindow().frameGeometry().center()
+            dock.move(int(c.x() - 470), int(c.y() - 320))
+        except Exception:
+            pass
+        self.dock = dock
 
     # ---------------------------------------------------------------- actions
+    def show_home(self):
+        if self.mode == "dock":
+            self._build_dock()
+        else:
+            self._show_home()
+
     def open_demo(self):
-        # O demo vive ao lado do perfil, empacotado pelo instalador em app/demo/.
-        # Procura caminhos prováveis; se não achar, orienta o usuário.
         candidates = []
         env = os.environ.get("IMAN_TERRA_HOME")
         if env:
             candidates.append(os.path.join(env, "demo", "welcome.qgz"))
-        # Layout instalado: <app>/profile-template/... e <app>/demo/welcome.qgz
         here = _DIR
         for _ in range(6):
             here = os.path.dirname(here)
@@ -243,10 +293,8 @@ class ImanBrandPlugin:
             if path and os.path.exists(path):
                 self.iface.addProject(path)
                 return
-        QMessageBox.information(
-            self.iface.mainWindow(), brand.PRODUCT_NAME,
-            "Projeto demo não encontrado.\nEle é instalado em app/demo/welcome.qgz.",
-        )
+        QMessageBox.information(self.iface.mainWindow(), brand.PRODUCT_NAME,
+                               "Projeto demo não encontrado.\nEle é instalado em app/demo/welcome.qgz.")
 
     def open_docs(self):
         self._open_url(brand.URL_DOCS)
@@ -261,9 +309,7 @@ class ImanBrandPlugin:
     def show_about(self):
         box = QMessageBox(self.iface.mainWindow())
         box.setWindowTitle("Sobre — %s" % brand.PRODUCT_NAME)
-        box.setIconPixmap(
-            QPixmap(_res("icon.png")).scaledToWidth(72, Qt.SmoothTransformation)
-        )
+        box.setIconPixmap(QPixmap(_res("icon.png")).scaledToWidth(72, Qt.SmoothTransformation))
         box.setTextFormat(Qt.RichText)
         box.setText(
             "<h3 style='color:%s'>%s</h3>"
@@ -272,14 +318,13 @@ class ImanBrandPlugin:
             "<hr>"
             "<p style='color:%s'>%s</p>"
             "<p style='font-size:10px;color:%s'>Versão %s · sem fork do QGIS "
-            "(Opção 1). Splash de marca, tema, ícone da janela e este \"Sobre\" "
-            "são entregues <b>sem recompilar</b> o QGIS. Limites remanescentes "
-            "(baixo valor, documentados) — ícone do arquivo executável e nome "
-            "interno do processo — só numa distribuição bundlada/Opção 2.</p>" % (
+            "(Opção 1). Splash de marca, tema, ícone da janela, a home de boas-vindas "
+            "e este \"Sobre\" são entregues <b>sem recompilar</b> o QGIS. Limites "
+            "remanescentes (baixo valor, documentados) — ícone do arquivo executável "
+            "e nome interno do processo — só numa distribuição bundlada/Opção 2.</p>" % (
                 brand.COLOR_PRIMARY_DEEP, brand.PRODUCT_NAME, brand.PRODUCT_SUBTITLE,
                 brand.PUBLISHER, brand.ORG_FULL,
-                brand.COLOR_SECONDARY,
-                brand.CREDITS_QGIS.replace("\n", "<br>"),
+                brand.COLOR_SECONDARY, brand.CREDITS_QGIS.replace("\n", "<br>"),
                 brand.COLOR_SECONDARY, brand.VERSION,
             )
         )
@@ -288,18 +333,47 @@ class ImanBrandPlugin:
 
     # ---------------------------------------------------------------- unload
     def unload(self):
-        for sig in ("projectRead", "newProjectCreated"):
+        if self._guard is not None:
             try:
-                getattr(self.iface, sig).disconnect(self._apply_title)
+                self._guard.stop()
             except Exception:
                 pass
+            self._guard = None
+        for sig, slot in (("projectRead", self._on_project_read),
+                          ("newProjectCreated", self._on_new_project)):
+            try:
+                getattr(self.iface, sig).disconnect(slot)
+            except Exception:
+                pass
+        # restaura o central widget nativo do QGIS
+        if self.mode == "central" and self.stack is not None and self.canvas_page is not None:
+            try:
+                win = self.iface.mainWindow()
+                if win.centralWidget() is self.stack:
+                    self.stack.removeWidget(self.canvas_page)
+                    win.setCentralWidget(self.canvas_page)
+                if self.home_page is not None:
+                    self.home_page.deleteLater()
+            except Exception:
+                pass
+        if self.dock is not None:
+            try:
+                self.iface.removeDockWidget(self.dock)
+                self.dock.deleteLater()
+            except Exception:
+                pass
+            self.dock = None
+        # restaura as toolbars nativas que o declutter ocultou
+        for tb in self._hidden_toolbars:
+            try:
+                tb.show()
+            except Exception:
+                pass
+        self._hidden_toolbars = []
         for action in self.actions:
             self.iface.removePluginMenu(self.menu, action)
         self.actions = []
-        if self.dock is not None:
-            self.iface.removeDockWidget(self.dock)
-            self.dock.deleteLater()
-            self.dock = None
         if self.toolbar is not None:
             del self.toolbar
             self.toolbar = None
+        self.stack = self.home_page = self.canvas_page = None
