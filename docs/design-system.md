@@ -155,8 +155,9 @@ instalador). Splash nativo, ícone do executável, About e nome interno → Opç
   estável, mas é inerte; a única forma no-fork de hospedar uma barra de marca acima do menu
   (`setMenuWidget`, reparentando o `menuBar` do QGIS) **corrompe o teardown e crasha** com
   access violation (0xC0000005). BL-5 proíbe shippar o hack.
-- **Dashboard/home no lugar do canvas-vazio → viável no-fork (com ressalvas).**
-  `takeCentralWidget` + `QStackedWidget` sobrevive ao ciclo abrir/fechar projeto sem
-  tela-fantasma, mantém docks/Locator e fecha limpo; depende de comandar o contrato de
-  central widget que o QGIS possui (guardrails) — candidato a fatia real.
-- **Home como DOCK do plugin de marca → robusto no-fork (rede de segurança, entregue).**
+- **Dashboard/home no MIOLO → SHIPPADO no-fork (fatia #006).** `takeCentralWidget` +
+  `QStackedWidget([canvas, home])` no plugin `iman_brand`: ciclo home→canvas→home sem
+  tela-fantasma (3 estados verificados pelo launcher, `mode='central'`, exit 0). Guardrail
+  defensivo: se um terceiro reivindicar o central widget, cai para o DOCK — **não** re-embrulha
+  (re-embrulhar por cima de um canvas já deletado corrompe o heap; o dock é a recuperação segura).
+- **Home como DOCK do plugin de marca → robusto no-fork (rede de segurança / fallback declarado).**

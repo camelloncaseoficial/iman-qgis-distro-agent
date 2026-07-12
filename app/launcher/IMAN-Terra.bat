@@ -74,11 +74,12 @@ set "SPLASH_DIR=%PROFILE_DIR:\=/%/QGIS/"
 >> "%PROFILE_DIR%\QGIS\QGISCUSTOMIZATION3.ini" echo splashpath=%SPLASH_DIR%
 
 REM -- Abre o QGIS com o perfil IMAN isolado -----------------------------------
+REM SEM --project: abrir mostra a HOME de boas-vindas no miolo (fatia #006). O
+REM projeto demo fica acessivel pela acao "Abrir projeto demo" do plugin de marca.
 start "" "%QGIS_EXE%" ^
   --profiles-path "%PROFILES_ROOT%" ^
   --profile "%PROFILE_NAME%" ^
   --code "%STARTUP%" ^
-  --project "%DEMO%" ^
   --noversioncheck
 
 endlocal

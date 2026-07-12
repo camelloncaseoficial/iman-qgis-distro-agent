@@ -1,0 +1,20 @@
+{
+  "steps": [
+    {
+      "state": "home",
+      "plugin_mode": "central"
+    },
+    {
+      "state": "canvas_after_open"
+    },
+    {
+      "state": "home_again_after_new"
+    },
+    {
+      "mode_central": "central"
+    },
+    {
+      "mode_after_fallback": "dock"
+    }
+  ]
+}
