@@ -1,138 +1,103 @@
 /* ==========================================================================
-   IMAN Terra - tema institucional (QSS). Opcao 1, no-fork.
-   Aplicado (anexado) a janela principal pelo startup (iman_startup.py). Recolore
-   a "chrome" da UI Qt (menus, toolbars, headers, selecao, abas, botoes) no verde
-   IMAN, MANTENDO areas de conteudo (arvore de camadas, tabelas) claras p/ legibilidade.
-   Limite honesto: NAO troca os icones de ACAO da toolbar do QGIS (core C++).
-   Paleta ATIVA (redesign D-IMAN-026, INTERIM) - fonte unica: brand.py /
-   docs/design-system.md / spike/003 tokens.py (BL-4). Promovida na fatia #005:
+   IMAN Terra - tema institucional (QSS), passada PROFUNDA "dark-chrome" (fatia #006).
+   Anexado a janela principal pelo startup (iman_startup.py). Recolore a chrome da
+   UI Qt (menus, toolbars, headers, selecao, abas, botoes, campos, scrollbars) na
+   linguagem do comp (docs/TerraWindow.dc.html), MANTENDO areas de conteudo (arvore,
+   tabelas) claras p/ legibilidade.
+   LIMITE HONESTO: QSS COLORE, nao troca icone nativo (icon-theme = fora de escopo)
+   nem reestrutura layout (o miolo = home = Fase 1 do plugin). Chrome pixel-identico
+   e chips-delegate do Processamento = so fork (teto declarado no #006).
+   Paleta ATIVA D-IMAN-026 (fonte unica: brand.py / design-system.md / tokens.py, BL-4):
      brand #103D29 | brand-2 #1E7A4D | accent #2B8FD6 | moss #6E9160 | earth #8A7A55
      bg #EBEEE8 | panel #FFFFFF | panel-2 #F5F7F2 | border #E2E5DE | text #1A231D
-     hover #EFF2EC | active-bg #E4F0E8 | active-fg #155F3D | chrome-fg #EAF3EC
+     text-muted #5E6A61 | hover #EFF2EC | active-bg #E4F0E8 | active-fg #155F3D
+     chrome-fg #EAF3EC | ink #0E1A14
    ========================================================================== */
 
-/* ---- Barra de menus superior (chrome) ---- */
-QMenuBar {
-    background-color: #103D29;
-    color: #EAF3EC;
-    border: none;
-}
-QMenuBar::item { background: transparent; padding: 5px 11px; }
+/* ---- Barra de menus: CHROME ESCURA, texto claro ---- */
+QMenuBar { background-color: #103D29; color: #EAF3EC; border: none; border-bottom: 1px solid #0B2C1E; }
+QMenuBar::item { background: transparent; padding: 6px 12px; border-radius: 6px; }
 QMenuBar::item:selected { background-color: #1E7A4D; color: #FFFFFF; }
 QMenuBar::item:pressed { background-color: #1E7A4D; color: #FFFFFF; }
 
 /* ---- Menus abertos ---- */
-QMenu {
-    background-color: #FFFFFF;
-    color: #1A231D;
-    border: 1px solid #1E7A4D;
-}
-QMenu::item { padding: 5px 24px 5px 22px; }
-QMenu::item:selected { background-color: #1E7A4D; color: #FFFFFF; }
-QMenu::separator { height: 1px; background: #E2E5DE; margin: 4px 8px; }
+QMenu { background-color: #FFFFFF; color: #1A231D; border: 1px solid #E2E5DE; border-radius: 8px; padding: 5px; }
+QMenu::item { padding: 6px 26px 6px 22px; border-radius: 6px; }
+QMenu::item:selected { background-color: #E4F0E8; color: #103D29; }
+QMenu::separator { height: 1px; background: #E2E5DE; margin: 5px 10px; }
 
-/* ---- Toolbars (fundo claro neutro; icones do QGIS ficam legiveis) ---- */
-QToolBar {
-    background-color: #F5F7F2;
-    border: none;
-    border-bottom: 1px solid #E2E5DE;
-    spacing: 2px;
-    padding: 2px;
-}
-QToolBar::separator { background: #E2E5DE; width: 1px; margin: 3px 4px; }
-QToolButton {
-    background: transparent;
-    border: 1px solid transparent;
-    border-radius: 4px;
-    padding: 2px;
-}
-QToolButton:hover { background-color: #EFF2EC; border: 1px solid #1E7A4D; }
-QToolButton:checked, QToolButton:pressed {
-    background-color: #E4F0E8; border: 1px solid #103D29;
-}
+/* ---- Toolbars: fundo panel-2, densidade limpa, separadores sutis ---- */
+QToolBar { background-color: #F5F7F2; border: none; border-bottom: 1px solid #E2E5DE; spacing: 3px; padding: 4px 6px; }
+QToolBar::separator { background: #E2E5DE; width: 1px; margin: 5px 5px; }
+QToolButton { background: transparent; border: 1px solid transparent; border-radius: 7px; padding: 3px; }
+QToolButton:hover { background-color: #EFF2EC; border: 1px solid #CFE0D2; }
+QToolButton:checked, QToolButton:pressed { background-color: #E4F0E8; border: 1px solid #1E7A4D; }
 QToolButton::menu-button { border: none; }
 
-/* ---- Status bar ---- */
-QStatusBar { background-color: #F5F7F2; color: #103D29; }
+/* ---- Status bar: CHROME ESCURA, chips/campos escuros ---- */
+QStatusBar { background-color: #103D29; color: #EAF3EC; border-top: 1px solid #0B2C1E; }
 QStatusBar::item { border: none; }
-
-/* ---- Docks / paineis ---- */
-QDockWidget { titlebar-close-icon: none; }
-QDockWidget::title {
-    background-color: #103D29;
-    color: #EAF3EC;
-    padding: 5px 8px;
-    font-weight: 600;
+QStatusBar QLabel { color: #CFE3D6; }
+QStatusBar QToolButton { color: #EAF3EC; }
+QStatusBar QToolButton:hover { background-color: rgba(255,255,255,0.10); }
+QStatusBar QLineEdit, QStatusBar QComboBox {
+    background-color: #0F3021; color: #EAF3EC; border: 1px solid #2C5A45; border-radius: 7px; padding: 2px 8px;
 }
+
+/* ---- Docks / paineis: header caixa escura, cantos suaves ---- */
+QDockWidget { titlebar-close-icon: none; }
+QDockWidget::title { background-color: #103D29; color: #EAF3EC; padding: 6px 10px; font-weight: 600; letter-spacing: .3px; }
 QDockWidget > QWidget { background-color: #FFFFFF; }
 
-/* ---- Arvore/lista (camadas, navegador): conteudo CLARO, selecao verde ---- */
+/* ---- Arvore/lista/tabela: conteudo CLARO, hover/selecao nos verdes ---- */
 QTreeView, QListView, QTableView {
-    background-color: #FFFFFF;
-    color: #1A231D;
-    alternate-background-color: #F5F7F2;
-    selection-background-color: #1E7A4D;
-    selection-color: #FFFFFF;
+    background-color: #FFFFFF; color: #1A231D; alternate-background-color: #F5F7F2;
+    selection-background-color: #1E7A4D; selection-color: #FFFFFF; border: none; outline: 0;
 }
+QTreeView::item, QListView::item { padding: 2px; border-radius: 6px; }
 QTreeView::item:hover, QListView::item:hover { background-color: #EFF2EC; }
-QTreeView::item:selected, QListView::item:selected {
-    background-color: #1E7A4D; color: #FFFFFF;
-}
+QTreeView::item:selected, QListView::item:selected { background-color: #1E7A4D; color: #FFFFFF; }
 QHeaderView::section {
-    background-color: #103D29;
-    color: #EAF3EC;
-    padding: 4px 6px;
-    border: none;
-    border-right: 1px solid #1E7A4D;
+    background-color: #103D29; color: #EAF3EC; padding: 5px 8px; border: none; border-right: 1px solid #1E7A4D;
 }
 
-/* ---- Abas ---- */
+/* ---- Abas: sublinhado ativo, cantos arredondados ---- */
 QTabBar::tab {
-    background: #F5F7F2;
-    color: #1A231D;
-    padding: 5px 12px;
-    border: 1px solid #E2E5DE;
-    border-bottom: none;
+    background: #F5F7F2; color: #5E6A61; padding: 6px 14px; border: 1px solid #E2E5DE; border-bottom: none;
+    border-top-left-radius: 8px; border-top-right-radius: 8px;
 }
-QTabBar::tab:selected {
-    background: #FFFFFF;
-    color: #103D29;
-    border-bottom: 2px solid #1E7A4D;
-    font-weight: 600;
-}
-QTabBar::tab:hover { background: #E4F0E8; }
+QTabBar::tab:selected { background: #FFFFFF; color: #103D29; border-bottom: 2px solid #1E7A4D; font-weight: 600; }
+QTabBar::tab:hover { background: #E4F0E8; color: #103D29; }
 
-/* ---- Botoes padrao ---- */
-QPushButton {
-    background-color: #FFFFFF;
-    color: #103D29;
-    border: 1px solid #1E7A4D;
-    border-radius: 5px;
-    padding: 4px 12px;
-}
+/* ---- Botoes: arredondados, verde de marca ---- */
+QPushButton { background-color: #FFFFFF; color: #103D29; border: 1px solid #1E7A4D; border-radius: 8px; padding: 5px 14px; }
 QPushButton:hover { background-color: #EFF2EC; }
 QPushButton:pressed { background-color: #E4F0E8; }
 QPushButton:default { background-color: #1E7A4D; color: #FFFFFF; border: 1px solid #103D29; }
 QPushButton:default:hover { background-color: #103D29; }
+QPushButton:disabled { color: #95A093; border-color: #E2E5DE; }
+
+/* ---- Campos de entrada (formularios) ---- */
+QLineEdit, QComboBox, QSpinBox, QDoubleSpinBox, QPlainTextEdit, QTextEdit {
+    background-color: #FFFFFF; color: #1A231D; border: 1px solid #E2E5DE; border-radius: 7px; padding: 3px 7px;
+    selection-background-color: #1E7A4D; selection-color: #FFFFFF;
+}
+QLineEdit:focus, QComboBox:focus, QSpinBox:focus, QDoubleSpinBox:focus,
+QPlainTextEdit:focus, QTextEdit:focus { border: 1px solid #1E7A4D; }
 
 /* ---- GroupBox ---- */
-QGroupBox {
-    border: 1px solid #E2E5DE;
-    border-radius: 5px;
-    margin-top: 8px;
-}
-QGroupBox::title {
-    subcontrol-origin: margin;
-    left: 8px;
-    color: #103D29;
-    font-weight: 600;
-}
+QGroupBox { border: 1px solid #E2E5DE; border-radius: 8px; margin-top: 8px; }
+QGroupBox::title { subcontrol-origin: margin; left: 10px; color: #103D29; font-weight: 600; }
 
-/* ---- Scrollbars discretas ---- */
-QScrollBar:vertical { background: #F5F7F2; width: 12px; margin: 0; }
-QScrollBar::handle:vertical { background: #C6D3C2; border-radius: 5px; min-height: 24px; }
+/* ---- Scrollbars finas e macias ---- */
+QScrollBar:vertical { background: transparent; width: 10px; margin: 2px; }
+QScrollBar::handle:vertical { background: #C6D3C2; border-radius: 5px; min-height: 28px; }
 QScrollBar::handle:vertical:hover { background: #1E7A4D; }
-QScrollBar:horizontal { background: #F5F7F2; height: 12px; margin: 0; }
-QScrollBar::handle:horizontal { background: #C6D3C2; border-radius: 5px; min-width: 24px; }
+QScrollBar:horizontal { background: transparent; height: 10px; margin: 2px; }
+QScrollBar::handle:horizontal { background: #C6D3C2; border-radius: 5px; min-width: 28px; }
 QScrollBar::handle:horizontal:hover { background: #1E7A4D; }
-QScrollBar::add-line, QScrollBar::sub-line { background: none; border: none; }
+QScrollBar::add-line, QScrollBar::sub-line { background: none; border: none; width: 0; height: 0; }
+QScrollBar::add-page, QScrollBar::sub-page { background: none; }
+
+/* ---- Tooltip institucional ---- */
+QToolTip { background-color: #103D29; color: #EAF3EC; border: 1px solid #1E7A4D; padding: 4px 8px; border-radius: 6px; }
