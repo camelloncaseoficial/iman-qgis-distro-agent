@@ -31,6 +31,24 @@ iman-qgis-distro-agent/
 └── packaging/               # [Opção 2, futuro] patches de fork, docs de build
 ```
 
+### Versão-baseline do QGIS (declarada)
+
+| | |
+|---|---|
+| **Baseline suportada** | **QGIS LTR 3.44.x** |
+| Versão efetivamente testada | 3.44.9 (standalone, `C:\Program Files\QGIS 3.44.9`) |
+| Versões **não verificadas** | 3.28 LTR, 3.34 LTR, e qualquer release não-LTR |
+
+A distro é uma camada de branding: ela **abre** qualquer QGIS que o launcher encontrar
+(`%ProgramFiles%\QGIS *` ou `C:\OSGeo4W`), porque recusar por versão deixaria o usuário sem
+saída. Isso é **detecção permissiva, não promessa de compatibilidade** — e a diferença
+precisa estar escrita, porque QSS e o dashboard da HOME podem **degradar em silêncio** em
+versões mais antigas (seletores Qt e nomes de objeto mudam entre séries do QGIS).
+
+Regra: **a versão do QGIS efetivamente exercitada na VM limpa (BL-7) é a versão suportada
+declarada no release.** Ver `docs/verify/bl7-clean-vm/RESULT.md`. Ampliar a baseline exige
+rodar o checklist naquela versão — não se infere compatibilidade.
+
 ### Componentes
 
 1. **Perfil isolado** — interface simplificada, menus/toolbars, tema institucional, CRS default

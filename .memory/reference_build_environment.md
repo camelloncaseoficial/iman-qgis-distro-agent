@@ -1,24 +1,46 @@
 # Referência — Ambiente de build/smoke local (máquina do dev)
 
-Fatos não óbvios do ambiente onde a distro é montada/verificada. Confirmados na fatia 1
-(2026-07-05). Complementa `reference_qgis_profile_and_packaging.md`.
+Fatos não óbvios do ambiente onde a distro é montada/verificada. Complementa
+`reference_qgis_profile_and_packaging.md`.
+
+> **Re-verificado em 2026-07-22 (fatia #007).** Os caminhos anteriores (fatia 1, 2026-07-05)
+> estavam **STALE nos três**: OSGeo4W foi REMOVIDO desta máquina e o usuário do Windows tem
+> espaço no nome. Os caminhos abaixo foram conferidos no disco nesta data — se algum falhar,
+> re-verificar e atualizar aqui, **não** "restaurar" a instrução velha.
 
 ## QGIS LTR (runtime)
 
-- Instalado via **OSGeo4W**: `C:\OSGeo4W\bin\qgis-ltr-bin.exe` (e `qgis-bin.exe`).
-  Prefix: `C:\OSGeo4W\apps\qgis-ltr`.
-- **PyQGIS headless**: rodar scripts com `C:\OSGeo4W\bin\python-qgis-ltr.bat <script.py>`
-  (seta o ambiente PyQGIS). Usado para gerar `welcome.qgz` e o smoke estático.
+- **`C:\OSGeo4W` NÃO EXISTE MAIS nesta máquina** (removido; confirmado 2026-07-22). Qualquer
+  receita que comece por `C:\OSGeo4W\...` está morta aqui.
+- O QGIS vivo é **standalone**: `C:\Program Files\QGIS 3.44.9\`
+  - GUI: `C:\Program Files\QGIS 3.44.9\bin\qgis-ltr-bin.exe`
+  - **PyQGIS headless**: `C:\Program Files\QGIS 3.44.9\bin\python-qgis-ltr.bat <script.py>`
+    (a receita headless sobreviveu — só mudou de casa). Usado para gerar `welcome.qgz` e o
+    smoke estático.
+- **Baseline suportada declarada: QGIS LTR 3.44.x** (testada: 3.44.9) — ver
+  `docs/distro-architecture.md`. O launcher aceita qualquer `QGIS *` que encontrar; isso é
+  detecção permissiva, **não** promessa de compatibilidade.
 - Smoke GUI sem tocar o perfil do usuário: `qgis-ltr-bin.exe --profiles-path <TEMP>
   --profile iman-distro --code ... --project ...` e ler o título via
   PowerShell `(Get-Process qgis-ltr-bin).MainWindowTitle` (esperar ~12s p/ carregar).
 
 ## Instalador
 
-- **Inno Setup 6.7.3** instalado via `winget install JRSoftware.InnoSetup`.
-- Compilador: `C:\Users\Francisco\AppData\Local\Programs\Inno Setup 6\ISCC.exe`
-  (NÃO em Program Files — winget instalou em AppData\Local\Programs).
-- Build: `ISCC.exe installer\iman-terra.iss` → `installer/dist/*.exe`.
+- **Inno Setup 6.7.3** — reinstalado em 2026-07-22 via
+  `winget install --id JRSoftware.InnoSetup -e`.
+- Compilador (caminho REAL, conferido):
+  `C:\Users\Francisco Camello\AppData\Local\Programs\Inno Setup 6\ISCC.exe`
+  — **com espaço** em "Francisco Camello" (a nota antiga dizia `C:\Users\Francisco\...` e
+  estava errada) e **NÃO** em Program Files / Program Files (x86).
+- Build: **não chamar o ISCC na mão.** Usar `installer\build.ps1`, que localiza o ISCC,
+  recusa árvore suja/branch errada e emite `installer/dist/BUILD_INFO.txt` amarrando
+  artefato ↔ commit ↔ versão ↔ SHA-256.
+
+## PowerShell
+
+- Bancada do dev: **PowerShell 5.1** (`5.1.26100.x`).
+- Alvo da VM limpa do BL-7: **PowerShell 5.1 e nada mais** — sem Python, sem Git, sem
+  OSGeo4W, sem admin, sem módulos de terceiros. Helpers em `tools/bl7/` respeitam isso.
 
 ## Marca oficial do IMAN (drop do sponsor 2026-07-06, ingerido na fatia 002)
 

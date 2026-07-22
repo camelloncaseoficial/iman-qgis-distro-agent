@@ -15,11 +15,17 @@
 - Startup script via `--code <script.py>`; projeto demo via `--project welcome.qgz`;
   `--noversioncheck` para não poluir a primeira abertura.
 
-## Executáveis do QGIS (detecção)
+## Executáveis do QGIS (detecção **na máquina do usuário**)
 
-- OSGeo4W: `C:\OSGeo4W\bin\qgis-ltr-bin.exe` (ou `qgis-bin.exe`).
-- Instalação standalone: `%ProgramFiles%\QGIS <versão>\bin\qgis-ltr-bin.exe`.
+> Esta seção descreve o que o **launcher procura no PC de quem instala** — não é descrição da
+> bancada do dev. Para a bancada, ver `reference_build_environment.md` (OSGeo4W foi removido
+> dela em 2026-07-22; o QGIS local é standalone).
+
+- Instalação standalone (caso comum hoje): `%ProgramFiles%\QGIS <versão>\bin\qgis-ltr-bin.exe`.
+- Instalação via OSGeo4W (ainda possível no PC do usuário): `C:\OSGeo4W\bin\qgis-ltr-bin.exe`.
 - O launcher detecta o primeiro disponível; se nenhum, orienta a instalar o QGIS LTR.
+- **Baseline suportada: QGIS LTR 3.44.x** (ver `docs/distro-architecture.md`). A detecção é
+  permissiva por glob `QGIS *` — versões fora da baseline abrem, mas não são verificadas.
 
 ## Instalador (Inno Setup)
 
