@@ -323,7 +323,55 @@ Confirme que o perfil do usuário continua intacto **depois** de desinstalar:
 
 ---
 
-## 13. Fechamento — coletar o ambiente
+## 13. Atualizar de uma versão anterior — **espera-se FAIL**
+
+> **Leia antes de executar.** Este passo existe para **medir e documentar um defeito conhecido**,
+> não para passar. Se ele der FAIL, o checklist está funcionando. Registre a evidência e siga.
+
+**Por que os passos 1–12 não pegam isto:** numa VM limpa o perfil isolado **nasce novo**, então o
+caminho de atualização **não existe por construção**. E o passo 12 reinstala a **mesma** versão
+sobre um perfil criado pela **mesma** versão — passa trivialmente. Ou seja: um BL-7 todo verde
+diria nada sobre atualizar, que é justamente o que acontece com quem já usa o produto.
+
+**O defeito:** o launcher só copia o `profile-template` no **primeiro** run:
+
+```bat
+if not exist "%PROFILE_DIR%\QGIS\QGIS3.ini" ( xcopy /E /I /Y "%TEMPLATE%" "%PROFILE_DIR%" )
+```
+
+Perfil que **já existe nunca recebe template novo** — nem CRS, nem QSS, nem splash.
+
+**Faça (na VM-B, depois do passo 12):**
+
+1. Crie um perfil "de versão anterior". Dois caminhos, use o que der:
+   - **preferido:** instale a **0.1.0** (o `.exe` de 05/jul, se disponível), abra uma vez, feche; ou
+   - **simulação:** abra o app uma vez para o perfil nascer, feche, e **edite à mão**
+     `%APPDATA%\InstitutoIMAN\IMAN Terra\profiles\iman-distro\QGIS\QGIS3.ini`, colocando um valor
+     reconhecível — por exemplo trocando o CRS padrão para `EPSG:4674`.
+2. Instale a **0.2.0** por cima, sem apagar nada.
+3. Abra o app.
+
+**Asserção:** o app reflete o **template NOVO**? — CRS `EPSG:31984` na barra de status, QSS novo,
+splash novo.
+
+| Sinal | Esperado se o update-path funcionasse | Observado |
+|---|---|---|
+| CRS na barra de status | `EPSG:31984` | `__________` |
+| QSS novo aplicado | sim | `SIM / NÃO` |
+| Splash novo | sim | `SIM / NÃO` |
+
+- Resultado: `PASS / FAIL` — **hoje o esperado é FAIL**
+- Screenshot: `13-update-path.png`
+- Origem: achado (B) do gate do #006 — foi exatamente isto que fotografou `EPSG:4674` na evidência
+  daquela fatia, com o template já em `EPSG:31984`. É o NIT-B da fatia 1 reincidindo, agora com prova.
+
+> **O conserto NÃO é desta fatia.** Versionar o template e re-sincronizar no upgrade **preservando
+> o que é do usuário** (BL-3) exige desenhar o que se sobrescreve e o que se preserva — é fatia
+> própria. Aqui só se **mede e declara**.
+
+---
+
+## 14. Fechamento — coletar o ambiente
 
 **Faça:**
 
@@ -341,4 +389,4 @@ dados, os `PASS/FAIL` deste checklist e os screenshots.
 > **A versão do QGIS que você testou vira a versão suportada declarada do release.** Se você testou
 > em 3.44.9, o release suporta 3.44.x — e mais nada, até alguém rodar este checklist noutra versão.
 
-- Screenshot: `13-collect-evidence.png`
+- Screenshot: `14-collect-evidence.png`

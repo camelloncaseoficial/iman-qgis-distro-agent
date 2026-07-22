@@ -138,6 +138,11 @@ $bl3b = $isoladoExiste -and ($isoladoArquivos -gt 0)
 
 Write-Host "  Arquivos no baseline : $($base.TotalArquivos)"
 Write-Host "  Arquivos agora       : $($agora.Count)"
+# Os dois totais podem COINCIDIR e ainda assim haver violacao: um arquivo apagado
+# mais um adicionado mantem a contagem. Por isso o detalhe vem sempre junto - o
+# total sozinho e numericamente verdadeiro e enganoso.
+Write-Host ("  Detalhe              : {0} alterado(s), {1} adicionado(s), {2} removido(s)" -f `
+            $alterados.Count, $adicionados.Count, $removidos.Count)
 Write-Host ""
 
 Write-Result 'BL-3a' $bl3a "perfil do usuario byte-identico ao baseline ($divergencias divergencia(s))"

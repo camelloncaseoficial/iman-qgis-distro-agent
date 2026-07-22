@@ -59,6 +59,8 @@ Execução do roteiro `CHECKLIST.md`. Preencher **durante** o teste, não de mem
 | 10 | Créditos (LICENSE / NOTICES / README / Sobre) | | |
 | 11 | Uninstall: remove `{app}`, **preserva** `%APPDATA%\InstitutoIMAN` | | |
 | 12 | Reinstalação sobre o perfil sobrevivente | | |
+| 13 | **Atualizar de versão anterior — espera-se FAIL** (ponto cego, ver §5) | | |
+| 14 | Coleta de ambiente | | |
 
 ## 4. Veredito por invariante de marca/licença
 
@@ -85,6 +87,20 @@ Execução do roteiro `CHECKLIST.md`. Preencher **durante** o teste, não de mem
 > **A versão do QGIS efetivamente testada VIRA a versão suportada declarada do release.**
 > Não se infere compatibilidade com outras versões. Suportar mais uma versão = rodar este
 > checklist nela. Ver `docs/distro-architecture.md`.
+>
+> ---
+>
+> **PONTO CEGO DECLARADO — atualização de versão anterior.**
+> Uma rodada em VM limpa **NÃO exercita o caminho de atualização**: o perfil isolado **nasce
+> novo**, então o defeito não existe por construção. O passo 12 (reinstalar) também não cobre —
+> reinstala a mesma versão sobre um perfil criado pela mesma versão. O **passo 13** cobre isso à
+> mão, e **hoje espera-se FAIL**: o launcher só copia o `profile-template` quando o perfil não
+> existe, então quem já usa o produto **nunca recebe** CRS, QSS nem splash novos.
+>
+> **Um BL-7 PASS NÃO autoriza afirmar que atualizar de uma versão anterior funciona.**
+> É o cenário do piloto — usuário que já tem o produto instalado — e é o único que a VM limpa é
+> cega para enxergar. O conserto é fatia própria (versionar o template e re-sincronizar no upgrade
+> preservando o que é do usuário, BL-3).
 
 **Veredito final:** `LIBERADO / BLOQUEADO` — justificativa: `____________________`
 
