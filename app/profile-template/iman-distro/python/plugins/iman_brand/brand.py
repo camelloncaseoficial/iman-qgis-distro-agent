@@ -41,6 +41,8 @@ COLOR_PANEL = "#FFFFFF"         # painel / cartão
 COLOR_PANEL_2 = "#F5F7F2"       # painel secundário / campo / linha alternada
 COLOR_SURFACE = "#F5F7F2"       # (legado) = panel-2 (fundo de painel claro)
 COLOR_BORDER = "#E2E5DE"        # borda
+COLOR_BORDER_STRONG = "#D0D5C9" # borda forte / handle de scrollbar / campo da status bar
+COLOR_BORDER_ACCENT = "#CFE0D2" # borda de realce suave (hover de botão de toolbar)
 COLOR_TEXT = "#1A231D"          # texto principal sobre claro
 COLOR_TEXT_MUTED = "#5E6A61"    # texto secundário
 COLOR_TEXT_FAINT = "#95A093"    # texto terciário / meta

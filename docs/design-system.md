@@ -42,7 +42,8 @@ batem — BL-4).
 | `panel` | `#FFFFFF` | painel / cartão |
 | `panel-2` | `#F5F7F2` | painel secundário / campo |
 | `border` | `#E2E5DE` | borda |
-| `border-strong` | `#D0D5C9` | borda forte / scrollbar |
+| `border-strong` | `#D0D5C9` | borda forte / handle de scrollbar / campo da status bar |
+| `border-accent` | `#CFE0D2` | borda de realce suave (hover de botão de toolbar) |
 | `text` | `#1A231D` | texto principal |
 | `text-muted` | `#5E6A61` | texto secundário |
 | `text-faint` | `#95A093` | texto terciário / meta |
@@ -60,6 +61,15 @@ batem — BL-4).
 > botão default, foco, borda de tooltip). **A paleta/identidade D-IMAN-026 não muda** — muda só
 > *quais* superfícies recebem o verde escuro. O token `chrome`/`#103D29` permanece vivo para a
 > chrome **nativa** da Opção 2 (fork) e para acentos pequenos (cabeçalho do diálogo "Sobre").
+
+> **Zero hex órfão (BL-4).** Todo hexadecimal usado em
+> `app/profile-template/iman-distro/QGIS/iman-theme.qss` precisa existir como token **nesta
+> tabela E em `brand.py`**. Hex solto no QSS foi exatamente o mecanismo que produziu **três
+> fontes de marca em desacordo** na fatia 002. A passada dark-chrome do #006 tinha criado seis
+> (`#0B2C1E`, `#0F3021`, `#2C5A45`, `#C6D3C2`, `#CFE0D2`, `#CFE3D6`): quatro eram derivados da
+> chrome escura e **morreram com a suavização**; `border-strong` absorveu o tom de scrollbar
+> (a tabela já prometia esse papel — quem tinha divergido era o QSS) e `border-accent` foi
+> **promovido a token nomeado**. Ao mexer no QSS, reconferir a varredura.
 
 ### Tema escuro (trabalho prolongado / imagem de satélite)
 

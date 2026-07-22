@@ -18,7 +18,10 @@
      brand #103D29 | brand-2 #1E7A4D | accent #2B8FD6 | moss #6E9160 | earth #8A7A55
      bg #EBEEE8 | panel #FFFFFF | panel-2 #F5F7F2 | border #E2E5DE | text #1A231D
      text-muted #5E6A61 | hover #EFF2EC | active-bg #E4F0E8 | active-fg #155F3D
-     border-strong #D0D5C9 | ink #0E1A14
+     border-strong #D0D5C9 | border-accent #CFE0D2 | ink #0E1A14
+   BL-4: todo hex daqui existe como token em brand.py E em docs/design-system.md.
+   Hex orfao no QSS e proibido - foi assim que a fatia 002 acabou com tres fontes
+   de marca em desacordo.
    ========================================================================== */
 
 /* ---- Barra de menus: CLARA, texto escuro, item ativo em verde pastel ---- */
@@ -98,10 +101,10 @@ QGroupBox::title { subcontrol-origin: margin; left: 10px; color: #155F3D; font-w
 
 /* ---- Scrollbars finas e macias ---- */
 QScrollBar:vertical { background: transparent; width: 10px; margin: 2px; }
-QScrollBar::handle:vertical { background: #C6D3C2; border-radius: 5px; min-height: 28px; }
+QScrollBar::handle:vertical { background: #D0D5C9; border-radius: 5px; min-height: 28px; }
 QScrollBar::handle:vertical:hover { background: #1E7A4D; }
 QScrollBar:horizontal { background: transparent; height: 10px; margin: 2px; }
-QScrollBar::handle:horizontal { background: #C6D3C2; border-radius: 5px; min-width: 28px; }
+QScrollBar::handle:horizontal { background: #D0D5C9; border-radius: 5px; min-width: 28px; }
 QScrollBar::handle:horizontal:hover { background: #1E7A4D; }
 QScrollBar::add-line, QScrollBar::sub-line { background: none; border: none; width: 0; height: 0; }
 QScrollBar::add-page, QScrollBar::sub-page { background: none; }
