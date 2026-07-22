@@ -136,7 +136,11 @@ try {
     # versionado. Sem esta excecao, o build 2 sempre falharia por causa do build
     # 1 - a guarda se auto-sabotaria.
 
-    $statusResult = Invoke-Native 'git' @('status', '--porcelain')
+    # --untracked-files=all e obrigatorio: sem ele o git COLAPSA um diretorio
+    # nao-rastreado numa unica linha ("installer/dist/"), a excecao abaixo nunca
+    # casa com o caminho do arquivo, e o primeiro build passaria a bloquear o
+    # segundo para sempre.
+    $statusResult = Invoke-Native 'git' @('status', '--porcelain', '--untracked-files=all')
     if ($statusResult.ExitCode -ne 0) {
         Fail 2 "git status falhou" @()
     }
