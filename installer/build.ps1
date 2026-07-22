@@ -378,6 +378,21 @@ if ($canonico -eq 'NAO') {
     Write-Host "  AVISO: build NAO-CANONICO (branch '$Branch', esperado 'develop')." -ForegroundColor Yellow
     Write-Host "         Serve para teste; o artefato de release sai de develop." -ForegroundColor Yellow
 }
+
+# Artefatos de versoes anteriores continuam em dist/ (o script so remove o alvo).
+# Sao a origem classica do erro de levar o .exe ERRADO para a VM - o BUILD_INFO.txt
+# descreve apenas o artefato acima.
+$outros = @(Get-ChildItem -LiteralPath $DistDir -Filter '*.exe' -File -ErrorAction SilentlyContinue |
+            Where-Object { $_.Name -ne $ArtifactName })
+if ($outros.Count -gt 0) {
+    Write-Host ""
+    Write-Host "  ATENCAO: ha outro(s) instalador(es) antigo(s) em installer\dist\:" -ForegroundColor Yellow
+    foreach ($o in $outros) {
+        Write-Host ("         {0}   ({1:yyyy-MM-dd})" -f $o.Name, $o.LastWriteTime) -ForegroundColor Yellow
+    }
+    Write-Host "         O BUILD_INFO.txt descreve APENAS $ArtifactName." -ForegroundColor Yellow
+    Write-Host "         Leve para a VM o arquivo cujo SHA-256 bate com o BUILD_INFO." -ForegroundColor Yellow
+}
 Write-Host ""
 
 exit 0
