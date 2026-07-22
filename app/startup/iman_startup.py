@@ -65,15 +65,20 @@ def _read_qss(brand):
     if brand is not None:
         # Fallback mínimo derivado das constantes (caso o .qss não venha no perfil).
         # Cores vêm da fonte única brand.py (paleta oficial travada, BL-4).
-        light = brand.COLOR_SURFACE  # near-white sobre o verde profundo
+        # Light-chrome (suavizado 2026-07-15): chrome CLARA, verde só no acento — espelha
+        # a passada do iman-theme.qss para o fallback não reintroduzir o verde escuro.
         return (
-            "QMenuBar {{ background-color: {deep}; color: {light}; }}\n"
-            "QMenuBar::item:selected {{ background-color: {primary}; color: #FFFFFF; }}\n"
-            "QStatusBar {{ background-color: {light}; color: {deep}; }}\n"
-            "QDockWidget::title {{ background-color: {deep}; color: {light}; "
-            "padding: 4px 8px; font-weight: 600; }}\n"
-        ).format(deep=brand.COLOR_PRIMARY_DEEP, primary=brand.COLOR_PRIMARY,
-                 light=light)
+            "QMenuBar {{ background-color: {panel}; color: {text}; "
+            "border-bottom: 1px solid {border}; }}\n"
+            "QMenuBar::item:selected {{ background-color: {activebg}; color: {activefg}; }}\n"
+            "QStatusBar {{ background-color: {panel2}; color: {muted}; "
+            "border-top: 1px solid {border}; }}\n"
+            "QDockWidget::title {{ background-color: {panel2}; color: {activefg}; "
+            "padding: 4px 8px; font-weight: 600; border-bottom: 1px solid {border}; }}\n"
+        ).format(panel=brand.COLOR_PANEL, panel2=brand.COLOR_PANEL_2,
+                 text=brand.COLOR_TEXT, muted=brand.COLOR_TEXT_MUTED,
+                 border=brand.COLOR_BORDER, activebg=brand.COLOR_ACTIVE_BG,
+                 activefg=brand.COLOR_ACTIVE_FG)
     return ""
 
 

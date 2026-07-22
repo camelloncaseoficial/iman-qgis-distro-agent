@@ -38,11 +38,15 @@ REM -- Deteccao do executavel do QGIS LTR --------------------------------------
 set "QGIS_EXE="
 if defined QGIS_BIN if exist "%QGIS_BIN%" set "QGIS_EXE=%QGIS_BIN%"
 
+REM OSGeo4W tem caminho fixo: teste direto.
 if not defined QGIS_EXE call :find_qgis "C:\OSGeo4W\bin\qgis-ltr-bin.exe"
 if not defined QGIS_EXE call :find_qgis "C:\OSGeo4W\bin\qgis-bin.exe"
-if not defined QGIS_EXE call :find_first "%ProgramFiles%\QGIS *\bin\qgis-ltr-bin.exe"
-if not defined QGIS_EXE call :find_first "%ProgramFiles%\QGIS *\bin\qgis-bin.exe"
-if not defined QGIS_EXE call :find_first "%ProgramFiles(x86)%\QGIS *\bin\qgis-ltr-bin.exe"
+REM Standalone: a pasta tem a VERSAO no nome ("QGIS 3.44.9"), entao o curinga
+REM precisa ser resolvido pelo FOR /D. LTR primeiro, depois a release comum.
+if not defined QGIS_EXE call :find_in_root "%ProgramFiles%" "qgis-ltr-bin.exe"
+if not defined QGIS_EXE call :find_in_root "%ProgramFiles%" "qgis-bin.exe"
+if not defined QGIS_EXE call :find_in_root "%ProgramFiles(x86)%" "qgis-ltr-bin.exe"
+if not defined QGIS_EXE call :find_in_root "%ProgramFiles(x86)%" "qgis-bin.exe"
 
 if not defined QGIS_EXE (
   echo.
@@ -89,8 +93,18 @@ exit /b 0
 if exist "%~1" set "QGIS_EXE=%~1"
 exit /b 0
 
-:find_first
-for /f "delims=" %%F in ('dir /b /s "%~1" 2^>nul') do (
-  if not defined QGIS_EXE set "QGIS_EXE=%%F"
+REM Procura <raiz>\QGIS <versao>\bin\<exe>.
+REM   %~1 = raiz (ex.: C:\Program Files)   %~2 = nome do executavel
+REM
+REM POR QUE FOR /D E NAO DIR /S: o `dir /s` procura um NOME DE ARQUIVO recursivamente
+REM e NAO expande curinga em componente de DIRETORIO. Ou seja,
+REM   dir /b /s "C:\Program Files\QGIS *\bin\qgis-ltr-bin.exe"
+REM retorna VAZIO mesmo com o QGIS instalado. Era o que esta rotina fazia, e por isso
+REM o launcher nao achava instalacao standalone nenhuma. O `for /d` resolve o curinga
+REM no nome do diretorio, que e onde a versao mora ("QGIS 3.44.9").
+:find_in_root
+if "%~1"=="" exit /b 0
+for /d %%D in ("%~1\QGIS *") do (
+  if not defined QGIS_EXE if exist "%%~fD\bin\%~2" set "QGIS_EXE=%%~fD\bin\%~2"
 )
 exit /b 0

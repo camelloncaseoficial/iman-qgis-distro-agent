@@ -42,14 +42,34 @@ batem — BL-4).
 | `panel` | `#FFFFFF` | painel / cartão |
 | `panel-2` | `#F5F7F2` | painel secundário / campo |
 | `border` | `#E2E5DE` | borda |
-| `border-strong` | `#D0D5C9` | borda forte / scrollbar |
+| `border-strong` | `#D0D5C9` | borda forte / handle de scrollbar / campo da status bar |
+| `border-accent` | `#CFE0D2` | borda de realce suave (hover de botão de toolbar) |
 | `text` | `#1A231D` | texto principal |
 | `text-muted` | `#5E6A61` | texto secundário |
 | `text-faint` | `#95A093` | texto terciário / meta |
 | `hover` | `#EFF2EC` | hover neutro |
 | `active-bg` | `#E4F0E8` | fundo de item ativo |
 | `active-fg` | `#155F3D` | texto de item ativo |
-| `chrome` / `chrome-fg` | `#103D29` / `#EAF3EC` | chrome escura + texto sobre ela |
+| `chrome` / `chrome-fg` | `#103D29` / `#EAF3EC` | verde profundo + texto sobre ele — **chrome NATIVA da Opção 2** e acento do diálogo "Sobre" (no no-fork **não** pinta mais a chrome do QSS — ver nota "chrome clara" abaixo) |
+
+> **Chrome CLARA (suavização · sponsor, 2026-07-15).** A passada dark-chrome da fatia #006
+> pintava toda a chrome do QSS (barra de menus, barra de status, títulos de dock, headers de
+> tabela, tooltip) com o verde profundo `#103D29` — cansava a vista em sessão longa. Por decisão
+> do sponsor, o QSS `app/profile-template/iman-distro/QGIS/iman-theme.qss` passou a **light-chrome**:
+> essas superfícies agora são claras (`panel`/`panel-2`) com texto escuro, e o verde institucional
+> (`#1E7A4D` / `active-fg #155F3D`) fica como **acento** (seleção, item ativo, sublinhado de aba,
+> botão default, foco, borda de tooltip). **A paleta/identidade D-IMAN-026 não muda** — muda só
+> *quais* superfícies recebem o verde escuro. O token `chrome`/`#103D29` permanece vivo para a
+> chrome **nativa** da Opção 2 (fork) e para acentos pequenos (cabeçalho do diálogo "Sobre").
+
+> **Zero hex órfão (BL-4).** Todo hexadecimal usado em
+> `app/profile-template/iman-distro/QGIS/iman-theme.qss` precisa existir como token **nesta
+> tabela E em `brand.py`**. Hex solto no QSS foi exatamente o mecanismo que produziu **três
+> fontes de marca em desacordo** na fatia 002. A passada dark-chrome do #006 tinha criado seis
+> (`#0B2C1E`, `#0F3021`, `#2C5A45`, `#C6D3C2`, `#CFE0D2`, `#CFE3D6`): quatro eram derivados da
+> chrome escura e **morreram com a suavização**; `border-strong` absorveu o tom de scrollbar
+> (a tabela já prometia esse papel — quem tinha divergido era o QSS) e `border-accent` foi
+> **promovido a token nomeado**. Ao mexer no QSS, reconferir a varredura.
 
 ### Tema escuro (trabalho prolongado / imagem de satélite)
 
