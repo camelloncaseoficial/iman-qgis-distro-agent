@@ -1,0 +1,40 @@
+﻿IMAN Terra - BUILD_INFO
+=======================================================================
+Este arquivo amarra o instalador ao commit que o gerou. Sem ele, um .exe
+numa VM e apenas um binario sem procedencia.
+
+Artefato              : Instituto-IMAN-IMAN-Terra-Setup-0.2.0.exe
+SHA-256               : 64C6104ADBA41DC9CAD745492E5BFC28BEB1A93756AC875AEAD26ECB37BC905D
+Tamanho (bytes)       : 3056011
+
+ProductVersion        : 0.2.0
+Commit                : 6db689792694918d51fe7c045ca98bf9a16d38f6
+Commit (curto)        : 6db6897
+Data do commit        : 2026-07-22T11:00:06-03:00
+Branch                : feat/005-kit-release-bl7
+Build canonico        : NAO  <<< artefato de branch de trabalho, nao de integracao
+
+QGIS LTR baseline     : 3.44.9   (versao suportada declarada)
+QGIS na bancada       : C:\Program Files\QGIS 3.44.9
+Compilador            : C:\Users\Francisco Camello\AppData\Local\Programs\Inno Setup 6\ISCC.exe
+Data/hora do build    : 2026-07-22 11:00:09 -03:00
+
+-----------------------------------------------------------------------
+SOBRE REPRODUTIBILIDADE
+O que este arquivo GARANTE e o par (ProductVersion, Commit): recompilar o
+MESMO commit limpo produz sempre os mesmos valores. E isso que amarra o
+artefato ao codigo.
+
+Sobre o SHA-256: builds repetidos do mesmo commit nesta bancada sairam
+BYTE-IDENTICOS (Inno Setup 6.7.3, verificado em compilacoes sucessivas em
+horarios diferentes). Ou seja, o hash tende a ser estavel - mas isso e
+OBSERVACAO, nao promessa: uma versao diferente do compilador pode mudar a
+saida sem que nada esteja errado. Um SHA-256 diferente NAO invalida o
+artefato por si; o que invalida e o par (versao, commit) nao bater.
+
+A funcao pratica do SHA-256 aqui e outra: conferir, na VM, que o arquivo
+BAIXADO e exatamente este - e nao um download truncado ou trocado.
+
+COMO CONFERIR NA VM (PowerShell 5.1):
+  Get-FileHash .\Instituto-IMAN-IMAN-Terra-Setup-0.2.0.exe -Algorithm SHA256
+-----------------------------------------------------------------------
