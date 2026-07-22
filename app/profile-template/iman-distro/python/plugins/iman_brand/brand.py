@@ -29,7 +29,7 @@ VERSION = "0.1.0"
 # final). Constantes legadas (COLOR_PRIMARY/…/MINT/WARM) mantêm o NOME por compat e
 # são re-apontadas ao PAPEL novo; `mint`/`warm` saíram da identidade (viram realce/earth).
 COLOR_PRIMARY = "#1E7A4D"       # brand-2 — verde-marca / destaque / estado ativo
-COLOR_PRIMARY_DEEP = "#103D29"  # brand — chrome escura (menubar/status/títulos de dock)
+COLOR_PRIMARY_DEEP = "#103D29"  # brand — verde profundo; acento (diálogo Sobre/hover) + chrome NATIVA da futura Opção 2. (QSS suavizado 2026-07-15: não pinta mais a chrome do menubar/status/dock)
 COLOR_INK = "#0E1A14"           # fundo escuro (bg dark do splash)
 COLOR_ACCENT = "#2B8FD6"        # accent — azul dados/água / ação / links
 COLOR_MINT = "#82D3A6"          # (legado) realce — mint saiu da identidade (D-IMAN-026)
