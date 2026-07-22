@@ -10,12 +10,22 @@ Saídas (ver a tabela de derivados em app/assets/README.md):
   - icon-iman-terra.ico                       16/24/32/48/64/128/256, transparente
   - ../profile-template/.../resources/icon.png 256x256, transparente
 
-RESPIRO = 0 (e por quê): a spec anterior mandava "quadrado + respiro 10%" porque o
-master antigo era um recorte JUSTO, sem margem nenhuma — sem o respiro o ícone
-encostava nas bordas. O master oficial já vem quadrado e com margem embutida (o
-contorno branco da arte funciona como respiro), então aplicar mais 10% empilharia
-margem sobre margem e comeria nitidez justo em 16x16, que é o tamanho crítico do
-atalho e da barra de tarefas. Verificado lado a lado antes de fixar.
+RESPIRO = 0 — o que isso PRODUZ, medido (alpha > 128):
+
+    master oficial ............ margens L/T/R/B = 0,2% / 0,2% / 0,2% / 0,0%
+                                (13 pixels OPACOS na ultima linha)
+    derivado .ico anterior .... margens L/T/R/B = 9,2% / 17,0% / 9,2% / 17,0%
+
+Ou seja: a arte oficial ENCOSTA na borda inferior da tela. O contorno branco dela e
+TINTA OPACA, nao margem de tela - le como respiro sobre fundo claro e SOME sobre
+fundo escuro. Com RESPIRO = 0 o icone fica edge-to-edge: renderiza MAIOR que os
+vizinhos na barra de tarefas e no Menu Iniciar, e com a base TANGENTE a borda.
+
+Isso e escolha deliberada, nao propriedade da arte: em 16x16 o desenho maior leu
+melhor do que a alternativa com 8% de respiro. Mas a comparacao foi feita em PNG
+ampliado, nao na barra de tarefas real - entao a decisao e EMPIRICA e PROVISORIA,
+com gate no 16x16 real durante o BL-7. Se ficar desproporcional ao lado dos outros
+icones, subir RESPIRO para ~8% e regerar; e um numero, nao uma refatoracao.
 
 Este script NÃO re-colore o símbolo (STOP-AND-FLAG do IMAN.cdr segue de pé) e não
 mexe em splash, wizard ou tema.
@@ -31,6 +41,12 @@ ICO_SIZES = [16, 24, 32, 48, 64, 128, 256]
 PLUGIN_ICON = os.path.join(A, "..", "profile-template", "iman-distro", "python",
                            "plugins", "iman_brand", "resources", "icon.png")
 
+# Margem transparente em CADA lado, como fração do lado do ícone.
+# 0.0 = edge-to-edge (estado atual, provisório — ver a docstring e o gate do BL-7).
+# 0.08 = a alternativa comparada em 16x16. Mexer aqui e rodar o script de novo é
+# a correção inteira, caso o gate na barra de tarefas real reprove o edge-to-edge.
+RESPIRO = 0.0
+
 
 def _quadrado(sym):
     """Garante tela quadrada, centralizando sem distorcer o desenho."""
@@ -43,7 +59,15 @@ def _quadrado(sym):
 
 
 def _escala(sym, lado):
-    return sym.resize((lado, lado), Image.LANCZOS)
+    """Reamostra para `lado`x`lado`, reservando RESPIRO de margem em cada borda."""
+    dentro = max(1, int(round(lado * (1 - 2 * RESPIRO))))
+    s = sym.resize((dentro, dentro), Image.LANCZOS)
+    if dentro == lado:
+        return s
+    tela = Image.new("RGBA", (lado, lado), (0, 0, 0, 0))
+    off = (lado - dentro) // 2
+    tela.paste(s, (off, off), s)
+    return tela
 
 
 def main():

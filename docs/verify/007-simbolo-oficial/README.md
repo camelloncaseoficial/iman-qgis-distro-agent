@@ -38,6 +38,27 @@ Estas superfícies só existem depois de instalar, e a crew não roda a VM:
 
 Entram no `docs/verify/bl7-clean-vm/CHECKLIST.md` como parte dos passos 3, 4 e 10.
 
+## Gate pendente para o BL-7 — respiro do ícone em 16×16 REAL
+
+O `.ico` foi gerado com **`RESPIRO = 0`**, o que produz um ícone **edge-to-edge**. Medido
+(`alpha > 128`): o master oficial tem margens **0,2% / 0,2% / 0,2% / 0,0%** e **13 pixels opacos na
+última linha** — a arte encosta na borda. O derivado anterior tinha **9,2% / 17,0% / 9,2% / 17,0%**.
+
+Na prática o ícone **renderiza maior que os vizinhos** e com a **base tangente à borda**. A escolha
+foi feita comparando PNG ampliado (`02-piramide-ico.png`), **não** a barra de tarefas real.
+
+**Passo a acrescentar ao `docs/verify/bl7-clean-vm/CHECKLIST.md`:**
+
+> **Ícone na barra de tarefas (16×16 real).** Com o IMAN Terra aberto e o atalho fixado, comparar o
+> ícone com os vizinhos da barra de tarefas e do Menu Iniciar.
+> **Asserção:** o globo está inteiro **e** o ícone não parece desproporcional (maior/colado na borda)
+> ao lado dos outros. `PASS / FAIL` · screenshot `15-icone-taskbar-16px.png`
+> Se FAIL: subir `RESPIRO` para ~8% em `app/assets/regenerate-icons.py` e regerar — é um número.
+
+> **Dependência entre branches:** o `CHECKLIST.md` **não existe** em `develop` — vive na
+> `feat/005-kit-release-bl7` (PR #7). Este passo **ainda precisa ser inserido lá**; não foi possível
+> fazê-lo a partir desta branch.
+
 ## Ressalva de marca (decisão não é da crew)
 
 A arte oficial traz um **contorno branco** em volta de toda a forma — tratamento de favicon, para
@@ -45,6 +66,10 @@ assentar sobre qualquer fundo. Sobre o verde do `wizard-large` ele fica **bem ma
 É mudança de **aparência**, não só correção do corte. Ficou como está porque a arte é a oficial e
 editá-la seria a crew cunhando decisão de marca.
 
-E o **símbolo dentro do splash continua o recortado** — o splash tem master próprio
-(`splash-iman-terra.svg`) e está fora do escopo. Hoje: ícones com globo inteiro, splash com globo
-cortado. Reconciliar é fatia própria.
+E o **símbolo dentro do splash continua o recortado**. Correção de uma afirmação anterior: o splash
+**não** tem master próprio de símbolo — o `splash-iman-terra.svg` **referencia o `iman-symbol.png`**
+em duas tags `<image>` (`785.7×660` e `128.6×108`, ambas ~1,19:1, dimensionadas para o master antigo
+de 1,2342:1). Com o master agora em 1:1 e o default `xMidYMid meet`, re-rasterizar hoje **mudaria
+escala e posição** do símbolo — o `splash-iman-terra.png` commitado **já não é** o que o SVG
+produziria. Dívida registrada em `app/assets/README.md`; reconciliar é fatia própria e **não** se
+resolve rodando `rasterize-splash.py` sem antes corrigir as caixas.

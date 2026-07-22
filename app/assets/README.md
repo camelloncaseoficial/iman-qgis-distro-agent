@@ -36,9 +36,35 @@ em `docs/`; aqui viram a fonte única de asset da distro. Nada de raster de trab
 > 1. A arte oficial traz um **contorno branco** em volta de toda a forma (tratamento de favicon,
 >    feito para assentar sobre qualquer fundo). Sobre o verde `brand` do `wizard-large` ele fica
 >    **visível e marcante** — é uma mudança de aparência, não só a correção do corte.
-> 2. O **símbolo dentro do `splash-iman-terra.svg` continua sendo o recortado**, porque o splash tem
->    master próprio e está **fora do escopo** desta correção. Ou seja: por enquanto os ícones mostram
->    o globo inteiro e o splash mostra o cortado. Reconciliar é fatia própria.
+> 2. O **`splash-iman-terra.png` commitado está dessincronizado do próprio master** — ver a
+>    armadilha logo abaixo. Hoje: ícones com o globo inteiro, splash com o globo cortado.
+
+> ### ⚠️ Armadilha conhecida: o splash **não** tem master próprio de símbolo
+>
+> O `splash-iman-terra.svg` **referencia o `iman-symbol.png`** em duas tags `<image>`:
+>
+> | Linha | Caixa | Proporção |
+> |---|---|---|
+> | 43 | `785.7 × 660` (marca d'água, `opacity 0.10`) | 1,1905:1 |
+> | 82 | `128.6 × 108` (símbolo ao lado do wordmark) | 1,1907:1 |
+>
+> As caixas foram dimensionadas para o master **antigo** (411×333 = **1,2342:1**). O master agora é
+> **1:1**. Nenhuma das duas tags declara `preserveAspectRatio`, então vale o default
+> **`xMidYMid meet`**: a imagem é encaixada **preservando o aspect** e centralizada — não é
+> esticada. O efeito prático de re-rasterizar hoje, portanto, **não é distorção e sim mudança de
+> escala e posição**: um símbolo 1:1 dentro de uma caixa 1,19:1 passa a ser limitado pela **altura**,
+> ficando mais estreito e com folga lateral.
+>
+> Consequência: **o `splash-iman-terra.png` commitado já não é o que o SVG produziria hoje.** Ele foi
+> rasterizado quando o master era o recortado. Isso é dívida registrada, **não** foi tocada nesta
+> fatia (splash está fora do escopo) e **não** se resolve rodando `rasterize-splash.py` sem antes
+> corrigir as caixas.
+>
+> **Fatia de reconciliação (a fazer):** recalcular as duas caixas para 1:1 — decidindo se a âncora é
+> a largura ou a altura em cada uso — e **re-rasterizar com o python do QGIS**
+> (`C:\Program Files\QGIS 3.44.9\bin\python-qgis-ltr.bat app\assets\rasterize-splash.py`, que usa
+> QtSvg; ver `.memory/reference_build_environment.md`). Enquanto isso não acontecer, **não**
+> re-rasterizar o splash.
 
 ## Derivados reprodutíveis (regeráveis a partir dos masters)
 
@@ -62,12 +88,29 @@ python app/assets/regenerate-icons.py             # ícones (a partir de iman-sy
 python app/assets/regenerate-brand-derivatives.py # wizards + banner do dock
 ```
 
-> **Por que o `.ico` deixou de ter "respiro 10%".** A spec anterior mandava acrescentar 10% de
-> margem porque o master antigo era um recorte **justo**, sem margem nenhuma — sem isso o desenho
-> encostava nas bordas. O master oficial já vem quadrado e **com margem embutida** (o contorno
-> branco funciona como respiro), então repetir os 10% empilharia margem sobre margem e comeria
-> nitidez justo em **16×16**, que é o tamanho do atalho e da barra de tarefas. Comparado lado a lado
-> antes de fixar — evidência em `docs/verify/007-simbolo-oficial/02-piramide-ico.png`.
+> **Por que o `.ico` deixou de ter "respiro 10%" — e o que isso custa.**
+>
+> Medição real das margens (`alpha > 128`):
+>
+> | | L | T | R | B |
+> |---|---|---|---|---|
+> | **master oficial** (`iman-symbol.png`) | 0,2% | 0,2% | 0,2% | **0,0%** |
+> | derivado `.ico` **anterior** | 9,2% | 17,0% | 9,2% | 17,0% |
+>
+> A arte oficial **encosta na borda inferior** — há **13 pixels opacos na última linha**. O contorno
+> branco dela é **tinta opaca, não margem de tela**: lê como respiro sobre fundo claro e **some**
+> sobre fundo escuro. *(Uma versão anterior desta nota afirmava que o master "já vem com margem
+> embutida". Era **falso** — a medição acima desmente.)*
+>
+> Com `RESPIRO = 0` o resultado é um ícone **edge-to-edge**: ele **renderiza maior que os vizinhos**
+> na barra de tarefas e no Menu Iniciar, e com a **base tangente à borda**. Isso é escolha
+> deliberada, não propriedade da arte — em 16×16 o desenho maior leu melhor que a alternativa com
+> 8% de respiro (`docs/verify/007-simbolo-oficial/02-piramide-ico.png`).
+>
+> **A comparação foi em PNG ampliado, não na barra de tarefas real.** Então a decisão é **empírica e
+> provisória**, com **gate no 16×16 real durante o BL-7**: se o ícone ficar desproporcional ao lado
+> dos vizinhos, subir `RESPIRO` para ~8% em `regenerate-icons.py` e regerar — é um número, não uma
+> refatoração.
 
 ## Limite honesto (BL-5)
 
