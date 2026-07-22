@@ -48,21 +48,29 @@ app/
 ├── assets/                          # identidade oficial: símbolo/splash SVG/.ico/wizard (ver assets/README.md)
 └── notices/                         # LICENSE, THIRD_PARTY_NOTICES.md, SOURCE_CODE.md
 installer/iman-terra.iss             # Inno Setup (saída: installer/dist/*.exe)
+installer/build.ps1                  # build reprodutível + BUILD_INFO.txt (procedência)
+tools/bl7/                           # helpers da verificação em VM limpa (PowerShell 5.1 puro)
+docs/verify/bl7-clean-vm/            # CHECKLIST.md + RESULT.md do BL-7
 ```
 
 ## Build & execução
 
-**Pré-requisito de runtime:** QGIS LTR instalado (OSGeo4W ou standalone). O instalador é *leve* —
+**Pré-requisito de runtime:** QGIS LTR instalado (standalone ou OSGeo4W).
+**Baseline suportada: QGIS LTR 3.44.x** (ver `docs/distro-architecture.md`). O instalador é *leve* —
 não empacota o QGIS; o launcher orienta se o QGIS estiver ausente.
 
 - **Rodar sem instalar:** dê duplo clique em `app/launcher/IMAN-Terra.bat` (cria o perfil isolado em
   `%APPDATA%\InstitutoIMAN\IMAN Terra\profiles\` no 1º uso e abre o QGIS com o branding).
-- **Compilar o instalador:** `ISCC.exe installer\iman-terra.iss` → gera
-  `installer/dist/Instituto-IMAN-IMAN-Terra-Setup-0.1.0.exe`.
+- **Compilar o instalador:** `.\installer\build.ps1` (não chame o `ISCC.exe` na mão).
+  O script **recusa** compilar de árvore suja ou de branch fora de `develop`, e emite
+  `installer/dist/BUILD_INFO.txt` amarrando **artefato ↔ commit ↔ versão ↔ SHA-256**.
+  Sem isso, um `.exe` numa VM é um binário sem procedência e a evidência do BL-7 não vale.
+  Para compilar deliberadamente de uma branch de trabalho:
+  `.\installer\build.ps1 -ExpectedBranch <branch>` — o artefato sai marcado como **não-canônico**.
 
 ## Smoke (verificação)
 
-**Executado neste ambiente (dev, QGIS LTR via OSGeo4W):**
+**Executado neste ambiente (dev, QGIS LTR 3.44.9 standalone — ver `.memory/reference_build_environment.md`):**
 
 1. `py_compile` do plugin + startup — OK.
 2. Smoke estático headless (PyQGIS): constantes de marca, import do plugin, `welcome.qgz` lê com
@@ -76,16 +84,22 @@ não empacota o QGIS; o launcher orienta se o QGIS estiver ausente.
 4. Instalador compila com sucesso (`.exe` em `installer/dist/`).
 
 **Lacuna declarada (BL-7 — verdade em VM limpa):** o ciclo **instalar → abrir → perfil/branding/
-plugin/demo → desinstalar limpo** numa **máquina Windows limpa** ainda não foi executado (sem VM
-disponível). Passos numerados para reproduzir:
+plugin/demo → desinstalar limpo** numa **máquina Windows limpa** ainda **não foi executado**.
+Enquanto isso não rodar, tudo acima é verdade só na máquina do dev.
 
-1. Copiar `installer/dist/Instituto-IMAN-IMAN-Terra-Setup-0.1.0.exe` para uma VM Windows 10/11 limpa
-   **com QGIS LTR instalado**.
-2. Instalar (usuário comum, sem admin) → conferir atalho no Menu Iniciar com o ícone IMAN.
-3. Abrir pelo atalho → janela `IMAN Terra — powered by QGIS`, painel de boas-vindas, plugin ativo,
-   "Sobre" com créditos do QGIS, `welcome.qgz` aberto.
-4. Conferir que o **perfil/instalação do QGIS do usuário não foi tocado** (BL-3).
-5. Desinstalar → `{app}` removido; **`%APPDATA%\InstitutoIMAN` preservado**; QGIS intacto.
+O **kit** para executá-lo está pronto e é mecânico:
+
+| Peça | O quê |
+|---|---|
+| `installer/build.ps1` | gera o `.exe` e o `BUILD_INFO.txt` (procedência: commit + versão + SHA-256) |
+| `docs/verify/bl7-clean-vm/CHECKLIST.md` | roteiro numerado de 13 passos, escrito para quem não conhece o código |
+| `docs/verify/bl7-clean-vm/RESULT.md` | modelo do laudo: PASS/FAIL por BL-1..BL-7 + **regra de corte** |
+| `tools/bl7/snapshot-user-profile.ps1` | fotografa o perfil do QGIS do usuário (hash por arquivo) |
+| `tools/bl7/assert-bl3.ps1` | prova que a distro **não tocou** no perfil do usuário |
+| `tools/bl7/collect-evidence.ps1` | coleta Windows/QGIS/resolução/DPI/instalação → esqueleto do RESULT |
+
+Os helpers rodam em **PowerShell 5.1 puro**: sem Python, sem git, sem módulos, sem administrador —
+porque é isso que existe numa VM limpa. **Quem executa a VM é o sponsor**, não a crew.
 
 ## Limites conhecidos do no-fork (Opção 2, futuro — declarados, não hackeados)
 
