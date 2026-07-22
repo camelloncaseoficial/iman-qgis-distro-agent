@@ -49,7 +49,17 @@ batem — BL-4).
 | `hover` | `#EFF2EC` | hover neutro |
 | `active-bg` | `#E4F0E8` | fundo de item ativo |
 | `active-fg` | `#155F3D` | texto de item ativo |
-| `chrome` / `chrome-fg` | `#103D29` / `#EAF3EC` | chrome escura + texto sobre ela |
+| `chrome` / `chrome-fg` | `#103D29` / `#EAF3EC` | verde profundo + texto sobre ele — **chrome NATIVA da Opção 2** e acento do diálogo "Sobre" (no no-fork **não** pinta mais a chrome do QSS — ver nota "chrome clara" abaixo) |
+
+> **Chrome CLARA (suavização · sponsor, 2026-07-15).** A passada dark-chrome da fatia #006
+> pintava toda a chrome do QSS (barra de menus, barra de status, títulos de dock, headers de
+> tabela, tooltip) com o verde profundo `#103D29` — cansava a vista em sessão longa. Por decisão
+> do sponsor, o QSS `app/profile-template/iman-distro/QGIS/iman-theme.qss` passou a **light-chrome**:
+> essas superfícies agora são claras (`panel`/`panel-2`) com texto escuro, e o verde institucional
+> (`#1E7A4D` / `active-fg #155F3D`) fica como **acento** (seleção, item ativo, sublinhado de aba,
+> botão default, foco, borda de tooltip). **A paleta/identidade D-IMAN-026 não muda** — muda só
+> *quais* superfícies recebem o verde escuro. O token `chrome`/`#103D29` permanece vivo para a
+> chrome **nativa** da Opção 2 (fork) e para acentos pequenos (cabeçalho do diálogo "Sobre").
 
 ### Tema escuro (trabalho prolongado / imagem de satélite)
 
