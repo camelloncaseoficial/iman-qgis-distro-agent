@@ -8,7 +8,12 @@
 ; ============================================================================
 
 #define ProductName "IMAN Terra"
-#define ProductVersion "0.1.0"
+; 0.1.0 JA FOI consumida pelo build de 05/07/2026 (fatia 1). Reusar a versao tornaria a
+; evidencia do BL-7 ambigua: nao daria pra saber QUAL artefato foi testado na VM.
+#define ProductVersion "0.2.0"
+; Versao-baseline do QGIS LTR suportada/testada. Fonte unica: docs/distro-architecture.md.
+; installer\build.ps1 le este define para carimbar o BUILD_INFO.txt.
+#define QgisBaselineVersion "3.44.9"
 #define Publisher "Instituto IMAN"
 #define PublisherDir "InstitutoIMAN"
 
@@ -19,7 +24,7 @@ AppName={#ProductName}
 AppVersion={#ProductVersion}
 AppVerName={#ProductName} {#ProductVersion}
 AppPublisher={#Publisher}
-VersionInfoDescription={#ProductName} - powered by QGIS
+VersionInfoDescription={#ProductName} - powered by QGIS (baseline QGIS LTR {#QgisBaselineVersion})
 DefaultDirName={autopf}\{#ProductName}
 DisableProgramGroupPage=yes
 DisableDirPage=no

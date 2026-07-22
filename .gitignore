@@ -18,7 +18,11 @@ env/
 resources_rc.py
 
 # Instalador / build (artefatos gerados)
-installer/dist/
+# O .exe NAO entra no repo; o BUILD_INFO.txt ENTRA — ele é a procedência do
+# artefato (commit + versão + SHA-256) e sem ele o BL-7 não é auditável.
+# Precisa ser "dist/*" e não "dist/": git não reabre um diretório já excluído.
+installer/dist/*
+!installer/dist/BUILD_INFO.txt
 installer/Output/
 *.exe
 /dist/
