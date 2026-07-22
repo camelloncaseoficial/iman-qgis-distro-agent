@@ -1,0 +1,19 @@
+@background: #f5f5f5;
+@itembackground: #ffffff;
+@itemalternativebackground: #f0f0f0;
+@itemdarkbackground: #e0f0eb;
+
+@lightgradient: QLinearGradient(x1:0, y1:0, x2:0, y2:1, stop:0 #ffffff, stop:1 #f5f5f5);
+@lightalternativegradient: QLinearGradient(x1:0, y1:0, x2:0, y2:1, stop:0 #f0f0f0, stop:1 #e0f0eb);
+@darkgradient: QLinearGradient(x1:0, y1:0, x2:0, y2:1, stop:0 #e0f0eb, stop:1 #cce0d8);
+@darkalternativegradient: QLinearGradient(x1:0, y1:0, x2:0, y2:1, stop:0 #d5ebe3, stop:1 #cce0d8);
+
+@gradient: QLinearGradient(x1:0, y1:0, x2:1, y2:1, stop:0 #f5f5f5, stop:1 #e0f0eb);
+
+@text: #2e2e2e;
+@toggleoff: #cccccc;
+@toggleon: #0071bc;
+@selection: #d0e4dc;
+@hover: #e6f4f1;
+@focusdark: rgba(0,0,0,80);
+@focus: rgba(0,140,100,255);

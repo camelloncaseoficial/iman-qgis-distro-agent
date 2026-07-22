@@ -1,0 +1,82 @@
+
+
+QScrollBar:vertical {
+    background-color: rgb(237, 250, 241);
+}
+
+QScrollBar:horizontal {
+    background-color: rgb(237, 250, 241);
+}
+
+QMenuBar {
+    background-color: #009846;
+    color: #ffffff;
+}
+
+QMenuBar::item
+{
+    background: transparent;
+}
+
+QMenuBar::item:selected
+{
+    background: #006633;
+    color: #ffffff;
+}
+
+QMenuBar::item:pressed
+{
+    background: #007a3d;
+    color: #f5f5f5;
+}
+
+QToolBar {
+    background:rgb(237, 250, 241);
+}
+
+QWindow, QMainWindow
+{
+    color: #ffffff;
+    background-color: rgb(237, 250, 241);
+}
+
+QPushButton {
+    background: QLinearGradient(x1:0, y1:0, x2:0, y2:1,
+        stop:0 #00c572, stop:1 #009846);
+    color: white;
+    padding: 3px 10px;
+    min-width: 72px;
+    font-size: 10px;
+    border: 1px solid #007a3d;
+    border-radius: 3px;
+}
+QPushButton:hover {
+    background: QLinearGradient(
+        x1:0, y1:0, x2:0, y2:1,
+        stop:0 #00cc77,
+        stop:1 #00a85d
+    );
+}
+
+QPushButton:pressed {
+    background-color: #007a3d;
+    border: 1px solid #005f2e;
+}
+
+QPushButton:focus {
+    border: 2px solid #0071bc;               /* Destaque azul tipo Windows */
+    outline: none;
+}
+
+QToolButton:hover {
+    background-color: #006633;
+}
+
+QToolButton:pressed {
+    background-color: #009846;
+}
+
+QToolButton[autoRaise=true]:hover {
+    background-color: #e0f0eb;
+    border-radius: 4px;
+}
