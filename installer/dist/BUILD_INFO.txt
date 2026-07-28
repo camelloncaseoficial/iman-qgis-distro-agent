@@ -4,20 +4,20 @@ Este arquivo amarra o instalador ao commit que o gerou. Sem ele, um .exe
 numa VM e apenas um binario sem procedencia.
 
 Artefato              : Instituto-IMAN-IMAN-Terra-Setup-0.2.0.exe
-SHA-256               : 01B926745C4D9823D34E7DCD2838A0F52020DE1346755D122BEC442AFA2249F1
-Tamanho (bytes)       : 3056021
+SHA-256               : A32476BEF697B22960BDE9676B94EF59AC1895D3B4659BAEE8832509BEDD4502
+Tamanho (bytes)       : 3117372
 
 ProductVersion        : 0.2.0
-Commit                : 0880d210c29e36516a1090e30beb1924f929bbb0
-Commit (curto)        : 0880d21
-Data do commit        : 2026-07-22T14:40:55-03:00
-Branch                : feat/005-kit-release-bl7
-Build canonico        : NAO  <<< artefato de branch de trabalho, nao de integracao
+Commit                : 5fee5e125f9a924ac02a47facaed2529df5fc562
+Commit (curto)        : 5fee5e1
+Data do commit        : 2026-07-22T16:11:59-03:00
+Branch                : develop
+Build canonico        : SIM
 
 QGIS LTR baseline     : 3.44.9   (versao suportada declarada)
 QGIS na bancada       : C:\Program Files\QGIS 3.44.9
 Compilador            : C:\Users\Francisco Camello\AppData\Local\Programs\Inno Setup 6\ISCC.exe
-Data/hora do build    : 2026-07-22 14:40:58 -03:00
+Data/hora do build    : 2026-07-28 10:46:29 -03:00
 
 -----------------------------------------------------------------------
 SOBRE REPRODUTIBILIDADE
