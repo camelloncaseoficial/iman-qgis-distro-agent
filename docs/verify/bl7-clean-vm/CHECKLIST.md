@@ -159,7 +159,7 @@ pasta do próprio usuário (algo como `C:\Users\<você>\AppData\Local\Programs\I
 | 5.2 | Título da janela contendo **IMAN Terra** | `PASS / FAIL` |
 | 5.3 | Ícone **IMAN** na barra de tarefas (não o ícone do QGIS) | `PASS / FAIL` |
 | 5.4 | A **HOME de boas-vindas NO MIOLO** da janela (área central, não um painel lateral) | `PASS / FAIL` |
-| 5.5 | Chrome escura (tema aplicado, não o cinza padrão do QGIS) | `PASS / FAIL` |
+| 5.5 | Chrome **clara**, com o verde só de acento (tema aplicado, não o cinza padrão do QGIS) | `PASS / FAIL` |
 | 5.6 | Toolbar de marca presente e enxuta | `PASS / FAIL` |
 
 - Tempo até ficar utilizável: `______ s`
@@ -168,6 +168,12 @@ pasta do próprio usuário (algo como `C:\Users\<você>\AppData\Local\Programs\I
 
 > Se o splash IMAN não aparecer mas o resto sim, marque só o 5.1 como FAIL — os itens são
 > independentes.
+
+> **O que é "chrome clara" no 5.5.** Barra de menus, barra de status, títulos de painel (dock) e
+> headers de tabela são **claros, com texto escuro**. O verde institucional aparece só como
+> **acento**: item de menu ativo, seleção, sublinhado da aba ativa, botão default, foco.
+> **Chrome verde-escura pintando essas superfícies é FAIL** — é a passada antiga, revertida pela
+> suavização de 2026-07-15 a pedido do sponsor. Ver a nota "Chrome CLARA" em `docs/design-system.md`.
 
 ---
 
