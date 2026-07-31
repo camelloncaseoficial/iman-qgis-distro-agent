@@ -17,6 +17,12 @@ env/
 *.qgs~
 resources_rc.py
 
+# Payload do QGIS embarcado no instalador (D-IMAN-028/DB-5)
+# ~541 MB de binario oficial NAO entram num repo de poucos MB - seria
+# irreversivel. O installer\build.ps1 estagia o MSI aqui em tempo de build e
+# confere o SHA-256 antes de compilar.
+installer/payload/
+
 # Instalador / build (artefatos gerados)
 # O .exe NAO entra no repo; o BUILD_INFO.txt ENTRA — ele é a procedência do
 # artefato (commit + versão + SHA-256) e sem ele o BL-7 não é auditável.

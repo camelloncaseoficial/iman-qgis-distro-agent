@@ -22,8 +22,9 @@
  ----------------
    0  sucesso
    2  ambiente (fora de repo git, git ausente, ISCC nao encontrado, .iss ausente)
-   3  guarda de integridade (arvore suja / branch errada)
+   3  guarda de integridade (arvore suja / branch errada / versao divergente)
    4  falha do compilador Inno Setup
+   5  payload do QGIS (ausente, download falhou ou SHA-256 nao confere)
 
  REQUISITOS: PowerShell 5.1, git no PATH, Inno Setup 6.
  (Este script roda na BANCADA do dev, nao na VM limpa. Os helpers que vao para a
@@ -40,7 +41,15 @@ param(
     [string]$ExpectedBranch = 'develop',
 
     # Caminho explicito do ISCC.exe (opcional; por padrao e localizado sozinho).
-    [string]$IsccPath
+    [string]$IsccPath,
+
+    # Onde procurar o MSI do QGIS ja baixado, antes de tentar a rede. Util em
+    # bancada sem internet e para nao rebaixar 541 MB a cada build.
+    # Tambem lido de %IMAN_QGIS_PAYLOAD_CACHE%.
+    [string]$PayloadCache = $env:IMAN_QGIS_PAYLOAD_CACHE,
+
+    # Nao tentar baixar: se o payload nao estiver em cache/estagiado, falhar.
+    [switch]$SemRede
 )
 
 $ErrorActionPreference = 'Stop'
@@ -218,7 +227,173 @@ $OutputBaseName = $baseNameMatch.Groups[1].Value.Replace('{#ProductVersion}', $P
 $ArtifactName   = "$OutputBaseName.exe"
 $ArtifactPath   = Join-Path $DistDir $ArtifactName
 
-Write-Ok "ProductVersion $ProductVersion / baseline QGIS LTR $QgisBaseline"
+Write-Ok "ProductVersion $ProductVersion / QGIS embarcado $QgisBaseline"
+
+# --- guarda 4: o launcher espelha a mesma versao de QGIS? --------------------
+#
+# D-IMAN-028/DB-14: o launcher precisa preferir o caminho EXATO do payload
+# ("C:\Program Files\QGIS <versao>"). Ele guarda essa versao numa constante
+# propria, porque um .bat nao le o .iss. Se as duas divergirem, o launcher para
+# de reconhecer o proprio payload e cai no fallback por curinga - que foi
+# EXATAMENTE o defeito medido na fatia #010 (abria a versao errada). O erro
+# seria silencioso: tudo instala, tudo abre, so que o QGIS errado.
+# Esta guarda existe para tornar essa divergencia impossivel, nao improvavel.
+
+Write-Step "Conferindo a versao do QGIS no launcher"
+
+$LauncherPath = Join-Path $RepoRoot 'app\launcher\IMAN-Terra.bat'
+if (-not (Test-Path -LiteralPath $LauncherPath)) {
+    Fail 2 "launcher nao encontrado" @("Esperado em: $LauncherPath")
+}
+$launcherText = Get-Content -LiteralPath $LauncherPath -Raw
+$lm = [regex]::Match($launcherText, '(?m)^\s*set\s+"QGIS_VERSION=([^"]+)"')
+if (-not $lm.Success) {
+    Fail 3 "QGIS_VERSION nao encontrada no launcher" @(
+        "Arquivo: $LauncherPath",
+        "Esperada uma linha:  set `"QGIS_VERSION=<versao>`"",
+        "Ela espelha o #define QgisBaselineVersion do .iss (D-IMAN-028/DB-14)."
+    )
+}
+$LauncherQgis = $lm.Groups[1].Value.Trim()
+if ($LauncherQgis -ne $QgisBaseline) {
+    Fail 3 "versao do QGIS divergente entre o .iss e o launcher" @(
+        "installer\iman-terra.iss  #define QgisBaselineVersion : $QgisBaseline",
+        "app\launcher\IMAN-Terra.bat  set QGIS_VERSION         : $LauncherQgis",
+        "",
+        "O instalador embarcaria uma versao e o launcher procuraria outra.",
+        "O produto ABRIRIA um QGIS diferente do que foi testado - em silencio.",
+        "",
+        "Corrija os dois para o mesmo valor e recompile."
+    )
+}
+Write-Ok "launcher e .iss concordam em QGIS $QgisBaseline"
+
+# --- payload do QGIS: estagiar e CONFERIR o SHA-256 -------------------------
+#
+# D-IMAN-028/DB-5: o MSI (~541 MB) nao entra no git. O build o estagia em
+# installer\payload\ e confere o hash ANTES de compilar. Sem a conferencia, um
+# download truncado viraria um instalador que falha so na maquina do usuario.
+
+Write-Step "Estagiando o payload do QGIS $QgisBaseline"
+
+# Hash oficial por versao. Um payload cuja versao nao esteja aqui e RECUSADO:
+# "nao conheco o hash" nunca pode virar "entao pode passar".
+# 3.44.9 conferido em 2026-07-31 contra o MSI baixado de download.qgis.org e
+# contra o pacote em cache da instalacao da bancada (mesmo ProductCode).
+$PayloadHashes = @{
+    '3.44.9' = '711D6DF99F450522A1E22755FCBFED65D5190C1E4C241793BC2F80FF1A2C24BA'
+}
+
+if (-not $PayloadHashes.ContainsKey($QgisBaseline)) {
+    Fail 5 "SHA-256 oficial desconhecido para o QGIS $QgisBaseline" @(
+        "Versoes com hash conhecido: " + (($PayloadHashes.Keys | Sort-Object) -join ', '),
+        "",
+        "Trocar a versao embarcada e decisao de PRODUTO, nao do build. Para adotar",
+        "uma nova versao: baixe o MSI oficial, confira a procedencia, registre o",
+        "SHA-256 em `$PayloadHashes e ATUALIZE JUNTO:",
+        "  - #define QgisBaselineVersion  (installer\iman-terra.iss)",
+        "  - QgisProductCode             (bloco [Code] do .iss - e por VERSAO)",
+        "  - set QGIS_VERSION            (app\launcher\IMAN-Terra.bat)"
+    )
+}
+
+$PayloadExpected = $PayloadHashes[$QgisBaseline]
+$PayloadName     = "QGIS-OSGeo4W-$QgisBaseline-1.msi"
+$PayloadDir      = Join-Path $InstallerDir 'payload'
+$PayloadPath     = Join-Path $PayloadDir $PayloadName
+$PayloadUrl      = "https://download.qgis.org/downloads/$PayloadName"
+
+if (-not (Test-Path -LiteralPath $PayloadDir)) {
+    New-Item -ItemType Directory -Path $PayloadDir -Force | Out-Null
+}
+
+function Test-PayloadHash([string]$Path, [string]$Expected) {
+    if (-not (Test-Path -LiteralPath $Path)) { return $false }
+    return ((Get-FileHash -LiteralPath $Path -Algorithm SHA256).Hash -eq $Expected)
+}
+
+if (Test-PayloadHash $PayloadPath $PayloadExpected) {
+    Write-Ok "payload ja estagiado e conferido"
+} else {
+    # Um arquivo estagiado com hash errado e pior que nenhum: seria a origem de
+    # um instalador silenciosamente quebrado. Remove e refaz.
+    if (Test-Path -LiteralPath $PayloadPath) {
+        Write-Host "    payload estagiado com SHA-256 divergente - descartando" -ForegroundColor Yellow
+        Remove-Item -LiteralPath $PayloadPath -Force
+    }
+
+    $origem = $null
+    if ($PayloadCache) {
+        $cand = if (Test-Path -LiteralPath $PayloadCache -PathType Container) {
+            Join-Path $PayloadCache $PayloadName
+        } else { $PayloadCache }
+        if (Test-PayloadHash $cand $PayloadExpected) { $origem = $cand }
+        elseif (Test-Path -LiteralPath $cand) {
+            Write-Host "    cache encontrado mas com SHA-256 divergente: $cand" -ForegroundColor Yellow
+        }
+    }
+
+    if ($origem) {
+        Write-Host "    copiando do cache: $origem"
+        Copy-Item -LiteralPath $origem -Destination $PayloadPath -Force
+    } elseif ($SemRede) {
+        Fail 5 "payload do QGIS ausente e -SemRede foi pedido" @(
+            "Esperado: $PayloadPath",
+            "Cache consultado: " + $(if ($PayloadCache) { $PayloadCache } else { '<nenhum>' }),
+            "",
+            "Baixe manualmente de:  $PayloadUrl",
+            "e coloque em:          $PayloadDir"
+        )
+    } else {
+        Write-Host "    baixando $PayloadUrl"
+        Write-Host "    (~541 MB; use -PayloadCache <pasta> para reaproveitar entre builds)"
+        try {
+            [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+            $wc = New-Object Net.WebClient
+            try { $wc.DownloadFile($PayloadUrl, $PayloadPath) } finally { $wc.Dispose() }
+        } catch {
+            Fail 5 "falha ao baixar o payload do QGIS" @(
+                "URL: $PayloadUrl",
+                "Erro: " + $_.Exception.Message,
+                "",
+                "Baixe manualmente e rode de novo com:",
+                "  .\installer\build.ps1 -PayloadCache '<pasta com o .msi>'"
+            )
+        }
+    }
+
+    if (-not (Test-PayloadHash $PayloadPath $PayloadExpected)) {
+        $obtido = if (Test-Path -LiteralPath $PayloadPath) {
+            (Get-FileHash -LiteralPath $PayloadPath -Algorithm SHA256).Hash
+        } else { '<arquivo ausente>' }
+        Fail 5 "SHA-256 do payload NAO confere" @(
+            "Arquivo  : $PayloadPath",
+            "Esperado : $PayloadExpected",
+            "Obtido   : $obtido",
+            "",
+            "Download truncado, arquivo trocado ou versao diferente do declarado.",
+            "Compilar assim produziria um instalador que so falha na maquina do usuario."
+        )
+    }
+    Write-Ok "payload estagiado e SHA-256 conferido"
+}
+
+$PayloadItem = Get-Item -LiteralPath $PayloadPath
+$PayloadSha  = (Get-FileHash -LiteralPath $PayloadPath -Algorithm SHA256).Hash
+Write-Ok ("$PayloadName ({0} MB)" -f [math]::Round($PayloadItem.Length / 1MB, 2))
+
+# O ProductCode que o .iss usa para decidir "pular ou instalar" (M2a) e por
+# VERSAO. Ele vai para o BUILD_INFO porque, sem ele, a evidencia da VM nao
+# permite reconstruir POR QUE o instalador pulou (ou nao pulou) o QGIS.
+$pcMatch = [regex]::Match($issText, "(?m)^\s*QgisProductCode\s*=\s*'([^']+)'")
+if (-not $pcMatch.Success) {
+    Fail 2 "QgisProductCode nao encontrado no bloco [Code] do .iss" @(
+        "Arquivo: $IssPath",
+        "Esperada uma linha:  QgisProductCode = '{GUID}';",
+        "Ela e especifica da VERSAO embarcada (D-IMAN-028/DB-16)."
+    )
+}
+$QgisProductCode = $pcMatch.Groups[1].Value
 
 # --- localizacao do ISCC -----------------------------------------------------
 
@@ -339,7 +514,19 @@ $lines = @(
     "Branch                : $Branch",
     "Build canonico        : $canonico$canonicoNota",
     "",
-    "QGIS LTR baseline     : $QgisBaseline   (versao suportada declarada)",
+    "-----------------------------------------------------------------------",
+    "QGIS EMBARCADO (D-IMAN-028 / via A2a)",
+    "Este instalador NAO exige QGIS previamente instalado: ele instala o QGIS",
+    "abaixo, offline, encadeando o MSI oficial nao modificado.",
+    "",
+    "QGIS embarcado        : $QgisBaseline",
+    "Payload               : $PayloadName",
+    "Payload SHA-256       : $PayloadSha",
+    "Payload (bytes)       : $($PayloadItem.Length)",
+    "ProductCode do QGIS   : $QgisProductCode",
+    "Origem oficial        : $PayloadUrl",
+    "-----------------------------------------------------------------------",
+    "",
     "QGIS na bancada       : $qgisOnBench",
     "Compilador            : $Iscc",
     "Data/hora do build    : $buildStamp",
