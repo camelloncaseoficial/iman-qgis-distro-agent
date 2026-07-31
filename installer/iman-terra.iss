@@ -225,10 +225,13 @@ begin
       NeedsRestart := True;
     end;
   else
-    Log('FALHA ao instalar o QGIS: codigo ' + IntToStr(Codigo));
-    Result := ExplicaCodigoMsi(Codigo) + #13#10 + #13#10 +
-              'Codigo do Windows Installer: ' + IntToStr(Codigo) + #13#10 +
-              'Log detalhado: ' + CaminhoLog + #13#10 + #13#10 +
-              'A instalacao do {#ProductName} foi cancelada e nada foi alterado nesta maquina.';
+    { begin/end obrigatorio: o ramo 'else' do case aceita UMA instrucao so. }
+    begin
+      Log('FALHA ao instalar o QGIS: codigo ' + IntToStr(Codigo));
+      Result := ExplicaCodigoMsi(Codigo) + #13#10 + #13#10 +
+                'Codigo do Windows Installer: ' + IntToStr(Codigo) + #13#10 +
+                'Log detalhado: ' + CaminhoLog + #13#10 + #13#10 +
+                'A instalacao do {#ProductName} foi cancelada e nada foi alterado nesta maquina.';
+    end;
   end;
 end;
