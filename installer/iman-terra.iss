@@ -33,6 +33,17 @@
 #define QgisPayloadFile "QGIS-OSGeo4W-" + QgisBaselineVersion + "-1.msi"
 #define QgisPayloadPath "payload\" + QgisPayloadFile
 
+; Duracao observada da instalacao do QGIS na maquina do sponsor (2026-07-31):
+; transacao iniciada 16:29:35, concluida 16:33:44 = 4 min 09 s. O numero vai
+; para o TEXTO que o usuario le - "cerca de 4 minutos" e a informacao mais
+; tranquilizadora que existe para quem esta parado na frente da maquina.
+#define QgisTempoEstimado "cerca de 4 minutos"
+
+; Nivel de UI do msiexec encadeado (D-IMAN-028/DB-19). ESCOLHIDO POR MEDICAO -
+; ver o cabecalho de PrepareToInstall. NAO troque sem medir de novo: a flag
+; muda o contrato de elevacao (S3) e o que aparece quando falha (M4).
+#define QgisMsiUiFlag "/qb!-"
+
 ; Guarda de compilacao: sem o payload o .exe sairia "bundlado" mas vazio - e o
 ; defeito so apareceria na VM. Falhar aqui e barato; falhar la, nao.
 #if !FileExists(AddBackslash(SourcePath) + QgisPayloadPath)
@@ -202,11 +213,71 @@ begin
     QGIS abrir" e o launcher (DB-14), nao o instalador. }
 
   Log('Encadeando o instalador oficial do QGIS {#QgisBaselineVersion}...');
+
+  { D-IMAN-028/DB-19 - A JANELA PARECE TRAVADA, E O WINDOWS CONCORDA.
+    Achado de teste com usuario (sponsor, 2026-07-31): "o instalador nao tem
+    nenhum indicativo de instalacao em andamento quando esta instalando o qgis,
+    o usuario fica perdido achando que esta travado".
+
+    Causa: durante os ~4 minutos do Exec(..., ewWaitUntilTerminated) o message
+    pump deste wizard fica bloqueado, e o Windows marca a janela como "Nao
+    Respondendo". O usuario nao esta interpretando mal - o SO esta AFIRMANDO
+    que travou.
+
+    Isto e divida da troca [Run] -> PrepareToInstall. A troca esta certa e FICA
+    (o [Run] roda depois de copiar arquivos e ignora o exit code, violando o
+    DB-15); o que se perdeu junto foi o StatusMsg de fabrica. Duas respostas:
+
+    (1) PROGRESSO REAL vem do proprio msiexec, que sabe a porcentagem - nos
+        nao. Por isso o nivel de UI deixou de ser /qn.
+
+        MEDIDO em 2026-07-31, via instalacao administrativa (/a), que exercita
+        o nivel de UI sem instalar nada. Enumerando as janelas do processo:
+
+          /qn    -> 0 janelas.               exit 0, 147,3 s
+          /qb    -> 2 janelas, com [Cancel]. exit 0, 143,1 s
+          /qb!   -> 2 janelas, com [Cancel]. exit 0, 140,6 s
+          /qb-   -> 2 janelas, com [Cancel]. exit 0, 142,9 s
+          /qb!-  -> 2 janelas, com [Cancel]. exit 0, 145,4 s
+
+        O QUE ISSO PROVA: que /qn e silencio TOTAL - ou seja, o defeito do
+        DB-19 esta confirmado por medicao, nao por relato - e que qualquer /qb
+        mostra janela de progresso ('Windows Installer', depois
+        'QGIS 3.44.9 Solothurn'). Nenhuma variante ficou presa esperando
+        clique: todas terminaram sozinhas.
+
+        O QUE ISSO **NAO** PROVA - e por isso nao esta escrito como se
+        provasse: sob /a os modificadores '!' e '-' NAO fizeram diferenca
+        observavel (o Cancel apareceu nos quatro). A instalacao administrativa
+        so extrai, entao provavelmente nao exercita nem o Cancel de instalacao
+        real nem o modal de conclusao. **A diferenca entre /qb, /qb!, /qb- e
+        /qb!- continua NAO MEDIDA** e tem de ser observada na rodada de VM,
+        sob /i. O que ficou medido da string escolhida e que o msiexec a
+        ACEITA (exit 0), que nao e pouco: flag malformada aborta.
+
+        Escolhemos {#QgisMsiUiFlag} por RISCO, com a semantica documentada:
+        '!' tira o Cancel - que deixaria o QGIS pela metade, e o nosso wizard
+        nao teria como se recompor no meio do PrepareToInstall; '-' suprime o
+        modal final - que travaria a instalacao esperando um clique de alguem
+        que pode nem estar olhando. Se a VM mostrar Cancel ou modal, o achado
+        e legitimo e a flag se ajusta com dado na mao.
+
+    (2) ROTULO NOSSO, com a duracao medida e dizendo O QUE esta instalando.
+        E aqui que se admite o congelamento em vez de fingir que nao acontece:
+        prometer "vai responder" e depois nao responder e pior que avisar. }
+  WizardForm.PreparingLabel.Caption :=
+    'Instalando o QGIS {#QgisBaselineVersion} (powered by QGIS).' + #13#10 + #13#10 +
+    'Esta etapa demora {#QgisTempoEstimado} e mostra uma janela de progresso propria.' + #13#10 +
+    'Enquanto ela roda, ESTA janela pode aparecer como "Nao Respondendo".' + #13#10 +
+    'Isso e normal: NAO feche e NAO reinicie o computador.';
+  WizardForm.PreparingLabel.Visible := True;
+  WizardForm.Update;
+
   ExtractTemporaryFile('{#QgisPayloadFile}');
 
   CaminhoMsi := ExpandConstant('{tmp}\{#QgisPayloadFile}');
   CaminhoLog := ExpandConstant('{tmp}\qgis-install.log');
-  Parametros := '/i "' + CaminhoMsi + '" /qn /norestart /L*v "' + CaminhoLog + '"';
+  Parametros := '/i "' + CaminhoMsi + '" {#QgisMsiUiFlag} /norestart /L*v "' + CaminhoLog + '"';
 
   if not Exec('msiexec.exe', Parametros, '', SW_HIDE, ewWaitUntilTerminated, Codigo) then
   begin

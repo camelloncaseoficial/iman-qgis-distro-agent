@@ -172,9 +172,15 @@ cd $env:USERPROFILE\Desktop\bl7
 
 **Faça:** conclua a instalação, prestando atenção em **quantas vezes** o Windows pede elevação.
 
-> **O que se espera e por quê.** O MSI do QGIS é `ALLUSERS=1` e, sob `/qn`, o msiexec **não exibe
-> UAC** — ou já está elevado, ou falha com `1625`. Logo a elevação deve vir do **nosso** instalador,
-> **uma única vez**, e ser **herdada** pelo QGIS. **Dois prompts é ACHADO**, não detalhe.
+> **O que se espera e por quê.** O MSI do QGIS é `ALLUSERS=1` e a elevação deve vir do **nosso**
+> instalador, **uma única vez**, e ser **herdada** pelo QGIS. **Dois prompts é ACHADO**, não detalhe.
+
+> ### ⚠ Esta asserção NÃO pode ser herdada da fatia #010
+> A evidência de "não há segundo UAC" veio da linha `MSI_LUA: Elevation prompt disabled for silent
+> installs`, observada sob **`/qn`** — e ela é, literalmente, **uma regra de instalação
+> silenciosa**. A fatia #011 trocou a flag para **`/qb!-`** (`DB-19`), que **não é** instalação
+> silenciosa. **A medição antiga não vale mais.** Conte os prompts do zero; marcar `PASS` por
+> herança aqui é exatamente o que o gate proíbe.
 
 | # | Asserção | Resultado |
 |---|---|---|
@@ -205,17 +211,37 @@ cd $env:USERPROFILE\Desktop\bl7
 
 ---
 
-## 5. O QGIS entrou junto — cronometrado
+## 5. O QGIS entrou junto — progresso visível e cronometrado (`DB-19`)
+
+> **O defeito que este passo existe para pegar.** Teste com usuário (2026-07-31): *"o instalador não
+> tem nenhum indicativo de instalação em andamento quando está instalando o qgis, o usuário fica
+> perdido achando que está travado."* Medido: a instalação do QGIS leva **~4 min 09 s**, e com a
+> flag antiga (`/qn`) o msiexec mostrava **zero janelas** — silêncio total. O usuário não estava
+> interpretando mal: com o message pump bloqueado, **o Windows marca a janela como "Não
+> Respondendo"**.
+
+**Faça:** durante a etapa do QGIS, **não toque em nada** e observe.
 
 | # | Asserção | Resultado |
 |---|---|---|
-| 5.1 | **Tempo total** da instalação (do duplo-clique ao fim): `______ min` | `RELATADO` |
-| 5.2 | `C:\Program Files\QGIS 3.44.9\bin\qgis-ltr-bin.exe` existe | `PASS / FAIL / N/E` |
-| 5.3 | O QGIS aparece em Configurações → Aplicativos | `PASS / FAIL / N/E` |
-| 5.4 | A instalação terminou **sem pedir reinício** | `PASS / FAIL / N/E` |
+| 5.1 | Aparece uma **janela de progresso do QGIS** (barra que **anda**, não texto parado) | `PASS / FAIL / N/E` |
+| 5.2 | O texto do nosso wizard diz que está instalando **o QGIS** e **quanto tempo leva** | `PASS / FAIL / N/E` |
+| 5.3 | A janela de progresso do QGIS tem botão **Cancelar**? `SIM / NÃO` | `RELATADO` — esperado `NÃO` (`/qb!-`), mas **não medido** |
+| 5.4 | No fim da etapa do QGIS, apareceu algum **modal exigindo clique**? `SIM / NÃO` | `RELATADO` — esperado `NÃO`; se `SIM`, é achado |
+| 5.5 | A janela do IMAN Terra ficou "Não Respondendo" em algum momento? `SIM / NÃO` | `RELATADO` — o texto **avisa** que pode |
+| 5.6 | **Tempo total** da instalação (do duplo-clique ao fim): `______ min` | `RELATADO` |
+| 5.7 | `C:\Program Files\QGIS 3.44.9\bin\qgis-ltr-bin.exe` existe | `PASS / FAIL / N/E` |
+| 5.8 | O QGIS aparece em Configurações → Aplicativos | `PASS / FAIL / N/E` |
+| 5.9 | A instalação terminou **sem pedir reinício** | `PASS / FAIL / N/E` |
 
-- Screenshot: `05-qgis-instalado.png`
-- Caso: **M1**
+- Screenshot **obrigatório**: `05-progresso-qgis.png` — tire **durante** a etapa do QGIS, com a
+  janela de progresso e o texto do wizard **na mesma imagem**.
+- Screenshot: `05b-qgis-instalado.png` · Caso: **M1** · Asserção: **DB-19**
+
+> **5.3 e 5.4 são `RELATADO`, não `PASS`, de propósito.** A escolha da flag `/qb!-` foi medida só
+> via instalação administrativa (`/a`), e nela os modificadores `!` e `-` **não fizeram diferença
+> observável** — o `Cancelar` apareceu nas quatro variantes. **A diferença entre `/qb`, `/qb!`,
+> `/qb-` e `/qb!-` continua NÃO MEDIDA.** Este passo é onde ela finalmente se mede, sob `/i`.
 
 > Se o instalador **pediu reinício**, isso é o código `3010` — **não é falha**, mas **anote**: é a
 > primeira vez que ele seria observado (na fatia #010 ficou `NÃO MEDIDO`).
@@ -514,6 +540,13 @@ Get-Process qgis-ltr-bin, qgis-bin -ErrorAction SilentlyContinue | Select-Object
 | 18.3 | A mensagem diz que **nada foi alterado** na máquina | `PASS / FAIL / N/E` |
 | 18.4 | **O IMAN Terra NÃO ficou instalado** — sem pasta em `C:\Program Files\IMAN Terra`, sem atalhos, sem entrada em Aplicativos | `PASS / FAIL / N/E` |
 | 18.5 | `%APPDATA%\InstitutoIMAN` **não** foi criado | `PASS / FAIL / N/E` |
+| 18.6 | O **próprio msiexec** exibiu um diálogo de erro (além da nossa mensagem)? `SIM / NÃO` | `RELATADO` |
+| 18.7 | Se exibiu: o instalador ficou **parado esperando clique**? `SIM / NÃO` | `RELATADO` — se `SIM`, é achado |
+
+> ### ⚠ Este caso também NÃO pode ser herdado da fatia #010
+> A troca de `/qn` para **`/qb!-`** (`DB-19`) muda o que o usuário vê quando falha: sob UI básica o
+> msiexec **pode exibir diálogo de erro próprio** onde antes não exibia — e, se exibir, pode
+> **bloquear esperando clique**. É o que 18.6 e 18.7 medem. **Nada aqui é `PASS` por herança.**
 
 - Método de falha usado: `______` · Texto literal da mensagem: `________________________________`
 - Screenshot: `18-m4-falha.png` · Caso: **M4**
