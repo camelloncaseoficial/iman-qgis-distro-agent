@@ -1,254 +1,339 @@
 # BL-7 — Checklist de verificação em VM limpa
 
 **Para quem executa:** este roteiro **não** exige conhecer o código. Cada passo tem o que fazer,
-**o que você deve ver** (asserção), um campo `PASS/FAIL` e o nome do screenshot a salvar.
+**o que você deve ver** (asserção), um campo de resultado e o nome do screenshot a salvar.
 Se o que você viu não bate com a asserção, marque `FAIL` e **descreva literalmente o que apareceu** —
 descrição fiel vale mais do que diagnóstico.
 
-**O que está sendo verificado:** que a distro **IMAN Terra** instala, abre com a cara certa, credita
-o QGIS e **não encosta nos dados do usuário** — numa máquina que nunca viu este projeto. Enquanto
-este checklist não roda numa VM de verdade, tudo que a crew entregou é verdade só na máquina do dev.
+**O que está sendo verificado:** que a distro **IMAN Terra** instala **o QGIS junto com ela**, abre
+com a cara certa, credita o QGIS e **não encosta nos dados do usuário** — numa máquina que nunca viu
+este projeto.
 
 > **Regra de ouro:** anote o que **aconteceu**, não o que deveria acontecer.
 
+> ### ⚠ Este checklist foi REESCRITO na fatia #011 (`D-IMAN-028`)
+>
+> O produto **inverteu de premissa**: o instalador deixou de ser uma camada leve que **exige** o
+> QGIS e passou a **embarcar e instalar** o QGIS (via **A2a**, MSI oficial encadeado, offline).
+>
+> As asserções antigas **"instalar sem elevar"** e **"na máquina sem QGIS aparece a mensagem de
+> QGIS ausente"** foram **REMOVIDAS** — não porque falhavam, mas porque **testavam o produto
+> anterior**. Rodá-las hoje produziria `FAIL` correto sobre asserção errada, em escala.
+
 ---
 
-## 0. Preparação (antes de começar)
+## 0. Preparação
 
-### 0.1 As duas VMs
+### 0.1 Legenda dos resultados — leia antes de preencher
 
-| | **VM-A** | **VM-B** |
+| Marca | Significa | Quando usar |
 |---|---|---|
-| Papel | máquina **sem QGIS nenhum** | máquina com **QGIS LTR** instalado |
-| Testa | a mensagem de "QGIS não encontrado" | o produto de verdade |
-| Passos | 1 | 2 a 12 |
+| `PASS` | **medido**, e bateu com a asserção | você executou e viu |
+| `FAIL` | **medido**, e não bateu | você executou e viu outra coisa — **transcreva o que apareceu** |
+| `RELATADO` | você observou algo relevante, mas **não é uma asserção com veredito** | ex.: transcrever o texto do SmartScreen |
+| `N/E` | **não executado** | faltou tempo, faltou ambiente, travou antes |
 
-**VM-B — o perfil do usuário precisa estar SUJO antes de instalar.** Abra o QGIS uma vez, mude
-alguma configuração (ex.: um tema ou um painel), crie e **salve um projeto**, feche. Sem isso o
-BL-3 não é testável: comparar uma pasta vazia com outra vazia não prova nada.
+> **`N/E` não é `PASS`.** Um passo não executado **nunca** vira "deve estar bom". Foi assim que a
+> rodada de 2026-07-30 se perdeu. No fim, preencha o **placar**: `___ de ___ passos com evidência`.
 
-### 0.2 Configuração das duas VMs
+### 0.2 As quatro rodadas
+
+Cada rodada parte de um **snapshot limpo**. Só a **Rodada M1** roda o checklist inteiro; as demais
+são curtas e focadas.
+
+| Rodada | Estado inicial da máquina | O que prova | Passos |
+|---|---|---|---|
+| **M1** | **sem QGIS nenhum** | **o caminho feliz principal** — instalar um arquivo e abrir | 1 a 15 |
+| **M2a** | QGIS **exatamente 3.44.9** já instalado | o instalador **pula** o QGIS (e prova que pulou) | 16 |
+| **M2b** | QGIS **3.44.12** já instalado | **coexistência** + o launcher abre o **nosso** QGIS | 17 |
+| **M4** | falha forçada no meio da instalação do QGIS | **aborta** deixando a máquina como estava | 18 |
+
+> **A rodada M1 é a que mudou de sentido.** Antes, "máquina sem QGIS" servia para testar uma
+> **mensagem de erro**. Agora é o **caminho feliz**: é a máquina do técnico de prefeitura que
+> recebeu um arquivo e mais nada.
+
+### 0.3 Configuração das VMs
 
 - Windows 11 **pt-BR**
-- usuário **NÃO administrador** (é assim que a TI de prefeitura entrega a máquina)
-- **snapshot LIMPA** tirada antes de qualquer passo (para poder repetir o teste do zero)
-- resolução **1366×768** com escala de exibição **125%**
-  → é a realidade de prefeitura **e** o pior caso do dashboard da HOME. Testar em 1920×1080
-  esconde exatamente os defeitos que interessam.
+- **usuário com direito de elevação** (administrador, ou senha de admin disponível)
+- **snapshot LIMPA** antes de cada rodada
+- resolução **1366×768** com escala de exibição **125 %**
 
-### 0.3 O instalador chega por DOWNLOAD HTTP
+> **Sobre a elevação (`D-IMAN-028`/DB-7).** A premissa antiga — "usuário NÃO administrador, é assim
+> que a TI de prefeitura entrega a máquina" — **caiu**. O MSI oficial do QGIS é `ALLUSERS=1`
+> (per-machine) e **exige** elevação; não há como instalá-lo sem ela. **Isso é consequência aceita
+> da via A2**, decidida pelo sponsor com o risco de adoção na mesa. O que este checklist mede é que
+> a elevação seja **uma só** (passo 4).
+
+> **Sobre os 125 %.** Não é capricho: o 125 % existe para **provocar** estresse de DPI, e é o pior
+> caso do dashboard da HOME. Na rodada de 2026-07-30 a VM saiu em **1024×768 @ 100 %** e isso virou
+> achado — testar em outra escala **esconde** exatamente os defeitos que interessam. Se não
+> conseguir 1366×768 @ 125 %, **anote a configuração real** e marque os passos visuais como
+> `RELATADO`, não `PASS`.
+
+### 0.4 O instalador chega por DOWNLOAD HTTP
 
 Publique o `.exe` num link (release privada, drive com link direto, servidor local) e **baixe pelo
 navegador dentro da VM**.
 
 > **Não copie por pasta compartilhada nem por área de transferência.** Só o download por HTTP marca
-> o arquivo com o *Mark-of-the-Web*, que é o que faz o **SmartScreen real** aparecer. Copiando por
-> pasta compartilhada você testaria um caminho que nenhum usuário vai percorrer.
+> o arquivo com o *Mark-of-the-Web*, que é o que faz o **SmartScreen real** aparecer.
 
-Confira o arquivo baixado contra o `BUILD_INFO.txt` que veio com o build:
+> ⚠ **O arquivo agora tem ~544 MB** (o QGIS vai dentro). Um download interrompido é muito mais
+> provável que antes — por isso a conferência abaixo deixou de ser formalidade.
 
 ```powershell
 Get-FileHash .\Instituto-IMAN-IMAN-Terra-Setup-<versao>.exe -Algorithm SHA256
 ```
 
-- [ ] O SHA-256 bate com o do `BUILD_INFO.txt` → **se não bater, PARE**: o arquivo não é o que você
-      acha que é, e todo o resto do teste seria sobre outro artefato.
+- [ ] O SHA-256 bate com o do `BUILD_INFO.txt` → **se não bater, PARE.**
 
-### 0.4 Helpers
+Confira também no `BUILD_INFO.txt`, e **anote aqui**:
 
-Copie a pasta `tools\bl7\` para a VM (ex.: `Desktop\bl7`). São três scripts de **PowerShell 5.1**:
-não precisam de Python, git, internet, módulos nem administrador.
+- QGIS embarcado: `__________` · Payload SHA-256 confere com o site oficial? `PASS / FAIL / N/E`
 
-Se o PowerShell recusar rodar os scripts, use nesta sessão (não altera a máquina permanentemente):
+### 0.5 Helpers
+
+Copie `tools\bl7\` para a VM (ex.: `Desktop\bl7`). São scripts de **PowerShell 5.1**: não precisam
+de Python, git, internet nem módulos.
 
 ```powershell
 Set-ExecutionPolicy -Scope Process -Bypass
 ```
 
-Todas as evidências caem em `Desktop\bl7-evidence\`.
+Evidências caem em `Desktop\bl7-evidence\`.
 
 ---
 
-## 1. VM-A — sem QGIS, a mensagem tem que ser humana
+# RODADA M1 — máquina sem QGIS (caminho feliz)
 
-**Faça:** instale o IMAN Terra na **VM-A** e abra pelo atalho do Menu Iniciar.
+## 1. Baseline do perfil do usuário — **o passo que já invalidou uma rodada inteira**
 
-**Deve acontecer:** uma janela de console com a mensagem `QGIS LTR nao foi encontrado`, explicando
-que o IMAN Terra é uma camada sobre o QGIS LTR oficial, com o endereço para baixá-lo, e esperando
-você apertar uma tecla.
+Nesta rodada a máquina **não tem QGIS**, então `%APPDATA%\QGIS` **não existe** — e é exatamente aí
+que mora a armadilha.
 
-**NÃO pode acontecer:** stacktrace de Python, mensagem em inglês, erro do Windows, nem janela que
-**pisca e some** antes de dar para ler.
+> ### ⚠ PARE E LEIA
+> Em 2026-07-30 o baseline foi capturado com `RaizExiste: false` / `TotalArquivos: 0`. Depois, o
+> `assert-bl3` devolveu `BL3a: false` **sem conseguir distinguir** "o produto invadiu o perfil" de
+> "alguém abriu o QGIS stock". **Comparar pasta vazia com pasta vazia não prova nada** — e não há
+> conserto retroativo: a rodada inteira virou trabalho perdido.
 
-- Fica na tela até você fechar? `PASS / FAIL`
-- Explica o que fazer? `PASS / FAIL`
-- Screenshot: `01-vma-qgis-ausente.png`
-- Invariante: **BL-5 / UX**
+**Faça, nesta ordem, ANTES de instalar o IMAN Terra:**
 
----
-
-## 2. VM-B — fotografar o perfil do usuário ANTES de instalar
-
-**Faça (antes de rodar o instalador, com o QGIS fechado):**
+1. Instale o **QGIS oficial 3.44.9** na VM (é o mesmo payload; instale-o **à mão**, só para sujar o
+   perfil).
+2. **Abra o QGIS uma vez**, mude uma configuração visível (um tema, um painel), **crie e salve um
+   projeto**, e **feche**.
+3. **Desinstale o QGIS** pelo Painel de Controle. O perfil em `%APPDATA%\QGIS` **sobrevive** ao
+   uninstall — é justamente o que queremos.
+4. Só então:
 
 ```powershell
 cd $env:USERPROFILE\Desktop\bl7
 .\snapshot-user-profile.ps1 -Rotulo antes
 ```
 
-**Deve acontecer:** o script lista a raiz `%APPDATA%\QGIS\QGIS3\profiles`, informa um número de
-arquivos **maior que zero** e grava `Desktop\bl7-evidence\perfil-usuario-antes.json`.
+**Asserção numérica, sem interpretação:**
 
-> Se disser que a raiz não existe, o preparo do item 0.1 não foi feito: abra o QGIS uma vez, mexa
-> na configuração, salve um projeto e repita este passo.
-
-- Arquivos contados: `______` (> 0) `PASS / FAIL`
-- Screenshot: `02-baseline-perfil-usuario.png`
+- `TotalArquivos` no `perfil-usuario-antes.json`: `______`
+- [ ] **É maior que zero?** → **se for `0`, PARE e refaça do item 1.** `PASS / FAIL`
+- Screenshot: `01-baseline-perfil-usuario.png`
 - Invariante: **BL-3**
+
+> **Por que dar esse trabalho todo:** o BL-3 diz que o produto não pode tocar o perfil do usuário.
+> Para provar isso, o perfil **precisa existir e ter conteúdo** antes. Uma máquina sem QGIS nunca
+> teria — então nós o criamos e depois removemos só o programa.
 
 ---
 
-## 3. Rodar o instalador — SmartScreen, wizard e créditos
+## 2. Rodar o instalador — SmartScreen, wizard e créditos
 
 **Faça:** execute o `.exe` baixado.
 
-**Deve acontecer:**
-
-1. O **SmartScreen** provavelmente aparece (o instalador **não é assinado** — isto é esperado nesta
-   fase). **Transcreva LITERALMENTE** o texto e o título da janela, e anote se há o link
-   *"Mais informações"*.
-2. O wizard abre em **português do Brasil**, com as artes de marca IMAN (imagem lateral e ícone).
+1. O **SmartScreen** provavelmente aparece (o instalador **não é assinado**). **Transcreva
+   LITERALMENTE** o texto e o título, e anote se há *"Mais informações"*.
+2. O wizard abre em **português do Brasil**, com as artes de marca IMAN.
 3. Aparece a **tela de licença** antes de instalar.
-4. **Nenhuma tela** sugere que isto é o QGIS oficial ou um produto endossado pela QGIS.ORG.
+4. **Nenhuma tela** sugere que isto é o QGIS oficial ou endossado pela QGIS.ORG.
 
-- Texto literal do SmartScreen: `________________________________`
-- Wizard em pt-BR, com arte IMAN? `PASS / FAIL`
-- Tela de licença apareceu? `PASS / FAIL`
-- Nenhuma tela se passa por QGIS oficial? `PASS / FAIL`
-- Screenshots: `03a-smartscreen.png`, `03b-wizard-boas-vindas.png`, `03c-licenca.png`
+| # | Asserção | Resultado |
+|---|---|---|
+| 2.1 | Texto literal do SmartScreen: `________________________________` | `RELATADO / N/E` |
+| 2.2 | Wizard em pt-BR, com arte IMAN | `PASS / FAIL / N/E` |
+| 2.3 | Tela de licença apareceu | `PASS / FAIL / N/E` |
+| 2.4 | Nenhuma tela se passa por QGIS oficial | `PASS / FAIL / N/E` |
+
+- Screenshots: `02a-smartscreen.png`, `02b-wizard-boas-vindas.png`, `02c-licenca.png`
 - Invariantes: **BL-1 / BL-2**
 
 ---
 
-## 4. Instalar SEM elevar
+## 3. Elevação — **conte os prompts** (S3)
 
-**Faça:** conclua a instalação **sem** informar senha de administrador.
+**Faça:** conclua a instalação, prestando atenção em **quantas vezes** o Windows pede elevação.
 
-**Deve acontecer:** o Windows **não pede** credencial de administrador, e a instalação termina numa
-pasta do próprio usuário (algo como `C:\Users\<você>\AppData\Local\Programs\IMAN Terra`).
+> **O que se espera e por quê.** O MSI do QGIS é `ALLUSERS=1` e, sob `/qn`, o msiexec **não exibe
+> UAC** — ou já está elevado, ou falha com `1625`. Logo a elevação deve vir do **nosso** instalador,
+> **uma única vez**, e ser **herdada** pelo QGIS. **Dois prompts é ACHADO**, não detalhe.
 
-> Por que importa: se exigir admin, a TI municipal precisa abrir chamado para cada máquina — na
-> prática, a distro não é adotada.
+| # | Asserção | Resultado |
+|---|---|---|
+| 3.1 | **Quantos** prompts de UAC apareceram no percurso inteiro: `______` | `PASS` se **1** |
+| 3.2 | Algum prompt apareceu **no meio** (depois de já ter começado a instalar)? `SIM / NÃO` | `PASS = NÃO` |
 
-- Pediu elevação? `SIM / NÃO` → **PASS = NÃO**
-- Diretório final: `________________________________`
-- Screenshot: `04-instalacao-concluida.png`
-- Critério: adoção (TI municipal)
+- Screenshot: `03-uac.png`
+- Asserção: **S3**
 
 ---
 
-## 5. Primeiro run — cronometrado, na ordem
+## 4. Onde o produto foi parar (S6)
+
+**Faça:** anote o diretório final e confira os atalhos.
+
+> Com elevação, `{autopf}` deve resolver para `C:\Program Files` (não mais
+> `%LOCALAPPDATA%\Programs`), e os atalhos viram **all-users** (`D-IMAN-028`/DB-9). **O caminho
+> medido em 30/07 deixou de valer.**
+
+| # | Asserção | Resultado |
+|---|---|---|
+| 4.1 | Diretório de instalação: `________________________________` | `PASS` se `C:\Program Files\IMAN Terra` |
+| 4.2 | Atalho do Menu Iniciar existe para **todos os usuários** | `PASS / FAIL / N/E` |
+| 4.3 | O QGIS foi instalado em `C:\Program Files\QGIS 3.44.9` | `PASS / FAIL / N/E` |
+
+- Screenshot: `04-local-instalacao.png`
+- Asserção: **S6**
+
+---
+
+## 5. O QGIS entrou junto — cronometrado
+
+| # | Asserção | Resultado |
+|---|---|---|
+| 5.1 | **Tempo total** da instalação (do duplo-clique ao fim): `______ min` | `RELATADO` |
+| 5.2 | `C:\Program Files\QGIS 3.44.9\bin\qgis-ltr-bin.exe` existe | `PASS / FAIL / N/E` |
+| 5.3 | O QGIS aparece em Configurações → Aplicativos | `PASS / FAIL / N/E` |
+| 5.4 | A instalação terminou **sem pedir reinício** | `PASS / FAIL / N/E` |
+
+- Screenshot: `05-qgis-instalado.png`
+- Caso: **M1**
+
+> Se o instalador **pediu reinício**, isso é o código `3010` — **não é falha**, mas **anote**: é a
+> primeira vez que ele seria observado (na fatia #010 ficou `NÃO MEDIDO`).
+
+---
+
+## 6. Primeiro run — cronometrado, na ordem
 
 **Faça:** abra pelo atalho do Menu Iniciar. **Marque o tempo** até a janela ficar utilizável.
 
-**Deve acontecer, nesta ordem:**
-
-| # | O que deve aparecer | Viu? |
+| # | O que deve aparecer | Resultado |
 |---|---|---|
-| 5.1 | **Splash com a arte IMAN** (não o splash padrão do QGIS) | `PASS / FAIL` |
-| 5.2 | Título da janela contendo **IMAN Terra** | `PASS / FAIL` |
-| 5.3 | Ícone **IMAN** na barra de tarefas (não o ícone do QGIS) | `PASS / FAIL` |
-| 5.4 | A **HOME de boas-vindas NO MIOLO** da janela (área central, não um painel lateral) | `PASS / FAIL` |
-| 5.5 | Chrome **clara**, com o verde só de acento (tema aplicado, não o cinza padrão do QGIS) | `PASS / FAIL` |
-| 5.6 | Toolbar de marca presente e enxuta | `PASS / FAIL` |
+| 6.1 | **Splash com a arte IMAN** (não o splash padrão do QGIS) | `PASS / FAIL / N/E` |
+| 6.2 | Título da janela contendo **IMAN Terra** | `PASS / FAIL / N/E` |
+| 6.3 | Ícone **IMAN** na barra de tarefas (não o do QGIS) | `PASS / FAIL / N/E` |
+| 6.4 | A **HOME de boas-vindas NO MIOLO** (área central, não painel lateral) | `PASS / FAIL / N/E` |
+| 6.5 | Chrome **clara**, com o verde só de acento | `PASS / FAIL / N/E` |
+| 6.6 | Toolbar de marca presente e enxuta | `PASS / FAIL / N/E` |
 
 - Tempo até ficar utilizável: `______ s`
-- Screenshots: `05a-splash.png`, `05b-primeira-tela.png`
+- Screenshots: `06a-splash.png`, `06b-primeira-tela.png`
 - Fatias verificadas: **#005 + #006**
 
-> Se o splash IMAN não aparecer mas o resto sim, marque só o 5.1 como FAIL — os itens são
-> independentes.
+> Itens são independentes: se só o splash falhar, marque só o 6.1.
 
-> **O que é "chrome clara" no 5.5.** Barra de menus, barra de status, títulos de painel (dock) e
+> **O que é "chrome clara" no 6.5.** Barra de menus, barra de status, títulos de painel (dock) e
 > headers de tabela são **claros, com texto escuro**. O verde institucional aparece só como
 > **acento**: item de menu ativo, seleção, sublinhado da aba ativa, botão default, foco.
 > **Chrome verde-escura pintando essas superfícies é FAIL** — é a passada antiga, revertida pela
-> suavização de 2026-07-15 a pedido do sponsor. Ver a nota "Chrome CLARA" em `docs/design-system.md`.
+> suavização de 2026-07-15 a pedido do sponsor. Ver "Chrome CLARA" em `docs/design-system.md`.
 
 ---
 
-## 6. O perfil carregou de verdade — os TRÊS sinais
+## 7. O ícone na barra de tarefas, em 16×16 — **passo `D1`**
+
+> **Por que este passo existe separado do 6.3.** O 6.3 pergunta "é o ícone IMAN e não o do QGIS?" —
+> e passa **igual** com um ícone edge-to-edge, cortado ou desproporcional. Ou seja: **o 6.3 é
+> insensível ao defeito**. Este passo olha o tamanho onde o defeito aparece: **16×16**.
+>
+> **Esta é a terceira tentativa de este passo entrar em `develop`** (órfão desde 2026-07-28).
+
+**Faça:** com o IMAN Terra aberto, olhe o ícone **na barra de tarefas** e ao lado dos vizinhos
+(Explorer, navegador). Se ajudar, aumente o zoom da tela numa captura.
+
+| # | Asserção | Resultado |
+|---|---|---|
+| 7.1 | O **globo aparece INTEIRO** — não cortado nas bordas | `PASS / FAIL / N/E` |
+| 7.2 | O ícone **não é desproporcional** ao lado dos vizinhos — nem "gordo" preenchendo tudo, nem miúdo perdido no meio do quadro | `PASS / FAIL / N/E` |
+
+- Screenshot **obrigatório**: `07-icone-taskbar-16px.png` — enquadre o IMAN Terra **junto** de pelo
+  menos dois ícones vizinhos, senão não dá para julgar proporção.
+- Origem: **`D1`**
+
+---
+
+## 8. O perfil carregou de verdade — os TRÊS sinais (S4)
 
 **Por que os três:** na fatia 1 houve um bug em que o QGIS abria **bonito mas com perfil vazio**
-(o caminho virava `profiles\profiles\`). Um sinal isolado pode enganar; os três juntos, não.
+(o caminho virava `profiles\profiles\`). Um sinal isolado engana; os três juntos, não.
 
-**Faça e confira:**
-
-| # | Onde olhar | O que deve estar lá | Viu? |
+| # | Onde olhar | O que deve estar lá | Resultado |
 |---|---|---|---|
-| 6.1 | Complementos → Gerenciar e Instalar Complementos → Instalados | **`iman_brand` ativo** (marcado) | `PASS / FAIL` |
-| 6.2 | Projeto → Propriedades → SRC (ou o SRC na barra de status) | o **CRS padrão do projeto novo** conforme a distro | `PASS / FAIL` |
-| 6.3 | A janela | **QSS aplicado** (cores IMAN em menus/painéis, não o tema padrão) | `PASS / FAIL` |
+| 8.1 | Complementos → Gerenciar e Instalar Complementos → Instalados | **`iman_brand` ativo** (marcado) | `PASS / FAIL / N/E` |
+| 8.2 | Projeto → Propriedades → SRC (ou o SRC na barra de status) | o **CRS padrão** da distro | `PASS / FAIL / N/E` |
+| 8.3 | A janela | **QSS aplicado** (cores IMAN, não o tema padrão) | `PASS / FAIL / N/E` |
 
-- Screenshot: `06-plugin-crs-tema.png` (pode ser mais de um)
+- Screenshot: `08-plugin-crs-tema.png`
 - **Os três precisam passar.** Dois em três = FAIL do passo.
-- Regressão coberta: **fatia 1** (armadilha `profiles\profiles\`)
+- Asserção: **S4** · Regressão coberta: **fatia 1**
 
 ---
 
-## 7. O perfil do usuário continua intacto — a asserção que bloqueia release
+## 9. O perfil do usuário continua intacto (S5) — bloqueia release
 
-**Faça: FECHE o IMAN Terra e o QGIS** (arquivo aberto vira ruído), depois:
+**Faça: FECHE o IMAN Terra e o QGIS**, depois:
 
 ```powershell
 cd $env:USERPROFILE\Desktop\bl7
 .\assert-bl3.ps1 -Baseline "$env:USERPROFILE\Desktop\bl7-evidence\perfil-usuario-antes.json"
 ```
 
-**Deve acontecer:** `RESULTADO: PASS`, com as duas asserções verdes:
+| # | Asserção | Resultado |
+|---|---|---|
+| 9.1 | `[BL-3a]` — perfil do usuário **byte-idêntico** ao passo 1 (0 divergências) | `PASS / FAIL / N/E` |
+| 9.2 | `[BL-3b]` — perfil isolado criado em `%APPDATA%\InstitutoIMAN\IMAN Terra\profiles\iman-distro` | `PASS / FAIL / N/E` |
 
-- `[BL-3a] PASS` — o perfil do usuário está **byte-idêntico** ao passo 2 (0 divergências)
-- `[BL-3b] PASS` — o perfil **isolado** foi criado em
-  `%APPDATA%\InstitutoIMAN\IMAN Terra\profiles\iman-distro`
-
-- `[BL-3a]` `PASS / FAIL` — se FAIL, **copie a lista de DIVERGENTES inteira** para o RESULT
-- `[BL-3b]` `PASS / FAIL`
-- Screenshot: `07-assert-bl3.png`
-- Evidência automática: `Desktop\bl7-evidence\assert-bl3.json`
+- Se `FAIL`, **copie a lista de DIVERGENTES inteira** para o `RESULT.md`.
+- Screenshot: `09-assert-bl3.png` · Evidência: `Desktop\bl7-evidence\assert-bl3.json`
 - Invariante: **BL-3 — inegociável. FAIL aqui BLOQUEIA o release.**
 
----
-
-## 8. Ciclo HOME ↔ canvas, 3 vezes
-
-**Faça, três vezes seguidas:**
-
-1. na HOME, abra o **projeto demo** → deve ir para o **canvas** do mapa
-2. **Projeto → Novo** → deve voltar para a **HOME**
-
-**Deve acontecer:** a troca é limpa nas três voltas. **Não pode** sobrar "tela-fantasma" (resto da
-HOME por cima do mapa, ou do mapa por cima da HOME), nem área cinza vazia.
-
-- Volta 1 `PASS / FAIL` · Volta 2 `PASS / FAIL` · Volta 3 `PASS / FAIL`
-- Screenshots: `08a-demo-canvas.png`, `08b-novo-home.png`
-- Guardrail: **#006**
+> **O BL-3 ficou MAIS crítico com A2, não menos.** Agora um instalador **de terceiro** (o MSI do
+> QGIS) roda **elevado** dentro do nosso percurso. A análise estática da fatia #010 diz que ele não
+> tem por onde escrever em `%APPDATA%\QGIS` (nenhuma pasta de perfil no pacote, sem tabela
+> `Registry`, e os scripts `postinstall.bat`/`preremove.bat` não citam `%APPDATA%`). **Isso é
+> evidência estática — este passo é o que a confirma na prática.**
 
 ---
 
-## 9. Segundo run — idempotência
+## 10. Ciclo HOME ↔ canvas, 3 vezes
 
-**Faça:** feche tudo e abra o IMAN Terra **de novo** pelo atalho.
+**Faça, três vezes:** na HOME abra o **projeto demo** → vai para o **canvas**; **Projeto → Novo** →
+volta para a **HOME**.
 
-**Deve acontecer:**
+**Não pode** sobrar "tela-fantasma" nem área cinza vazia.
 
-| # | Asserção | Viu? |
+- Volta 1 `PASS / FAIL / N/E` · Volta 2 `PASS / FAIL / N/E` · Volta 3 `PASS / FAIL / N/E`
+- Screenshots: `10a-demo-canvas.png`, `10b-novo-home.png` · Guardrail: **#006**
+
+---
+
+## 11. Segundo run — idempotência
+
+| # | Asserção | Resultado |
 |---|---|---|
-| 9.1 | Abre **mais rápido** que o primeiro run — não recopia o template do perfil | `PASS / FAIL` |
-| 9.2 | O splash IMAN aparece de novo | `PASS / FAIL` |
-| 9.3 | A HOME aparece de novo | `PASS / FAIL` |
-| 9.4 | Suas alterações do run anterior continuam lá (o perfil não foi sobrescrito) | `PASS / FAIL` |
-
-**Confira o arquivo de customização** — ele é reescrito a cada abertura e **não pode duplicar**:
+| 11.1 | Abre **mais rápido** que o primeiro run | `PASS / FAIL / N/E` |
+| 11.2 | O splash IMAN aparece de novo | `PASS / FAIL / N/E` |
+| 11.3 | A HOME aparece de novo | `PASS / FAIL / N/E` |
+| 11.4 | Suas alterações do run anterior continuam lá | `PASS / FAIL / N/E` |
 
 ```powershell
 Get-Content "$env:APPDATA\InstitutoIMAN\IMAN Terra\profiles\iman-distro\QGIS\QGISCUSTOMIZATION3.ini"
@@ -256,109 +341,78 @@ Get-Content "$env:APPDATA\InstitutoIMAN\IMAN Terra\profiles\iman-distro\QGIS\QGI
 
 Deve ter **exatamente um** `[Customization]` e **uma** linha `splashpath=`.
 
-- Linhas duplicadas? `SIM / NÃO` → **PASS = NÃO**
-- Screenshot: `09-segundo-run-customization.png`
-- Critério: **idempotência**
+- Linhas duplicadas? `SIM / NÃO` → **PASS = NÃO** · Screenshot: `11-segundo-run-customization.png`
 
 ---
 
-## 10. Créditos do QGIS
+## 12. Créditos do QGIS
 
-**Faça:** abra a pasta de instalação (a do passo 4) e depois, no aplicativo, `Ajuda → Sobre`.
-
-**Deve acontecer:**
-
-| # | Onde | O que deve estar lá | Viu? |
+| # | Onde | O que deve estar lá | Resultado |
 |---|---|---|---|
-| 10.1 | pasta instalada | arquivo **`LICENSE`** | `PASS / FAIL` |
-| 10.2 | pasta instalada | arquivo **`THIRD_PARTY_NOTICES.md`** | `PASS / FAIL` |
-| 10.3 | pasta instalada | arquivo **`README.md`** | `PASS / FAIL` |
-| 10.4 | `Ajuda → Sobre` | credita o **QGIS** | `PASS / FAIL` |
-| 10.5 | em algum lugar visível | a expressão **"powered by QGIS"** | `PASS / FAIL` |
-| 10.6 | em algum lugar visível | o aviso de **independência** (não é produto oficial nem endossado pela QGIS.ORG) | `PASS / FAIL` |
+| 12.1 | pasta instalada | **`LICENSE`** | `PASS / FAIL / N/E` |
+| 12.2 | pasta instalada | **`THIRD_PARTY_NOTICES.md`** | `PASS / FAIL / N/E` |
+| 12.3 | pasta instalada | **`README.md`** | `PASS / FAIL / N/E` |
+| 12.4 | `Ajuda → Sobre` | credita o **QGIS** | `PASS / FAIL / N/E` |
+| 12.5 | visível | **"powered by QGIS"** | `PASS / FAIL / N/E` |
+| 12.6 | visível | aviso de **independência** | `PASS / FAIL / N/E` |
 
-- Screenshots: `10a-pasta-instalada.png`, `10b-sobre.png`
-- Invariante: **BL-1**
+- Screenshots: `12a-pasta-instalada.png`, `12b-sobre.png` · Invariante: **BL-1**
+
+> ⚠ **Achado esperado, e é para registrar como tal:** o `THIRD_PARTY_NOTICES.md` **ainda não cobre**
+> as obrigações de **redistribuidor** (`D-IMAN-028`/DB-6) — QGIS GPL-2.0-or-later com oferta de
+> fonte, Qt (LGPL), GDAL, PROJ, GEOS, Python. **É fatia própria, obrigatória antes de distribuir.**
+> Aqui só se **constata**. Esta rodada **constrói e testa; não distribui.**
 
 ---
 
-## 11. Desinstalar — e o que tem que SOBRAR
+## 13. Desinstalar — e o que tem que SOBRAR
 
 **Faça:** Configurações → Aplicativos → IMAN Terra → Desinstalar.
 
-**Deve acontecer:**
-
-| # | Asserção | Viu? |
+| # | Asserção | Resultado |
 |---|---|---|
-| 11.1 | A pasta de instalação (passo 4) foi **removida** | `PASS / FAIL` |
-| 11.2 | Os atalhos (Menu Iniciar / Área de Trabalho) foram **removidos** | `PASS / FAIL` |
-| 11.3 | `%APPDATA%\InstitutoIMAN` **CONTINUA LÁ** | `PASS / FAIL` |
-| 11.4 | O QGIS do usuário continua instalado e funcionando (abra-o) | `PASS / FAIL` |
+| 13.1 | A pasta de instalação foi **removida** | `PASS / FAIL / N/E` |
+| 13.2 | Os atalhos foram **removidos** | `PASS / FAIL / N/E` |
+| 13.3 | `%APPDATA%\InstitutoIMAN` **CONTINUA LÁ** | `PASS / FAIL / N/E` |
+| 13.4 | **O QGIS CONTINUA INSTALADO e abre** | `PASS / FAIL / N/E` |
 
-> **11.3 não é bug — é proposital.** O instalador **não** tem seção `[UninstallDelete]` para
-> `%APPDATA%\InstitutoIMAN`. Desinstalar o programa **não pode** apagar os dados do usuário (BL-3).
-> Se a pasta sumir, é **FAIL**.
-
-Confirme que o perfil do usuário continua intacto **depois** de desinstalar:
+> **13.3 e 13.4 não são bugs — são propositais.**
+> **13.3:** não há `[UninstallDelete]` para `%APPDATA%\InstitutoIMAN` (BL-3).
+> **13.4:** desinstalar o IMAN Terra **não remove o QGIS**. Remover quebraria o trabalho GIS de quem
+> passou a usá-lo para outra coisa. `D-IMAN-028`/**DB-11 está ABERTA** — até o sponsor arbitrar, a
+> opção não-destrutiva é a única aceitável. **Se o QGIS sumir, é FAIL.**
 
 ```powershell
 .\assert-bl3.ps1 -Baseline "$env:USERPROFILE\Desktop\bl7-evidence\perfil-usuario-antes.json"
 ```
 
-- `[BL-3a]` depois do uninstall: `PASS / FAIL`
-- Screenshot: `11-pos-uninstall.png`
-- Invariante: **BL-3**
+- `[BL-3a]` depois do uninstall: `PASS / FAIL / N/E` · Screenshot: `13-pos-uninstall.png`
 
 ---
 
-## 12. Reinstalar por cima do perfil sobrevivente
+## 14. Reinstalar por cima do perfil sobrevivente
 
-**Faça:** instale de novo o mesmo `.exe`, sem apagar nada, e abra.
-
-**Deve acontecer:**
-
-| # | Asserção | Viu? |
+| # | Asserção | Resultado |
 |---|---|---|
-| 12.1 | Instala normalmente | `PASS / FAIL` |
-| 12.2 | Abre normalmente, com splash + HOME | `PASS / FAIL` |
-| 12.3 | **Não** aparece um segundo perfil `iman-distro` duplicado | `PASS / FAIL` |
-| 12.4 | Nada quebra por causa do perfil que sobreviveu ao uninstall | `PASS / FAIL` |
+| 14.1 | Instala normalmente | `PASS / FAIL / N/E` |
+| 14.2 | **Pula o QGIS** (ele já está lá) — a instalação é bem mais rápida | `PASS / FAIL / N/E` |
+| 14.3 | Abre normalmente, com splash + HOME | `PASS / FAIL / N/E` |
+| 14.4 | **Não** aparece um segundo perfil `iman-distro` duplicado | `PASS / FAIL / N/E` |
 
-- Screenshot: `12-reinstalacao.png`
-- Critério: **upgrade**
+- Screenshot: `14-reinstalacao.png` · Critério: **upgrade**
 
 ---
 
-## 13. Atualizar de uma versão anterior — **espera-se FAIL**
+## 15. Atualizar de uma versão anterior — **espera-se FAIL**
 
 > **Leia antes de executar.** Este passo existe para **medir e documentar um defeito conhecido**,
-> não para passar. Se ele der FAIL, o checklist está funcionando. Registre a evidência e siga.
+> não para passar. Se der FAIL, o checklist está funcionando.
 
-**Por que os passos 1–12 não pegam isto:** numa VM limpa o perfil isolado **nasce novo**, então o
-caminho de atualização **não existe por construção**. E o passo 12 reinstala a **mesma** versão
-sobre um perfil criado pela **mesma** versão — passa trivialmente. Ou seja: um BL-7 todo verde
-diria nada sobre atualizar, que é justamente o que acontece com quem já usa o produto.
+**O defeito:** o launcher só copia o `profile-template` no **primeiro** run — perfil que já existe
+nunca recebe template novo (nem CRS, nem QSS, nem splash).
 
-**O defeito:** o launcher só copia o `profile-template` no **primeiro** run:
-
-```bat
-if not exist "%PROFILE_DIR%\QGIS\QGIS3.ini" ( xcopy /E /I /Y "%TEMPLATE%" "%PROFILE_DIR%" )
-```
-
-Perfil que **já existe nunca recebe template novo** — nem CRS, nem QSS, nem splash.
-
-**Faça (na VM-B, depois do passo 12):**
-
-1. Crie um perfil "de versão anterior". Dois caminhos, use o que der:
-   - **preferido:** instale a **0.1.0** (o `.exe` de 05/jul, se disponível), abra uma vez, feche; ou
-   - **simulação:** abra o app uma vez para o perfil nascer, feche, e **edite à mão**
-     `%APPDATA%\InstitutoIMAN\IMAN Terra\profiles\iman-distro\QGIS\QGIS3.ini`, colocando um valor
-     reconhecível — por exemplo trocando o CRS padrão para `EPSG:4674`.
-2. Instale a **0.2.0** por cima, sem apagar nada.
-3. Abra o app.
-
-**Asserção:** o app reflete o **template NOVO**? — CRS `EPSG:31984` na barra de status, QSS novo,
-splash novo.
+**Faça:** crie um perfil "de versão anterior" (instale a 0.2.0 e abra uma vez; ou edite à mão
+`...\profiles\iman-distro\QGIS\QGIS3.ini` pondo `EPSG:4674`), instale a versão nova por cima e abra.
 
 | Sinal | Esperado se o update-path funcionasse | Observado |
 |---|---|---|
@@ -366,33 +420,134 @@ splash novo.
 | QSS novo aplicado | sim | `SIM / NÃO` |
 | Splash novo | sim | `SIM / NÃO` |
 
-- Resultado: `PASS / FAIL` — **hoje o esperado é FAIL**
-- Screenshot: `13-update-path.png`
-- Origem: achado (B) do gate do #006 — foi exatamente isto que fotografou `EPSG:4674` na evidência
-  daquela fatia, com o template já em `EPSG:31984`. É o NIT-B da fatia 1 reincidindo, agora com prova.
+- Resultado: `PASS / FAIL / N/E` — **hoje o esperado é FAIL** · Screenshot: `15-update-path.png`
 
-> **O conserto NÃO é desta fatia.** Versionar o template e re-sincronizar no upgrade **preservando
-> o que é do usuário** (BL-3) exige desenhar o que se sobrescreve e o que se preserva — é fatia
-> própria. Aqui só se **mede e declara**.
+> **O conserto NÃO é desta fatia.** Versionar o template e re-sincronizar preservando o que é do
+> usuário (BL-3) é fatia própria. Aqui só se **mede e declara**.
 
 ---
 
-## 14. Fechamento — coletar o ambiente
+# RODADA M2a — QGIS 3.44.9 já instalado
 
-**Faça:**
+**Prepare:** snapshot limpa + instale **à mão** o **QGIS oficial 3.44.9**. Não instale o IMAN Terra
+ainda.
+
+## 16. O instalador **pula** o QGIS — e prova que pulou
+
+> **Por que "funcionou no fim" não basta.** O MSI oficial **não pula sozinho**: ele não tem `Upgrade`
+> table nem `FindRelatedProducts` (medido na fatia #010). Chamado com o mesmo `ProductCode` já
+> instalado, ele entra em **reconfiguração** do produto existente. O "pulo" é **código nosso**
+> (`PrepareToInstall` testando o `ProductCode` em `HKLM64`). Se esse código falhar, a instalação
+> **ainda termina bem** — só que tendo reconfigurado o QGIS do usuário. **Por isso o teste é de
+> tempo e de log, não de resultado final.**
+
+**Faça:** anote a hora, instale o IMAN Terra, anote a hora do fim.
+
+| # | Asserção | Resultado |
+|---|---|---|
+| 16.1 | **Tempo total**: `______` — deve ser **muito menor** que o da rodada M1 (passo 5.1) | `PASS / FAIL / N/E` |
+| 16.2 | **Não** apareceu a etapa demorada de instalação do QGIS | `PASS / FAIL / N/E` |
+| 16.3 | O QGIS **continua na mesma versão** (3.44.9) e a **data de modificação** de `C:\Program Files\QGIS 3.44.9` **não mudou** | `PASS / FAIL / N/E` |
+| 16.4 | **Não** foi criado `%TEMP%\qgis-install.log` (ou ele é da instalação manual anterior) | `PASS / FAIL / N/E` |
+| 16.5 | O IMAN Terra abre normalmente | `PASS / FAIL / N/E` |
+
+```powershell
+(Get-Item 'C:\Program Files\QGIS 3.44.9').LastWriteTime
+Get-ChildItem $env:TEMP -Filter 'qgis-install.log' | Select-Object FullName, LastWriteTime
+```
+
+- Screenshot: `16-m2a-pulou.png` · Caso: **M2a**
+
+---
+
+# RODADA M2b — QGIS 3.44.12 já instalado
+
+**Prepare:** snapshot limpa + instale **à mão** o **QGIS oficial 3.44.12**
+(`QGIS-OSGeo4W-3.44.12-1.msi`). Não instale o IMAN Terra ainda.
+
+## 17. Coexistência — e o launcher abre o **nosso** QGIS
+
+> **É aqui que o fix do `DB-14` se prova no produto.** `3.44.9` e `3.44.12` têm `ProductCode` **e**
+> `UpgradeCode` diferentes: o MSI oficial os trata como produtos sem relação e instala **lado a
+> lado** (`D-IMAN-028`/**DB-13**). Isso é **não destrutivo** — mas cria a ambiguidade "qual QGIS
+> abrir?", e a rotina antiga do launcher escolhia **`3.44.12`**, porque a ordem é alfabética por
+> texto e `'1' < '9'`.
+
+| # | Asserção | Resultado |
+|---|---|---|
+| 17.1 | A instalação **prossegue** e instala o `3.44.9` | `PASS / FAIL / N/E` |
+| 17.2 | **As DUAS pastas existem**: `C:\Program Files\QGIS 3.44.9` **e** `QGIS 3.44.12` | `PASS / FAIL / N/E` |
+| 17.3 | O `3.44.12` do usuário **continua funcionando** (abra-o pelo atalho dele) | `PASS / FAIL / N/E` |
+| 17.4 | **O IMAN Terra abre o `3.44.9`** — não o `3.44.12` | `PASS / FAIL / N/E` |
+
+**Como provar o 17.4 sem depender de olho:** com o IMAN Terra aberto, rode
+
+```powershell
+Get-Process qgis-ltr-bin, qgis-bin -ErrorAction SilentlyContinue | Select-Object Id, Path
+```
+
+- Caminho observado: `________________________________` → **PASS só se contiver `QGIS 3.44.9`**
+- Screenshot: `17-m2b-coexistencia.png` · Caso: **M2b**
+
+> **`D-IMAN-028`/DB-13 e DB-11 permanecem decisões do sponsor.** Este passo **mede** a coexistência;
+> não a endossa como resposta final.
+
+---
+
+# RODADA M4 — a instalação do QGIS falha no meio
+
+**Prepare:** snapshot limpa, **sem QGIS**.
+
+## 18. Falhar é permitido; mentir não
+
+**Faça — force a falha por um destes caminhos** (anote qual usou):
+
+- **(a)** encha o disco antes de instalar, deixando menos de ~3 GB livres; ou
+- **(b)** com o instalador rodando na etapa do QGIS, mate o processo `msiexec.exe` pelo
+  Gerenciador de Tarefas; ou
+- **(c)** inicie outra instalação MSI qualquer em paralelo (provoca o `1618`).
+
+| # | Asserção | Resultado |
+|---|---|---|
+| 18.1 | Apareceu uma **mensagem em português** dizendo que a instalação do QGIS falhou | `PASS / FAIL / N/E` |
+| 18.2 | A mensagem traz o **código** do Windows Installer | `PASS / FAIL / N/E` — código: `______` |
+| 18.3 | A mensagem diz que **nada foi alterado** na máquina | `PASS / FAIL / N/E` |
+| 18.4 | **O IMAN Terra NÃO ficou instalado** — sem pasta em `C:\Program Files\IMAN Terra`, sem atalhos, sem entrada em Aplicativos | `PASS / FAIL / N/E` |
+| 18.5 | `%APPDATA%\InstitutoIMAN` **não** foi criado | `PASS / FAIL / N/E` |
+
+- Método de falha usado: `______` · Texto literal da mensagem: `________________________________`
+- Screenshot: `18-m4-falha.png` · Caso: **M4**
+
+> **O que se está provando (`D-IMAN-028`/DB-15):** que a falha do QGIS **aborta antes de tocar em
+> qualquer coisa**, em vez de deixar o IMAN Terra instalado e inutilizável. O encadeamento roda em
+> `PrepareToInstall`, que é **anterior** à cópia de qualquer arquivo.
+> **18.4 é a asserção central deste caso.**
+
+---
+
+## 19. Fechamento — coletar o ambiente e fechar o placar
 
 ```powershell
 cd $env:USERPROFILE\Desktop\bl7
 .\collect-evidence.ps1
 ```
 
-Gera `Desktop\bl7-evidence\RESULT-esqueleto.md` com Windows, **versão exata do QGIS**, resolução,
-escala, diretório de instalação e presença do perfil isolado.
+Gera `Desktop\bl7-evidence\RESULT-esqueleto.md` com Windows, versão do QGIS, resolução, escala,
+diretório de instalação e presença do perfil isolado.
 
-**Depois:** preencha o `RESULT.md` (modelo em `docs/verify/bl7-clean-vm/RESULT.md`) colando esses
-dados, os `PASS/FAIL` deste checklist e os screenshots.
+**Depois:** preencha o `RESULT.md` colando esses dados, os resultados deste checklist e os
+screenshots.
 
-> **A versão do QGIS que você testou vira a versão suportada declarada do release.** Se você testou
-> em 3.44.9, o release suporta 3.44.x — e mais nada, até alguém rodar este checklist noutra versão.
+### Placar obrigatório
 
-- Screenshot: `14-collect-evidence.png`
+| | |
+|---|---|
+| Passos **com evidência** (`PASS` + `FAIL`) | `______ de ______` |
+| Passos `N/E` | `______` — **liste quais e por quê** |
+| Rodadas concluídas | `M1 ☐ · M2a ☐ · M2b ☐ · M4 ☐` |
+
+> **Um checklist com muitos `N/E` não é um checklist reprovado — é um checklist incompleto**, e
+> precisa dizer isso em voz alta. O que **não** pode acontecer é `N/E` virar silêncio, e silêncio
+> virar "deve estar bom".
+
+- Screenshot: `19-collect-evidence.png`

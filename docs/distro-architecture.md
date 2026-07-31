@@ -26,28 +26,57 @@ iman-qgis-distro-agent/
 │   ├── demo/                # welcome.qgz
 │   ├── assets/              # símbolo/logo/.ico/splash oficial (fonte única de marca; ver assets/README.md)
 │   └── notices/             # LICENSE, THIRD_PARTY_NOTICES.md, SOURCE_CODE.md
-├── installer/               # *.iss (Inno Setup) + dist/
+├── installer/               # *.iss (Inno Setup) + dist/ + payload/ (MSI do QGIS, fora do git)
 ├── docs/                    # esta doc, branding/licença, design system, guias
 └── packaging/               # [Opção 2, futuro] patches de fork, docs de build
 ```
 
-### Versão-baseline do QGIS (declarada)
+### Versão do QGIS: EMBARCADA, não mais "exigida" (`D-IMAN-028`)
+
+> **Mudou na fatia #011.** Até a 0.2.0 o instalador era **leve**: exigia o QGIS LTR já instalado e
+> o launcher orientava se não achasse. A partir da 0.3.0 o instalador **embarca o MSI oficial do
+> QGIS e o instala** (via **A2a**, offline). **Não é fork** (`D-IMAN-028`/DB-1): o binário oficial
+> é redistribuído **sem modificação**.
 
 | | |
 |---|---|
-| **Baseline suportada** | **QGIS LTR 3.44.x** |
-| Versão efetivamente testada | 3.44.9 (standalone, `C:\Program Files\QGIS 3.44.9`) |
-| Versões **não verificadas** | 3.28 LTR, 3.34 LTR, e qualquer release não-LTR |
+| **QGIS embarcado** | **3.44.9** (`QGIS-OSGeo4W-3.44.9-1.msi`, 541,14 MB) |
+| Fonte única | `#define QgisBaselineVersion` em `installer/iman-terra.iss` |
+| Espelhos que mudam **junto** | `QgisProductCode` (bloco `[Code]` do `.iss`) · `set QGIS_VERSION` (`app/launcher/IMAN-Terra.bat`) · `$PayloadHashes` (`installer/build.ps1`) |
+| Versões **não verificadas** | 3.28 LTR, 3.34 LTR, 3.40 LTR, 3.44.x ≠ 3.44.9, e qualquer release não-LTR |
 
-A distro é uma camada de branding: ela **abre** qualquer QGIS que o launcher encontrar
-(`%ProgramFiles%\QGIS *` ou `C:\OSGeo4W`), porque recusar por versão deixaria o usuário sem
-saída. Isso é **detecção permissiva, não promessa de compatibilidade** — e a diferença
-precisa estar escrita, porque QSS e o dashboard da HOME podem **degradar em silêncio** em
-versões mais antigas (seletores Qt e nomes de objeto mudam entre séries do QGIS).
+O `#define QgisBaselineVersion` **mudou de sentido** (`D-IMAN-028`/DB-12): era "versão suportada
+declarada", agora é **a versão que o pacote instala**. O `build.ps1` recusa compilar se o `.iss` e o
+launcher divergirem, e recusa uma versão cujo SHA-256 oficial não esteja registrado — trocar a
+versão embarcada é **decisão de produto**, não do build.
 
-Regra: **a versão do QGIS efetivamente exercitada na VM limpa (BL-7) é a versão suportada
-declarada no release.** Ver `docs/verify/bl7-clean-vm/RESULT.md`. Ampliar a baseline exige
-rodar o checklist naquela versão — não se infere compatibilidade.
+**Coexistência, não atualização** (`D-IMAN-028`/DB-13). O MSI oficial **não tem `Upgrade` table nem
+`FindRelatedProducts`** (medido no spike #010): ele **nunca procura** outra versão do QGIS. Cada
+versão tem `ProductCode` **e** `UpgradeCode` próprios — até entre patches da mesma minor (3.44.9 ×
+3.44.12). Consequência: numa máquina que já tem QGIS, o nosso payload **instala lado a lado** e a
+instalação de terceiro fica **intacta**. Isso é bom para o BL-3 e é o comportamento do instalador
+oficial, não uma escolha nossa.
+
+**Quem resolve a ambiguidade é o launcher** (`D-IMAN-028`/DB-14). Com coexistência, "qual QGIS
+abrir?" passa a ter mais de uma resposta. O launcher prefere, nesta ordem: (1) `%QGIS_BIN%`, se
+definido; (2) o **caminho exato do payload** (`%ProgramFiles%\QGIS <versão embarcada>`); (3) mesma
+minor (`QGIS 3.44*`); (4) OSGeo4W; (5) qualquer `QGIS *`, como último recurso.
+
+> ⚠ Os níveis 3 a 5 são **detecção permissiva, não promessa de compatibilidade**: QSS e o dashboard
+> da HOME podem **degradar em silêncio** noutra série (seletores Qt e nomes de objeto mudam entre
+> séries). O nível 5 usa `for /d`, cuja ordem é **alfabética por texto** — `QGIS 3.44.12` vem antes
+> de `QGIS 3.44.9` porque `'1' < '9'`. Foi exatamente esse detalhe que fez o launcher abrir a versão
+> errada até a fatia #011; o teste `tools/test-launcher-detection.ps1` monta **≥ 2 QGIS** e asseria
+> **qual** foi escolhido, justamente para isso não voltar sem ninguém ver.
+
+Regra que **não** mudou: **a versão exercitada na VM limpa (BL-7) é a versão suportada declarada do
+release.** Ver `docs/verify/bl7-clean-vm/RESULT.md`. Ampliar a baseline exige rodar o checklist
+naquela versão — não se infere compatibilidade.
+
+> **Obrigação de licença que cresce junto** (`D-IMAN-028`/DB-6): embarcar o MSI é **redistribuição**.
+> O `THIRD_PARTY_NOTICES.md` atual **não cobre** isso (GPL-2.0-or-later do QGIS com oferta de fonte,
+> Qt sob LGPL, GDAL, PROJ, GEOS, Python). **Fatia própria, obrigatória antes de qualquer
+> distribuição.**
 
 ### Componentes
 
