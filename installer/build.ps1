@@ -25,6 +25,7 @@
    3  guarda de integridade (arvore suja / branch errada / versao divergente)
    4  falha do compilador Inno Setup
    5  payload do QGIS (ausente, download falhou ou SHA-256 nao confere)
+   6  guarda DB-18 (o launcher nao passa no teste de deteccao do QGIS)
 
  REQUISITOS: PowerShell 5.1, git no PATH, Inno Setup 6.
  (Este script roda na BANCADA do dev, nao na VM limpa. Os helpers que vao para a
@@ -267,6 +268,66 @@ if ($LauncherQgis -ne $QgisBaseline) {
     )
 }
 Write-Ok "launcher e .iss concordam em QGIS $QgisBaseline"
+
+# --- guarda 5: o launcher PASSA no teste de deteccao? -----------------------
+#
+# D-IMAN-028/DB-18: a guarda 4 confere a versao ESCRITA no launcher; esta roda
+# o launcher DE VERDADE contra raizes sinteticas e confere QUAL QGIS ele
+# escolhe. As duas protegem o mesmo invariante ("o produto abre o QGIS que
+# embarcamos"), e a diferenca importa: o .bat so se comporta como corrigido se
+# chegar ao disco com CRLF. O MESMO arquivo com finais de linha LF cai de
+# 5 de 5 para 1 de 5 casos (medido em 2026-08-31) e volta a abrir a versao
+# errada - sem um ruido. O .gitattributes da raiz impede o LF no checkout;
+# esta guarda e a rede que prova, a cada build, que ele impediu.
+#
+# Bloqueante de proposito, nao aviso: um aviso e exatamente o que deixaria a
+# reversao silenciosa entrar nos 544 MB. Roda ANTES de estagiar o payload para
+# falhar barato, sem baixar 541 MB.
+
+Write-Step "Rodando o teste de deteccao do QGIS pelo launcher"
+
+$DetectTest = Join-Path $RepoRoot 'tools\test-launcher-detection.ps1'
+if (-not (Test-Path -LiteralPath $DetectTest)) {
+    Fail 2 "teste de deteccao do launcher nao encontrado" @(
+        "Esperado em: $DetectTest",
+        "Ele e a guarda do D-IMAN-028/DB-18; sem ele o build nao tem como saber",
+        "se o launcher ainda abre o QGIS que o instalador embarca."
+    )
+}
+
+# Processo filho de proposito: o teste termina com 'exit 0/1' e o codigo dele e
+# a evidencia. Rodar em processo separado garante o codigo intacto e mantem a
+# saida (o placar caso a caso) visivel no log do build.
+$PsExe = Join-Path $PSHOME 'powershell.exe'
+if (-not (Test-Path -LiteralPath $PsExe)) { $PsExe = 'powershell.exe' }
+
+& $PsExe -NoProfile -ExecutionPolicy Bypass -File $DetectTest -VersaoPayload $QgisBaseline
+$DetectExit = $LASTEXITCODE
+
+if ($DetectExit -ne 0) {
+    Fail 6 "o launcher NAO passa no teste de deteccao do QGIS" @(
+        "Teste    : tools\test-launcher-detection.ps1   (exit $DetectExit)",
+        "Launcher : $LauncherPath",
+        "Placar   : o esperado e 5 de 5; veja os casos [FAIL] logo acima.",
+        "",
+        "D-IMAN-028/DB-18. CAUSA MAIS PROVAVEL: o .bat chegou ao disco com",
+        "finais de linha LF em vez de CRLF. Sob LF este launcher cai para",
+        "1 de 5 casos e reabre o defeito do DB-14 - em silencio.",
+        "",
+        "Confira com uma linha (tem de imprimir True):",
+        "  (Get-Content -Raw app\launcher\IMAN-Terra.bat).Contains([char]13)",
+        "",
+        "Se der False, este clone nao aplicou o .gitattributes da raiz",
+        "(*.bat text eol=crlf) - ele esta ausente nesta ref ou foi ignorado.",
+        "Traga a ref que o contem e restaure o CRLF apagando e re-extraindo:",
+        "  Remove-Item app\launcher\IMAN-Terra.bat",
+        "  git checkout -- app\launcher\IMAN-Terra.bat",
+        "",
+        "Se der True, o defeito NAO e de finais de linha: leia os casos [FAIL]."
+    )
+}
+
+Write-Ok "launcher passa no teste de deteccao (5 de 5)"
 
 # --- payload do QGIS: estagiar e CONFERIR o SHA-256 -------------------------
 #
