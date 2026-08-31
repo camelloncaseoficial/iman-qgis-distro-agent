@@ -1,0 +1,17 @@
+# Finais de linha - D-IMAN-028/DB-18
+#
+# POR QUE ESTE ARQUIVO EXISTE
+# O launcher (app\launcher\IMAN-Terra.bat) so escolhe o QGIS que o instalador
+# embarcou se chegar ao disco com CRLF. O MESMO arquivo com finais de linha LF
+# faz 1 de 5 no tools\test-launcher-detection.ps1, contra 5 de 5 com CRLF
+# (medido em 2026-08-31 contra develop 868ec3e). O produto instala, abre e
+# parece corrigido - abrindo a versao errada do QGIS. Sem esta regra, o unico
+# que garante o CRLF e o core.autocrlf da maquina de quem clonou: um clone com
+# autocrlf=false ou input (padrao em Linux/macOS e em muito CI) reverte o fix
+# do DB-14 em silencio.
+#
+# Cirurgico de proposito: nada de "* text=auto" aqui. Renormalizar a arvore
+# inteira e fatia propria, nunca carona numa fatia de higiene.
+
+*.bat text eol=crlf
+*.cmd text eol=crlf
