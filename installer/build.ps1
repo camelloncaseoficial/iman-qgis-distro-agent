@@ -27,7 +27,7 @@
    5  payload do QGIS (ausente, download falhou ou SHA-256 nao confere)
    6  guarda DB-18 (o launcher nao passa no teste de deteccao do QGIS)
 
- REQUISITOS: PowerShell 5.1, git no PATH, Inno Setup 6.
+ REQUISITOS: PowerShell 5.1, git no PATH, Inno Setup 7 ou 6 (D-IMAN-030).
  (Este script roda na BANCADA do dev, nao na VM limpa. Os helpers que vao para a
  VM estao em tools\bl7\ e nao dependem de git/Python.)
 
@@ -460,6 +460,13 @@ $QgisProductCode = $pcMatch.Groups[1].Value
 
 Write-Step "Localizando o compilador do Inno Setup"
 
+# D-IMAN-030: majores do Inno Setup aceitas, EM ORDEM DE PRECEDENCIA.
+# A ordem e ARBITRADA (o 7 vence o 6), nao acidental: as duas majores convivem
+# lado a lado na mesma maquina, e deixar vencer "a que estiver primeiro no array
+# de caminhos" faria o compilador do release depender de ONDE cada uma foi
+# instalada - um build reprodutivel nao pode depender disso.
+$IsccMajoresAceitas = @(7, 6)
+
 function Find-Iscc([string]$Explicit) {
     if ($Explicit) {
         if (Test-Path -LiteralPath $Explicit) { return (Resolve-Path -LiteralPath $Explicit).Path }
@@ -467,46 +474,153 @@ function Find-Iscc([string]$Explicit) {
     }
     if ($env:ISCC -and (Test-Path -LiteralPath $env:ISCC)) { return $env:ISCC }
 
-    # Ordem deliberada: winget instala em LOCALAPPDATA\Programs (a memoria da
-    # fatia 1 presumiu Program Files e errou - por isso a busca e explicita).
-    $candidates = @(
-        (Join-Path $env:LOCALAPPDATA 'Programs\Inno Setup 6\ISCC.exe'),
-        (Join-Path ${env:ProgramFiles(x86)} 'Inno Setup 6\ISCC.exe'),
-        (Join-Path $env:ProgramFiles 'Inno Setup 6\ISCC.exe')
+    # Ordem deliberada dos diretorios: winget instala em LOCALAPPDATA\Programs (a
+    # memoria da fatia 1 presumiu Program Files e errou - por isso a busca e
+    # explicita); o instalador oficial do 7 desta bancada caiu em Program Files.
+    #
+    # A MAJOR e o laco de FORA, de proposito: um Inno 7 em Program Files tem de
+    # vencer um Inno 6 em LOCALAPPDATA, e nao o contrario.
+    $bases = @(
+        (Join-Path $env:LOCALAPPDATA 'Programs'),
+        ${env:ProgramFiles(x86)},
+        $env:ProgramFiles
     )
-    foreach ($c in $candidates) {
-        if ($c -and (Test-Path -LiteralPath $c)) { return $c }
+
+    foreach ($major in $IsccMajoresAceitas) {
+        foreach ($b in $bases) {
+            if (-not $b) { continue }
+            $c = Join-Path $b "Inno Setup $major\ISCC.exe"
+            if (Test-Path -LiteralPath $c) { return $c }
+        }
+
+        # Recurso seguinte: chave de desinstalacao do proprio Inno Setup.
+        $keys = @(
+            "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Inno Setup ${major}_is1",
+            "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Inno Setup ${major}_is1",
+            "HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Inno Setup ${major}_is1"
+        )
+        foreach ($k in $keys) {
+            try {
+                $loc = (Get-ItemProperty -Path $k -Name InstallLocation -ErrorAction Stop).InstallLocation
+                if ($loc) {
+                    $exe = Join-Path $loc 'ISCC.exe'
+                    if (Test-Path -LiteralPath $exe) { return $exe }
+                }
+            } catch { }
+        }
     }
 
-    # Ultimo recurso: chave de desinstalacao do proprio Inno Setup.
-    $keys = @(
-        'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Inno Setup 6_is1',
-        'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Inno Setup 6_is1',
-        'HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Inno Setup 6_is1'
-    )
-    foreach ($k in $keys) {
-        try {
-            $loc = (Get-ItemProperty -Path $k -Name InstallLocation -ErrorAction Stop).InstallLocation
-            if ($loc) {
-                $exe = Join-Path $loc 'ISCC.exe'
-                if (Test-Path -LiteralPath $exe) { return $exe }
-            }
-        } catch { }
-    }
-
+    # Ultimo recurso: o PATH. Aqui a major nao e escolhida por nos - vem quem
+    # estiver no PATH, e a validacao de versao logo abaixo decide se serve.
     $cmd = Get-Command 'ISCC.exe' -ErrorAction SilentlyContinue
     if ($cmd) { return $cmd.Source }
     return $null
 }
 
+# A VERSAO do compilador, medida NO COMPILADOR QUE SERA USADO.
+#
+# D-IMAN-030. MEDIDO em 2026-09-01 nesta bancada (Inno Setup 7.1.0) porque as
+# duas fontes obvias NAO servem:
+#   (Get-Item ISCC.exe).VersionInfo -> FileVersion e ProductVersion sao
+#                                      '0.0.0.0'. O binario do ISCC 7 nao
+#                                      carrega version info util.
+#   banner do ISCC sem argumentos   -> 'Inno Setup 7 Command-Line Compiler'.
+#                                      So a MAJOR; nem o '.1.0'.
+# O que serve e a linha que o proprio ISCC imprime ao compilar SEM /Q:
+#   'Compiler engine version: Inno Setup 7.1.0'
+# (o /Q da compilacao a suprime - por isso a sonda e uma chamada separada).
+#
+# A sonda manda compilar um .iss descartavel que aborta ainda no
+# preprocessador: a linha sai antes do erro, e a chamada inteira custou ~60 ms
+# na medicao.
+function Get-IsccVersao([string]$Exe) {
+    $probeIss = Join-Path $env:TEMP ("iman-iscc-probe-" + [Guid]::NewGuid().ToString('N') + ".iss")
+    $probeOut = "$probeIss.out"
+    # stderr num arquivo proprio: a sonda ABORTA de proposito, e o "Compile
+    # aborted." dela no console de um build BEM-SUCEDIDO so assustaria quem le.
+    $probeErr = "$probeIss.err"
+    try {
+        Set-Content -LiteralPath $probeIss -Value '#error iman-sonda-de-versao' -Encoding Ascii
+
+        # Start-Process com TIMEOUT de proposito: -IsccPath e $env:ISCC apontam
+        # para um executavel ARBITRARIO, e um build nunca pode ficar pendurado
+        # nele esperando um processo que nao vai terminar.
+        $p = Start-Process -FilePath $Exe -ArgumentList "`"$probeIss`"" `
+                           -RedirectStandardOutput $probeOut `
+                           -RedirectStandardError $probeErr -NoNewWindow -PassThru
+        if (-not $p.WaitForExit(15000)) {
+            try { $p.Kill() } catch { }
+            return $null
+        }
+        if (-not (Test-Path -LiteralPath $probeOut)) { return $null }
+
+        $texto = Get-Content -LiteralPath $probeOut -Raw
+        if (-not $texto) { return $null }
+        $m = [regex]::Match($texto, 'Compiler engine version:\s*Inno Setup\s+([0-9]+(?:\.[0-9]+)*)')
+        if ($m.Success) { return $m.Groups[1].Value }
+        return $null
+    } catch {
+        return $null
+    } finally {
+        Remove-Item -LiteralPath $probeIss -Force -ErrorAction SilentlyContinue
+        Remove-Item -LiteralPath $probeOut -Force -ErrorAction SilentlyContinue
+        Remove-Item -LiteralPath $probeErr -Force -ErrorAction SilentlyContinue
+    }
+}
+
 $Iscc = Find-Iscc $IsccPath
 if (-not $Iscc) {
-    Fail 2 "ISCC.exe (Inno Setup 6) nao encontrado" @(
+    Fail 2 "ISCC.exe (Inno Setup 7 ou 6) nao encontrado" @(
+        "Procurado: 'Inno Setup 7' e 'Inno Setup 6' em LOCALAPPDATA\Programs,",
+        "Program Files e Program Files (x86); nas chaves 'Inno Setup <major>_is1'",
+        "(HKCU, HKLM e WOW6432Node); e, por ultimo, no PATH.",
+        "",
         "Instale com:  winget install --id JRSoftware.InnoSetup -e",
         "Ou informe o caminho:  .\installer\build.ps1 -IsccPath 'C:\...\ISCC.exe'"
     )
 }
-Write-Ok $Iscc
+
+# FAIL-LOUD (D-IMAN-030): major desconhecida NAO segue com aviso. Compilar o
+# release com um compilador que nunca foi validado contra este .iss e
+# exatamente o risco que esta guarda existe para impedir - a falha apareceria
+# so na VM, ou pior, na maquina do usuario.
+$IsccVersao = Get-IsccVersao $Iscc
+if (-not $IsccVersao) {
+    Fail 2 "nao foi possivel determinar a versao do Inno Setup" @(
+        "Executavel: $Iscc",
+        "",
+        "A sonda manda o ISCC compilar um .iss descartavel e le a linha:",
+        "  'Compiler engine version: Inno Setup <versao>'",
+        "Nao sair essa linha significa que este executavel nao se comporta como",
+        "um ISCC - ou que e uma versao que nunca foi validada contra este .iss.",
+        "",
+        # Parenteses obrigatorios em torno da concatenacao: o ',' do array
+        # tem precedencia MAIOR que o '+' em PowerShell, e sem eles o
+        # "a", "b" + $x + "." vira um array de tres itens em vez de duas
+        # linhas (medido nesta fatia - a mensagem saiu quebrada em 3).
+        ("Versoes aceitas: Inno Setup major " + ($IsccMajoresAceitas -join ' ou ') + ".")
+    )
+}
+
+$IsccMajor = [int](($IsccVersao -split '\.')[0])
+if ($IsccMajoresAceitas -notcontains $IsccMajor) {
+    Fail 2 "Inno Setup $IsccVersao nao e uma versao aceita" @(
+        "Executavel: $Iscc",
+        # Parenteses: ver a nota de precedencia ',' x '+' logo acima.
+        ("Aceitas   : major " + ($IsccMajoresAceitas -join ' ou ') + "."),
+        "",
+        "O .iss deste produto so foi validado sob as majores acima. Seguir com um",
+        "compilador nao reconhecido produziria um release que ninguem checou, e o",
+        "defeito apareceria so na maquina do usuario. Por isso aqui e RECUSA, nao",
+        "aviso.",
+        "",
+        "Adotar uma major nova e decisao de toolchain (foi assim com o 7, em",
+        "D-IMAN-030): valide o .iss sob ela e so entao acrescente a major em",
+        "`$IsccMajoresAceitas."
+    )
+}
+
+Write-Ok "Inno Setup $IsccVersao  ($Iscc)"
 
 # --- compilacao --------------------------------------------------------------
 
@@ -589,7 +703,8 @@ $lines = @(
     "-----------------------------------------------------------------------",
     "",
     "QGIS na bancada       : $qgisOnBench",
-    "Compilador            : $Iscc",
+    "Compilador            : Inno Setup $IsccVersao",
+    "Compilador (caminho)  : $Iscc",
     "Data/hora do build    : $buildStamp",
     "",
     "-----------------------------------------------------------------------",
