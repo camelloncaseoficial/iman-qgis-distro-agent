@@ -159,9 +159,13 @@ const
     Lido em 2026-09-01 da tabela Property do MSI oficial
     QGIS-OSGeo4W-3.44.13-1.msi, cujo SHA-256 confere com o .sha256sum publicado
     em download.qgis.org. Confirmado tambem contra a chave ARP da bancada.
-    O valor anterior, da baseline 3.44.9, era
-    '{8397FA4A-7089-1014-9008-9EE76A62B1BC}' - GUIDS DIFERENTES entre patches
-    da mesma minor, que e justamente o que o DB-16 depende. }
+    O valor anterior, da baseline 3.44.9, era 8397FA4A-7089-1014-9008-9EE76A62B1BC
+    (escrito SEM chaves de proposito: em Pascal Script a chave de FECHAR
+    encerraria ESTE comentario no meio dele, e o compilador quebra com
+    'String error' - foi o que aconteceu na primeira tentativa desta fatia,
+    sob o Inno 7. Nao e incompatibilidade do 7: o 6 faria igual).
+    GUIDS DIFERENTES entre patches da mesma minor e justamente a premissa de
+    que o DB-16 depende. }
   QgisProductCode = '{740D7A65-CBA3-1014-A0B5-B03A9B7608F5}';
   ChaveArp = 'SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\';
 
