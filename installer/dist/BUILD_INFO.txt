@@ -3,21 +3,34 @@
 Este arquivo amarra o instalador ao commit que o gerou. Sem ele, um .exe
 numa VM e apenas um binario sem procedencia.
 
-Artefato              : Instituto-IMAN-IMAN-Terra-Setup-0.2.0.exe
-SHA-256               : A32476BEF697B22960BDE9676B94EF59AC1895D3B4659BAEE8832509BEDD4502
-Tamanho (bytes)       : 3117372
+Artefato              : Instituto-IMAN-IMAN-Terra-Setup-0.3.0.exe
+SHA-256               : 9211F2C06FE75D1E7F7CFA8B9CDFF299294650C789AD3EE718C36F498D0D1A96
+Tamanho (bytes)       : 585448952
 
-ProductVersion        : 0.2.0
-Commit                : 5fee5e125f9a924ac02a47facaed2529df5fc562
-Commit (curto)        : 5fee5e1
-Data do commit        : 2026-07-22T16:11:59-03:00
-Branch                : develop
-Build canonico        : SIM
+ProductVersion        : 0.3.0
+Commit                : be054209c9dbf4dc97efc0b482d1fb8e90cb5b2e
+Commit (curto)        : be05420
+Data do commit        : 2026-09-01T17:32:14-03:00
+Branch                : chore/013-inno7-toolchain
+Build canonico        : NAO  <<< artefato de branch de trabalho, nao de integracao
 
-QGIS LTR baseline     : 3.44.9   (versao suportada declarada)
-QGIS na bancada       : C:\Program Files\QGIS 3.44.9
-Compilador            : C:\Users\Francisco Camello\AppData\Local\Programs\Inno Setup 6\ISCC.exe
-Data/hora do build    : 2026-07-28 10:46:29 -03:00
+-----------------------------------------------------------------------
+QGIS EMBARCADO (D-IMAN-028 / via A2a)
+Este instalador NAO exige QGIS previamente instalado: ele instala o QGIS
+abaixo, offline, encadeando o MSI oficial nao modificado.
+
+QGIS embarcado        : 3.44.13
+Payload               : QGIS-OSGeo4W-3.44.13-1.msi
+Payload SHA-256       : 42E2F1A6047A827454BC991F8E8CAA069961B9CB4B877E1F5568A43D98844EB4
+Payload (bytes)       : 582197248
+ProductCode do QGIS   : {740D7A65-CBA3-1014-A0B5-B03A9B7608F5}
+Origem oficial        : https://download.qgis.org/downloads/QGIS-OSGeo4W-3.44.13-1.msi
+-----------------------------------------------------------------------
+
+QGIS na bancada       : C:\Program Files\QGIS 3.44.13
+Compilador            : Inno Setup 7.1.0
+Compilador (caminho)  : C:\Program Files\Inno Setup 7\ISCC.exe
+Data/hora do build    : 2026-09-01 17:32:22 -03:00
 
 -----------------------------------------------------------------------
 SOBRE REPRODUTIBILIDADE
@@ -38,5 +51,5 @@ pergunta, tambem necessaria: 'o arquivo que chegou na VM e exatamente este
 que eu gerei?' - contra download truncado, trocado ou corrompido.
 
 COMO CONFERIR NA VM (PowerShell 5.1):
-  Get-FileHash .\Instituto-IMAN-IMAN-Terra-Setup-0.2.0.exe -Algorithm SHA256
+  Get-FileHash .\Instituto-IMAN-IMAN-Terra-Setup-0.3.0.exe -Algorithm SHA256
 -----------------------------------------------------------------------
