@@ -20,7 +20,7 @@ REM fonte unica. Trocar la SEM trocar aqui faria o launcher parar de reconhecer
 REM o proprio payload e cair no fallback por curinga - exatamente o defeito que
 REM o DB-14 corrige. Por isso installer\build.ps1 RECUSA compilar se os dois
 REM valores divergirem: a checagem existe para tornar esse erro impossivel.
-set "QGIS_VERSION=3.44.9"
+set "QGIS_VERSION=3.44.13"
 for /f "tokens=1,2 delims=." %%a in ("%QGIS_VERSION%") do set "QGIS_MINOR=%%a.%%b"
 
 REM -- Layout: este .bat vive em <APP_HOME>\launcher\ --------------------------

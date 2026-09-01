@@ -339,10 +339,17 @@ Write-Step "Estagiando o payload do QGIS $QgisBaseline"
 
 # Hash oficial por versao. Um payload cuja versao nao esteja aqui e RECUSADO:
 # "nao conheco o hash" nunca pode virar "entao pode passar".
-# 3.44.9 conferido em 2026-07-31 contra o MSI baixado de download.qgis.org e
-# contra o pacote em cache da instalacao da bancada (mesmo ProductCode).
+# 3.44.9  conferido em 2026-07-31 contra o MSI baixado de download.qgis.org e
+#         contra o pacote em cache da instalacao da bancada (mesmo ProductCode).
+# 3.44.13 conferido em 2026-09-01 contra o arquivo de checksum OFICIAL
+#         https://download.qgis.org/downloads/QGIS-OSGeo4W-3.44.13-1.sha256sum
+#         (procedencia do proprio projeto QGIS, nao do arquivo baixado aqui) e
+#         batendo com o MSI em disco. Baseline desde a fatia #013.
+# Versoes antigas ficam: a tabela e um registro de procedencia, nao a escolha.
+# Quem escolhe a versao embarcada e o #define QgisBaselineVersion do .iss.
 $PayloadHashes = @{
-    '3.44.9' = '711D6DF99F450522A1E22755FCBFED65D5190C1E4C241793BC2F80FF1A2C24BA'
+    '3.44.9'  = '711D6DF99F450522A1E22755FCBFED65D5190C1E4C241793BC2F80FF1A2C24BA'
+    '3.44.13' = '42E2F1A6047A827454BC991F8E8CAA069961B9CB4B877E1F5568A43D98844EB4'
 }
 
 if (-not $PayloadHashes.ContainsKey($QgisBaseline)) {

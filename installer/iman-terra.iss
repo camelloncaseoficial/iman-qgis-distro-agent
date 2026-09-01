@@ -23,7 +23,14 @@
 ; significava "versao suportada declarada"; agora e o que o pacote INSTALA.
 ; Fonte unica com docs/distro-architecture.md. installer\build.ps1 le este
 ; define para estagiar o payload, conferir o SHA-256 e carimbar o BUILD_INFO.txt.
-#define QgisBaselineVersion "3.44.9"
+;
+; 3.44.9 -> 3.44.13 em 2026-09-01 (decisao do sponsor na fatia #013): a 3.44.13
+; passa a ser a baseline padrao. Trocar este numero OBRIGA a trocar junto, e o
+; build recusa se algum ficar para tras:
+;   - QgisProductCode        (bloco [Code] abaixo - e por VERSAO)
+;   - set QGIS_VERSION       (app\launcher\IMAN-Terra.bat)
+;   - $PayloadHashes         (installer\build.ps1)
+#define QgisBaselineVersion "3.44.13"
 #define Publisher "Instituto IMAN"
 #define PublisherDir "InstitutoIMAN"
 
@@ -149,8 +156,13 @@ const
   { ProductCode EXATO do payload embarcado. ATENCAO: e especifico da VERSAO -
     trocar QgisBaselineVersion OBRIGA a trocar este GUID junto, senao o "pulo"
     do M2a nunca casa e o instalador reconfigura o QGIS a cada execucao.
-    Medido em 2026-07-31 no MSI oficial QGIS-OSGeo4W-3.44.9-1.msi. }
-  QgisProductCode = '{8397FA4A-7089-1014-9008-9EE76A62B1BC}';
+    Lido em 2026-09-01 da tabela Property do MSI oficial
+    QGIS-OSGeo4W-3.44.13-1.msi, cujo SHA-256 confere com o .sha256sum publicado
+    em download.qgis.org. Confirmado tambem contra a chave ARP da bancada.
+    O valor anterior, da baseline 3.44.9, era
+    '{8397FA4A-7089-1014-9008-9EE76A62B1BC}' - GUIDS DIFERENTES entre patches
+    da mesma minor, que e justamente o que o DB-16 depende. }
+  QgisProductCode = '{740D7A65-CBA3-1014-A0B5-B03A9B7608F5}';
   ChaveArp = 'SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\';
 
 { O QGIS ja instalado E EXATAMENTE o do payload?
