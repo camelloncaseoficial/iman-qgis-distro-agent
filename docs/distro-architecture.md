@@ -40,10 +40,17 @@ iman-qgis-distro-agent/
 
 | | |
 |---|---|
-| **QGIS embarcado** | **3.44.9** (`QGIS-OSGeo4W-3.44.9-1.msi`, 541,14 MB) |
+| **QGIS embarcado** | **3.44.13** (`QGIS-OSGeo4W-3.44.13-1.msi`, 555,23 MB) |
 | Fonte única | `#define QgisBaselineVersion` em `installer/iman-terra.iss` |
 | Espelhos que mudam **junto** | `QgisProductCode` (bloco `[Code]` do `.iss`) · `set QGIS_VERSION` (`app/launcher/IMAN-Terra.bat`) · `$PayloadHashes` (`installer/build.ps1`) |
-| Versões **não verificadas** | 3.28 LTR, 3.34 LTR, 3.40 LTR, 3.44.x ≠ 3.44.9, e qualquer release não-LTR |
+| Versões **não verificadas** | 3.28 LTR, 3.34 LTR, 3.40 LTR, 3.44.x ≠ 3.44.13, e qualquer release não-LTR |
+
+> **Baseline trocada de `3.44.9` para `3.44.13` em 2026-09-01** (decisão do sponsor, fatia
+> #013). `ProductCode` lido da tabela `Property` do MSI oficial:
+> `{740D7A65-CBA3-1014-A0B5-B03A9B7608F5}` — o da `3.44.9` era `{8397FA4A-…}`. **GUIDs
+> diferentes entre patches da mesma minor** é exatamente a premissa de que o DB-16 depende.
+> SHA-256 conferido contra o [`.sha256sum` oficial do projeto QGIS](https://download.qgis.org/downloads/QGIS-OSGeo4W-3.44.13-1.sha256sum).
+> ⚠ A `3.44.13` **ainda não foi exercitada na VM limpa** — vale a regra do BL-7 abaixo.
 
 O `#define QgisBaselineVersion` **mudou de sentido** (`D-IMAN-028`/DB-12): era "versão suportada
 declarada", agora é **a versão que o pacote instala**. O `build.ps1` recusa compilar se o `.iss` e o

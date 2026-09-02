@@ -17,6 +17,12 @@
     "QGIS 3.34.15" < "QGIS 3.44.9"     -> escolhia a serie ERRADA
     "QGIS 3.44.12" < "QGIS 3.44.9"     -> porque '1' < '9'
 
+ (Esses dois exemplos sao as medicoes originais, da epoca em que o payload era
+ o 3.44.9.) Nenhuma versao rival esta mais escrita a mao nos casos: o rival de
+ mesma minor e derivado do payload e CONFERIDO - ver $RivalMesmaMinor. Trocar a
+ baseline sem isso deixaria o teste passando com 5 de 5 e insensivel ao defeito,
+ que e o pior resultado possivel para uma guarda de build.
+
  Por isso todo caso abaixo monta pelo menos DOIS QGIS e asseria QUAL foi
  escolhido - nunca apenas "achou alguma coisa".
 
@@ -39,7 +45,7 @@
 param(
     # Versao que o launcher deve preferir. Espelha QGIS_VERSION no .bat e
     # QgisBaselineVersion no .iss.
-    [string]$VersaoPayload = '3.44.9',
+    [string]$VersaoPayload = '3.44.13',
 
     # Launcher a testar. So mude para conferir a SENSIBILIDADE do teste:
     # apontando para a rotina ANTIGA, os casos M2b/M3/M3+ tem de FALHAR.
@@ -90,29 +96,54 @@ function Get-EscolhaDoLauncher {
     return ($linha -replace '^QGIS_EXE=', '').Trim()
 }
 
+# Rival de MESMA MINOR usado nos casos M2b e M3+.
+#
+# Ele so serve se ordenar ANTES do payload POR TEXTO - que e a ordem em que o
+# `for /d` do cmd enumera os diretorios. Se ordenar DEPOIS, a rotina antiga
+# tambem acertaria, o caso passaria por acaso e o teste deixaria de ser
+# evidencia de coisa alguma. Por isso a escolha e CONFERIDA aqui, nao presumida:
+# uma baseline futura que quebre a premissa para o teste em vez de silenciar.
+$RivalMesmaMinor = '3.44.12'
+if ($RivalMesmaMinor -eq $VersaoPayload) { $RivalMesmaMinor = '3.44.1' }
+
+if ([string]::CompareOrdinal("QGIS $RivalMesmaMinor", "QGIS $VersaoPayload") -ge 0) {
+    Write-Host ""
+    Write-Host "  TESTE INVALIDO para o payload $VersaoPayload" -ForegroundColor Red
+    Write-Host ""
+    Write-Host "    Rival de mesma minor: QGIS $RivalMesmaMinor" -ForegroundColor Yellow
+    Write-Host "    Ele NAO ordena antes de 'QGIS $VersaoPayload' por texto, entao os" -ForegroundColor Yellow
+    Write-Host "    casos M2b/M3+ passariam mesmo com a rotina ANTIGA - e o teste" -ForegroundColor Yellow
+    Write-Host "    deixaria de detectar o defeito do DB-14." -ForegroundColor Yellow
+    Write-Host ""
+    Write-Host "    Escolha um rival 3.44.x que ordene ANTES do payload e ajuste" -ForegroundColor Yellow
+    Write-Host "    `$RivalMesmaMinor neste arquivo." -ForegroundColor Yellow
+    Write-Host ""
+    exit 1
+}
+
 $casos = @(
     @{
-        Nome     = 'M2b - payload 3.44.9 convivendo com 3.44.12 (o caso comum no campo)'
-        Versoes  = @('3.44.9', '3.44.12')
+        Nome     = "M2b - payload $VersaoPayload convivendo com $RivalMesmaMinor (o caso comum no campo)"
+        Versoes  = @($VersaoPayload, $RivalMesmaMinor)
         Esperado = "QGIS $VersaoPayload"
-        Porque   = "'QGIS 3.44.12' ordena ANTES de 'QGIS 3.44.9' ('1' < '9'): a rotina antiga pegava a 3.44.12"
+        Porque   = "'QGIS $RivalMesmaMinor' ordena ANTES de 'QGIS $VersaoPayload' por TEXTO: a rotina antiga pegava a $RivalMesmaMinor"
     },
     @{
         Nome     = 'M3 - payload convivendo com minor mais antiga (3.34.15)'
-        Versoes  = @('3.34.15', '3.44.9')
+        Versoes  = @('3.34.15', $VersaoPayload)
         Esperado = "QGIS $VersaoPayload"
         Porque   = "'QGIS 3.34.15' ordena primeiro: a rotina antiga abria a serie ERRADA"
     },
     @{
         Nome     = 'M3+ - payload no meio de tres versoes alheias'
-        Versoes  = @('3.34.15', '3.40.3', '3.44.9', '3.44.12')
+        Versoes  = @('3.34.15', '3.40.3', $VersaoPayload, $RivalMesmaMinor)
         Esperado = "QGIS $VersaoPayload"
         Porque   = 'com quatro instalacoes o acerto por acaso fica improvavel'
     },
     @{
-        Nome     = 'Fallback de mesma minor - payload AUSENTE, existe 3.44.12'
-        Versoes  = @('3.34.15', '3.44.12')
-        Esperado = 'QGIS 3.44.12'
+        Nome     = "Fallback de mesma minor - payload AUSENTE, existe $RivalMesmaMinor"
+        Versoes  = @('3.34.15', $RivalMesmaMinor)
+        Esperado = "QGIS $RivalMesmaMinor"
         Porque   = 'sem o payload, mesma minor (3.44.x) deve vencer uma serie diferente'
     },
     @{

@@ -3,6 +3,11 @@
 Fatos não óbvios do ambiente onde a distro é montada/verificada. Complementa
 `reference_qgis_profile_and_packaging.md`.
 
+> **Re-verificado de novo em 2026-09-01 (fatia #013).** Três fatos mudaram desde 2026-07-22:
+> o **Inno Setup 6 não existe mais** nesta máquina (só o **7.1.0**), o QGIS da bancada agora é
+> **3.44.13** (e virou a baseline embarcada), e o usuário do Windows é `Francisco` — **sem**
+> espaço. A nota de 2026-07-22 dizia `C:\Users\Francisco Camello\...` e estava errada.
+
 > **Re-verificado em 2026-07-22 (fatia #007).** Os caminhos anteriores (fatia 1, 2026-07-05)
 > estavam **STALE nos três**: OSGeo4W foi REMOVIDO desta máquina e o usuário do Windows tem
 > espaço no nome. Os caminhos abaixo foram conferidos no disco nesta data — se algum falhar,
@@ -12,12 +17,14 @@ Fatos não óbvios do ambiente onde a distro é montada/verificada. Complementa
 
 - **`C:\OSGeo4W` NÃO EXISTE MAIS nesta máquina** (removido; confirmado 2026-07-22). Qualquer
   receita que comece por `C:\OSGeo4W\...` está morta aqui.
-- O QGIS vivo é **standalone**: `C:\Program Files\QGIS 3.44.9\`
-  - GUI: `C:\Program Files\QGIS 3.44.9\bin\qgis-ltr-bin.exe`
-  - **PyQGIS headless**: `C:\Program Files\QGIS 3.44.9\bin\python-qgis-ltr.bat <script.py>`
+- O QGIS vivo é **standalone**: `C:\Program Files\QGIS 3.44.13\` (era `3.44.9` até 2026-09-01;
+  a `3.44.9` foi **removida** desta máquina e não está mais em disco)
+  - GUI: `C:\Program Files\QGIS 3.44.13\bin\qgis-ltr-bin.exe`
+  - **PyQGIS headless**: `C:\Program Files\QGIS 3.44.13\bin\python-qgis-ltr.bat <script.py>`
     (a receita headless sobreviveu — só mudou de casa). Usado para gerar `welcome.qgz` e o
     smoke estático.
-- **Baseline suportada declarada: QGIS LTR 3.44.x** (testada: 3.44.9) — ver
+- **Baseline EMBARCADA: QGIS LTR 3.44.13** desde a fatia #013 (decisão do sponsor, 2026-09-01);
+  a `3.44.13` **ainda não passou pela VM limpa** — a versão certificada é a que rodou o BL-7. Ver
   `docs/distro-architecture.md`. O launcher aceita qualquer `QGIS *` que encontrar; isso é
   detecção permissiva, **não** promessa de compatibilidade.
 - Smoke GUI sem tocar o perfil do usuário: `qgis-ltr-bin.exe --profiles-path <TEMP>
@@ -26,12 +33,18 @@ Fatos não óbvios do ambiente onde a distro é montada/verificada. Complementa
 
 ## Instalador
 
-- **Inno Setup 6.7.3** — reinstalado em 2026-07-22 via
-  `winget install --id JRSoftware.InnoSetup -e`.
-- Compilador (caminho REAL, conferido):
-  `C:\Users\Francisco Camello\AppData\Local\Programs\Inno Setup 6\ISCC.exe`
-  — **com espaço** em "Francisco Camello" (a nota antiga dizia `C:\Users\Francisco\...` e
-  estava errada) e **NÃO** em Program Files / Program Files (x86).
+- **Inno Setup 7.1.0**, e **NENHUM Inno 6** — conferido em 2026-09-01 nos três caminhos padrão,
+  nas chaves ARP e no PATH. A nota anterior (6.7.3 em `C:\Users\Francisco Camello\...`) está
+  **morta nos dois pontos**: a major e o caminho.
+- Compilador (caminho REAL, conferido): `C:\Program Files\Inno Setup 7\ISCC.exe`
+  — em **Program Files**, não em `LOCALAPPDATA\Programs`, e **o ISCC NÃO está no PATH**.
+- O `build.ps1` aceita as majores **7 e 6**, com o **7 vencendo** quando as duas existem
+  (`D-IMAN-030`). Major desconhecida é **recusa**, não aviso.
+- **A versão do ISCC 7 não sai de `VersionInfo` (é `0.0.0.0`) nem do banner (só a major).**
+  Sai da linha `Compiler engine version: Inno Setup 7.1.0`, que o ISCC imprime ao compilar
+  **sem `/Q`**. Detalhe medido em `docs/verify/013-inno7-toolchain/README.md`.
+- O ISCC 7 imprime **`Non-commercial use only`** em todo build. STOP-AND-FLAG de licenciamento
+  aberto com o sponsor — não é decisão da crew.
 - Build: **não chamar o ISCC na mão.** Usar `installer\build.ps1`, que localiza o ISCC,
   recusa árvore suja/branch errada e emite `installer/dist/BUILD_INFO.txt` amarrando
   artefato ↔ commit ↔ versão ↔ SHA-256.
