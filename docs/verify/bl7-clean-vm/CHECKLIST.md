@@ -44,7 +44,7 @@ são curtas e focadas.
 | Rodada | Estado inicial da máquina | O que prova | Passos |
 |---|---|---|---|
 | **M1** | **sem QGIS nenhum** | **o caminho feliz principal** — instalar um arquivo e abrir | 1 a 15 |
-| **M2a** | QGIS **exatamente 3.44.9** já instalado | o instalador **pula** o QGIS (e prova que pulou) | 16 |
+| **M2a** | QGIS **exatamente 3.44.13** já instalado | o instalador **pula** o QGIS (e prova que pulou) | 16 |
 | **M2b** | QGIS **3.44.12** já instalado | **coexistência** + o launcher abre o **nosso** QGIS | 17 |
 | **M4** | falha forçada no meio da instalação do QGIS | **aborta** deixando a máquina como estava | 18 |
 
@@ -79,7 +79,7 @@ navegador dentro da VM**.
 > **Não copie por pasta compartilhada nem por área de transferência.** Só o download por HTTP marca
 > o arquivo com o *Mark-of-the-Web*, que é o que faz o **SmartScreen real** aparecer.
 
-> ⚠ **O arquivo agora tem ~544 MB** (o QGIS vai dentro). Um download interrompido é muito mais
+> ⚠ **O arquivo agora tem ~558 MB** (o QGIS vai dentro). Um download interrompido é muito mais
 > provável que antes — por isso a conferência abaixo deixou de ser formalidade.
 
 ```powershell
@@ -120,7 +120,7 @@ que mora a armadilha.
 
 **Faça, nesta ordem, ANTES de instalar o IMAN Terra:**
 
-1. Instale o **QGIS oficial 3.44.9** na VM (é o mesmo payload; instale-o **à mão**, só para sujar o
+1. Instale o **QGIS oficial 3.44.13** na VM (é o mesmo payload; instale-o **à mão**, só para sujar o
    perfil).
 2. **Abra o QGIS uma vez**, mude uma configuração visível (um tema, um painel), **crie e salve um
    projeto**, e **feche**.
@@ -204,7 +204,7 @@ cd $env:USERPROFILE\Desktop\bl7
 |---|---|---|
 | 4.1 | Diretório de instalação: `________________________________` | `PASS` se `C:\Program Files\IMAN Terra` |
 | 4.2 | Atalho do Menu Iniciar existe para **todos os usuários** | `PASS / FAIL / N/E` |
-| 4.3 | O QGIS foi instalado em `C:\Program Files\QGIS 3.44.9` | `PASS / FAIL / N/E` |
+| 4.3 | O QGIS foi instalado em `C:\Program Files\QGIS 3.44.13` | `PASS / FAIL / N/E` |
 
 - Screenshot: `04-local-instalacao.png`
 - Asserção: **S6**
@@ -230,7 +230,7 @@ cd $env:USERPROFILE\Desktop\bl7
 | 5.4 | No fim da etapa do QGIS, apareceu algum **modal exigindo clique**? `SIM / NÃO` | `RELATADO` — esperado `NÃO`; se `SIM`, é achado |
 | 5.5 | A janela do IMAN Terra ficou "Não Respondendo" em algum momento? `SIM / NÃO` | `RELATADO` — o texto **avisa** que pode |
 | 5.6 | **Tempo total** da instalação (do duplo-clique ao fim): `______ min` | `RELATADO` |
-| 5.7 | `C:\Program Files\QGIS 3.44.9\bin\qgis-ltr-bin.exe` existe | `PASS / FAIL / N/E` |
+| 5.7 | `C:\Program Files\QGIS 3.44.13\bin\qgis-ltr-bin.exe` existe | `PASS / FAIL / N/E` |
 | 5.8 | O QGIS aparece em Configurações → Aplicativos | `PASS / FAIL / N/E` |
 | 5.9 | A instalação terminou **sem pedir reinício** | `PASS / FAIL / N/E` |
 
@@ -453,10 +453,34 @@ nunca recebe template novo (nem CRS, nem QSS, nem splash).
 
 ---
 
-# RODADA M2a — QGIS 3.44.9 já instalado
+# RODADA M2a — QGIS 3.44.13 já instalado
 
-**Prepare:** snapshot limpa + instale **à mão** o **QGIS oficial 3.44.9**. Não instale o IMAN Terra
+**Prepare:** snapshot limpa + instale **à mão** o **QGIS oficial 3.44.13**. Não instale o IMAN Terra
 ainda.
+
+> ### ⚠ Só nesta rodada o instalador é lançado pela linha de comando
+>
+> O passo **16.4** precisa do **log do Inno Setup**, e esse log só existe se o instalador for
+> lançado com a flag `/LOG`. Crie a pasta e lance assim:
+>
+> ```powershell
+> New-Item -ItemType Directory -Force C:\bl7 | Out-Null
+> Start-Process .\Instituto-IMAN-IMAN-Terra-Setup-<versao>.exe -ArgumentList '/LOG=C:\bl7\m2a-setup.log' -Verb RunAs
+> ```
+>
+> O UAC aparece normalmente — clique **Sim** — e daí em diante o wizard é o mesmo, com os mesmos
+> cliques.
+>
+> **O caminho `C:\bl7\` é curto de propósito.** O Inno 7 passou a gravar os caminhos **dentro do
+> log** em forma *extended-length* (`\\?\C:\...`); um caminho curto e sem espaços elimina a dúvida
+> de "é esse arquivo mesmo?" na hora de abrir. **Não presuma a forma: anote o caminho literal.**
+>
+> - Caminho do log **literalmente como apareceu**: `________________________________`
+>
+> ⚠ **Isto NÃO vale para as outras rodadas.** O **§2** depende do **duplo clique** (o SmartScreen
+> real só aparece com o *Mark-of-the-Web*, e lançar por linha de comando pode não disparar) e o
+> **§3 conta prompts de UAC**. A M2a não afere nenhum dos dois — por isso a mudança de lançamento
+> fica presa aqui. **Se ao executar você perceber que ela vazou para outra rodada, PARE e relate.**
 
 ## 16. O instalador **pula** o QGIS — e prova que pulou
 
@@ -467,22 +491,81 @@ ainda.
 > **ainda termina bem** — só que tendo reconfigurado o QGIS do usuário. **Por isso o teste é de
 > tempo e de log, não de resultado final.**
 
-**Faça:** anote a hora, instale o IMAN Terra, anote a hora do fim.
+**Faça:** anote a hora, instale o IMAN Terra (com `/LOG`, como acima), anote a hora do fim.
 
 | # | Asserção | Resultado |
 |---|---|---|
 | 16.1 | **Tempo total**: `______` — deve ser **muito menor** que o da rodada M1 (passo 5.1) | `PASS / FAIL / N/E` |
 | 16.2 | **Não** apareceu a etapa demorada de instalação do QGIS | `PASS / FAIL / N/E` |
-| 16.3 | O QGIS **continua na mesma versão** (3.44.9) e a **data de modificação** de `C:\Program Files\QGIS 3.44.9` **não mudou** | `PASS / FAIL / N/E` |
-| 16.4 | **Não** foi criado `%TEMP%\qgis-install.log` (ou ele é da instalação manual anterior) | `PASS / FAIL / N/E` |
+| 16.3 | O QGIS **continua na mesma versão** (3.44.13) e a **data de modificação** de `C:\Program Files\QGIS 3.44.13` **não mudou** | `PASS / FAIL / N/E` |
+| 16.4 | **Qual das duas linhas** do instalador apareceu no log — ver o quadro logo abaixo | `PASS / FAIL / N/E` |
 | 16.5 | O IMAN Terra abre normalmente | `PASS / FAIL / N/E` |
 
 ```powershell
-(Get-Item 'C:\Program Files\QGIS 3.44.9').LastWriteTime
-Get-ChildItem $env:TEMP -Filter 'qgis-install.log' | Select-Object FullName, LastWriteTime
+(Get-Item 'C:\Program Files\QGIS 3.44.13').LastWriteTime
 ```
 
-- Screenshot: `16-m2a-pulou.png` · Caso: **M2a**
+### 16.4 — asserção **enumerada**: qual das duas linhas o log trouxe
+
+> #### ⚠ Por que este passo deixou de procurar arquivo em `%TEMP%`
+>
+> A versão anterior mandava conferir que **não existe** `%TEMP%\qgis-install.log`. Isso **nunca
+> provou nada**. O log do MSI é escrito em `{tmp}` do Inno (`installer\iman-terra.iss`, linha 295:
+> `CaminhoLog := ExpandConstant('{tmp}\qgis-install.log')`), e `{tmp}` é um subdiretório **por
+> execução** debaixo de `%TEMP%` (`...\is-XXXXXXX.tmp\`) que o **Inno apaga ao sair**.
+>
+> Resultado: a busca volta **vazia nos dois mundos** — com o pulo funcionando **e** com ele
+> quebrado. E **`-Recurse` não conserta**: o diretório já não existe quando o comando roda.
+> Medido nesta bancada em 2026-09-02, na rodada com o pulo **funcionando**: `{tmp}` era
+> `...\Temp\is-4RYMAKQ43I.tmp`, sumiu ao fim, a busca original devolveu `0` e a busca com
+> `-Recurse` devolveu `0` também. Um `PASS` ali seria **falso**, e falso **exatamente** no
+> caminho de falha silenciosa que o §16 existe para pegar.
+>
+> O conserto não é buscar melhor: é trocar **ausência de arquivo** (que os dois mundos produzem)
+> por **presença de um valor que discrimina**.
+
+As duas linhas abaixo são ramos **mutuamente exclusivos** do mesmo trecho do instalador
+(`installer\iman-terra.iss`, linhas **220** e **231**): **uma delas sai sempre**.
+
+```powershell
+Select-String -Path C:\bl7\m2a-setup.log -Pattern 'PULANDO|Encadeando'
+```
+
+- **Trecho LITERAL da linha encontrada** — copie do log, com o carimbo de hora:
+
+  `______________________________________________________________________________`
+
+| Se a linha encontrada for… | O que significa | Veredito de 16.4 |
+|---|---|---|
+| `QGIS 3.44.13 ({740D7A65-CBA3-1014-A0B5-B03A9B7608F5}) ja instalado: PULANDO o encadeamento.` | o instalador **pulou** o encadeamento — é o comportamento que esta rodada existe para provar | `PASS` |
+| `Encadeando o instalador oficial do QGIS 3.44.13...` | o instalador **encadeou** o MSI mesmo com o QGIS já instalado: o `DB-16` **falhou** e o QGIS do usuário foi **reconfigurado** | `FAIL` — achado grave, transcreva tudo |
+| **nenhuma das duas** | o log não foi gerado, ou o instalador não chegou ao `PrepareToInstall` | `N/E` — conserte o lançamento e refaça. **Não** marque `PASS` |
+
+> **Um `SIM` não serve aqui.** É o trecho literal que distingue os dois mundos; um veredito sem
+> ele volta a ser a asserção cega que este passo acabou de substituir.
+
+> #### Estado da validação deste passo (bancada do dev, 2026-09-02)
+>
+> A asserção nova foi **exercitada**, não só escrita:
+>
+> - **Flag de log confirmada:** `/LOG=<caminho>` no **Inno Setup 7.1.0** cria o arquivo. O próprio
+>   log se identifica na 2ª linha: `Setup version: Inno Setup version 7.1.0 (32-bit)`.
+> - **As chamadas `Log()` do bloco `[Code]` chegam nesse arquivo**, com carimbo de hora na frente.
+> - **Texto já expandido** (o `.iss` usa `{#QgisBaselineVersion}`; no arquivo sai `3.44.13`), como
+>   saiu de verdade:
+>   `2026-09-02 10:16:50.490   QGIS 3.44.13 ({740D7A65-CBA3-1014-A0B5-B03A9B7608F5}) ja instalado: PULANDO o encadeamento.`
+> - **O ramo `PULANDO` foi observado de verdade**, rodando o instalador canônico `0.3.0` nesta
+>   bancada — que já tem o QGIS 3.44.13 e o `ProductCode` na ARP (`HKLM64`). Saída `exit 0`, e
+>   **só** a linha do pulo apareceu: a linha `Encadeando` **não** está no mesmo log.
+> - **Limite honesto 1:** a bancada rodou com `/VERYSILENT`; este passo roda o **wizard
+>   interativo**. `/LOG` e `Log()` não dependem do nível de UI, mas essa **equivalência não foi
+>   medida** aqui.
+> - **Limite honesto 2 — o ramo `Encadeando` NÃO é testável nesta bancada:** o `ProductCode` do
+>   QGIS 3.44.13 está presente e o instalador sempre pula. Esse ramo só se observa na **rodada
+>   M1** (máquina sem QGIS nenhum) — **é lá que ele tem de ser conferido**, e é lá que a segunda
+>   linha da tabela acima deixa de ser hipótese.
+
+- Screenshot: `16-m2a-pulou.png` · Caso: **M2a** · Asserção: **DB-16**
 
 ---
 
@@ -493,18 +576,38 @@ Get-ChildItem $env:TEMP -Filter 'qgis-install.log' | Select-Object FullName, Las
 
 ## 17. Coexistência — e o launcher abre o **nosso** QGIS
 
-> **É aqui que o fix do `DB-14` se prova no produto.** `3.44.9` e `3.44.12` têm `ProductCode` **e**
+> **É aqui que o fix do `DB-14` se prova no produto.** `3.44.13` e `3.44.12` têm `ProductCode` **e**
 > `UpgradeCode` diferentes: o MSI oficial os trata como produtos sem relação e instala **lado a
 > lado** (`D-IMAN-028`/**DB-13**). Isso é **não destrutivo** — mas cria a ambiguidade "qual QGIS
-> abrir?", e a rotina antiga do launcher escolhia **`3.44.12`**, porque a ordem é alfabética por
-> texto e `'1' < '9'`.
+> abrir?", e a rotina antiga do launcher escolhia **`3.44.12`**: ela pegava o **primeiro**
+> diretório `QGIS *` na ordem em que o `for /d` do `cmd` enumera, que é **ordem de texto**, e
+> `"QGIS 3.44.12"` vem **antes** de `"QGIS 3.44.13"` porque `'2' < '3'`.
+
+> ### A rival `3.44.12` não é resíduo — ela é a rival **por desenho**
+>
+> Repare que a **razão** mudou junto com a baseline: com o payload anterior, o que
+> ordenava a rival antes dele era `'1' < '9'`; com o payload `3.44.13`, é `'2' < '3'`. A conclusão
+> sobreviveu, a explicação não — e é a explicação que faz alguém saber o que conferir da próxima
+> vez. O que o §17 depende não é de nenhum desses dois pares, e sim da **propriedade**:
+>
+> > **A rival de mesma minor só serve enquanto ordenar ANTES do payload por texto.** Se ordenar
+> > **depois**, a rotina **antiga** também acertaria: o §17 passaria **por acaso**, deixaria de
+> > testar o `DB-14` e viraria ruído — um `PASS` que não prova nada.
+>
+> **Se uma baseline futura inverter isso, TROQUE A RIVAL — não silencie o passo.** Escolha um
+> `3.44.x` que ordene antes do payload por texto e atualize os passos 17.1–17.4 junto.
+>
+> Essa mesma propriedade **já é guardada em código**: `tools/test-launcher-detection.ps1` (bloco
+> logo acima de `$casos`) deriva a rival do payload, compara com `CompareOrdinal` e **aborta com
+> `exit 1`** — `TESTE INVALIDO para o payload <versao>` — se a premissa cair. Roteiro manual e
+> guarda automatizada protegem a mesma coisa **de propósito**: quem mexer numa encontra a outra.
 
 | # | Asserção | Resultado |
 |---|---|---|
-| 17.1 | A instalação **prossegue** e instala o `3.44.9` | `PASS / FAIL / N/E` |
-| 17.2 | **As DUAS pastas existem**: `C:\Program Files\QGIS 3.44.9` **e** `QGIS 3.44.12` | `PASS / FAIL / N/E` |
+| 17.1 | A instalação **prossegue** e instala o `3.44.13` | `PASS / FAIL / N/E` |
+| 17.2 | **As DUAS pastas existem**: `C:\Program Files\QGIS 3.44.13` **e** `QGIS 3.44.12` | `PASS / FAIL / N/E` |
 | 17.3 | O `3.44.12` do usuário **continua funcionando** (abra-o pelo atalho dele) | `PASS / FAIL / N/E` |
-| 17.4 | **O IMAN Terra abre o `3.44.9`** — não o `3.44.12` | `PASS / FAIL / N/E` |
+| 17.4 | **O IMAN Terra abre o `3.44.13`** — não o `3.44.12` | `PASS / FAIL / N/E` |
 
 **Como provar o 17.4 sem depender de olho:** com o IMAN Terra aberto, rode
 
@@ -512,7 +615,7 @@ Get-ChildItem $env:TEMP -Filter 'qgis-install.log' | Select-Object FullName, Las
 Get-Process qgis-ltr-bin, qgis-bin -ErrorAction SilentlyContinue | Select-Object Id, Path
 ```
 
-- Caminho observado: `________________________________` → **PASS só se contiver `QGIS 3.44.9`**
+- Caminho observado: `________________________________` → **PASS só se contiver `QGIS 3.44.13`**
 - Screenshot: `17-m2b-coexistencia.png` · Caso: **M2b**
 
 > **`D-IMAN-028`/DB-13 e DB-11 permanecem decisões do sponsor.** Este passo **mede** a coexistência;
