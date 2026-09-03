@@ -276,7 +276,8 @@ Write-Ok "launcher e .iss concordam em QGIS $QgisBaseline"
 # escolhe. As duas protegem o mesmo invariante ("o produto abre o QGIS que
 # embarcamos"), e a diferenca importa: o .bat so se comporta como corrigido se
 # chegar ao disco com CRLF. O MESMO arquivo com finais de linha LF cai de
-# 5 de 5 para 1 de 5 casos (medido em 2026-08-31) e volta a abrir a versao
+# 5 de 5 para 1 de 5 casos (medido em 2026-08-31, quando o teste tinha 5
+# casos; hoje tem 6 - o placar quem da e o teste) e volta a abrir a versao
 # errada - sem um ruido. O .gitattributes da raiz impede o LF no checkout;
 # esta guarda e a rede que prova, a cada build, que ele impediu.
 #
@@ -308,11 +309,11 @@ if ($DetectExit -ne 0) {
     Fail 6 "o launcher NAO passa no teste de deteccao do QGIS" @(
         "Teste    : tools\test-launcher-detection.ps1   (exit $DetectExit)",
         "Launcher : $LauncherPath",
-        "Placar   : o esperado e 5 de 5; veja os casos [FAIL] logo acima.",
+        "Placar   : o esperado e TODOS; veja os casos [FAIL] logo acima.",
         "",
         "D-IMAN-028/DB-18. CAUSA MAIS PROVAVEL: o .bat chegou ao disco com",
         "finais de linha LF em vez de CRLF. Sob LF este launcher cai para",
-        "1 de 5 casos e reabre o defeito do DB-14 - em silencio.",
+        "1 de 5 casos (medicao de 2026-08-31) e reabre o DB-14 - em silencio.",
         "",
         "Confira com uma linha (tem de imprimir True):",
         "  (Get-Content -Raw app\launcher\IMAN-Terra.bat).Contains([char]13)",
@@ -327,7 +328,7 @@ if ($DetectExit -ne 0) {
     )
 }
 
-Write-Ok "launcher passa no teste de deteccao (5 de 5)"
+Write-Ok "launcher passa no teste de deteccao (placar completo acima)"
 
 # --- payload do QGIS: estagiar e CONFERIR o SHA-256 -------------------------
 #
