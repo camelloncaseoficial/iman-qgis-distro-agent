@@ -29,13 +29,26 @@ def _fit(sym, box_w, box_h, frac):
 
 
 def wizard(path, size, bg, frac, vpos):
-    canvas = Image.new("RGB", size, bg)
+    """`bg=None` => fundo TRANSPARENTE, com alfa real (D-IMAN-028/DB-21).
+
+    POR QUE ALFA E NAO UMA COR: a pagina do wizard do Inno e `clWindow`, cor do
+    tema do Windows - medida em 2026-09-03 num build real desta bancada, veio
+    `#FFFFFF`, que NAO e token da paleta oficial. Cravar qualquer cor de fundo
+    no PNG produz uma chapa visivel assim que a pagina nao for exatamente essa
+    cor (tema escuro, alto contraste, outra versao do Inno). Com alfa real +
+    `WizardImageAlphaFormat` no `.iss`, o simbolo assenta sobre a cor que a
+    pagina tiver. Ver `docs/verify/015-db21-wizard/`.
+    """
+    if bg is None:
+        canvas = Image.new("RGBA", size, (0, 0, 0, 0))
+    else:
+        canvas = Image.new("RGB", size, bg)
     s = _fit(SYM, size[0], size[1], frac)
     x = (size[0] - s.width) // 2
     y = int(size[1] * vpos - s.height / 2)
     canvas.paste(s, (x, y), s)
     canvas.save(path)
-    print("wizard:", os.path.basename(path), size, "bg", bg)
+    print("wizard:", os.path.basename(path), size, "bg", bg if bg else "TRANSPARENTE (RGBA)")
 
 
 def plugin_banner():
@@ -50,6 +63,8 @@ def plugin_banner():
 
 if __name__ == "__main__":
     wizard(os.path.join(A, "wizard-large.png"), (410, 797), BRAND, 0.72, 0.34)
-    wizard(os.path.join(A, "wizard-small.png"), (138, 140), LIGHT, 0.74, 0.5)
+    # wizard-small: fundo TRANSPARENTE (DB-21). O `LIGHT` #EBEEE8 que estava
+    # aqui e o que produzia a chapa cinza no canto do wizard.
+    wizard(os.path.join(A, "wizard-small.png"), (138, 140), None, 0.74, 0.5)
     plugin_banner()
     print("OK — mark preservado; fundos/banner na paleta nova (INTERIM).")

@@ -147,8 +147,16 @@ receita de regeneração). Nada de raster de trabalho solto em `docs/`.
 - `iman-symbol.png` — símbolo oficial (folha + globo), transparente — master dos ícones.
 - `icon-iman-terra.png` / `icon-iman-terra.ico` — ícone do atalho/instalador, **regerado do símbolo
   oficial**: transparente, multi-resolução (16/24/32/48/64/128/256).
-- `wizard-large.png` / `wizard-small.png` — imagens do wizard do instalador Inno (símbolo sobre
-  `brand.primary-deep` / fundo claro).
+- `wizard-large.png` / `wizard-small.png` — imagens do wizard do instalador Inno: o grande
+  traz o símbolo sobre `brand` (`#103D29`); o pequeno tem **fundo transparente** (alfa real).
+
+> **O logo do wizard não carrega cor de fundo (`D-IMAN-028`/DB-21, 2026-09-03).** O `wizard-small.png`
+> era RGB sem alfa, com `#EBEEE8` cravado nos pixels, e isso aparecia como uma **chapa cinza**
+> atrás do logo em toda página interna do instalador. A página do wizard é `clWindow` — cor do
+> **tema do Windows**, medida em `#FFFFFF` num build real — e `#FFFFFF` **não é token desta paleta**.
+> Repintar o PNG com a cor da página só mudaria a chapa de lugar no próximo tema; por isso o fundo
+> saiu do arquivo e virou **alfa**, com `WizardImageAlphaFormat=defined` no `.iss`. Evidência
+> antes/depois em `docs/verify/015-db21-wizard/`.
 - `logo-iman.png` — logo institucional (arte própria IMAN).
 - `backgrounds/bg-iman-branco.jpeg` / `backgrounds/bg-iman-verde.jpeg` — fundos institucionais oficiais.
 

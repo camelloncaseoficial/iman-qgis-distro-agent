@@ -88,6 +88,21 @@ WizardStyle=modern
 ; a arte oficial entra so na superficie que o no-fork alcanca (wizard do instalador).
 WizardImageFile=..\app\assets\wizard-large.png
 WizardSmallImageFile=..\app\assets\wizard-small.png
+; D-IMAN-028/DB-21 - A CHAPA CINZA DO LOGO.
+; O wizard-small.png era RGB SEM canal alfa, com o fundo #EBEEE8 cravado nos
+; pixels; a pagina do wizard e clWindow (medido num build real desta bancada:
+; #FFFFFF). Resultado: um retangulo cinza atras do logo, no canto superior
+; direito de toda pagina interna. Nao era composicao do Inno - estava no
+; arquivo.
+; O conserto NAO e repintar o PNG com a cor da pagina: #FFFFFF nao e token da
+; paleta (docs/design-system.md) e a cor da pagina vem do TEMA do Windows, nao
+; de nos - repintar so troca a chapa de lugar no proximo tema. Com alfa real no
+; PNG, esta diretiva manda o Inno RESPEITAR o canal alfa e o simbolo assenta
+; sobre a cor que a pagina tiver.
+; 'defined' (e nao 'premultiplied') porque o PIL grava alfa RETO, nao
+; pre-multiplicado - ver app/assets/regenerate-brand-derivatives.py.
+; Evidencia antes/depois: docs/verify/015-db21-wizard/.
+WizardImageAlphaFormat=defined
 Compression=lzma2
 ; SolidCompression=no e DELIBERADO, nao descuido (era 'yes' ate a fatia #011).
 ; O payload e um MSI ja comprimido: recomprimi-lo em bloco solido rendeu 1,8%
