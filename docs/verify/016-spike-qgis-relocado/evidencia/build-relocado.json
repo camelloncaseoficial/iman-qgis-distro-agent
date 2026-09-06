@@ -1,0 +1,13 @@
+﻿{
+    "QuandoUtc":  "2026-09-06T23:11:27.4533733Z",
+    "Msi":  "D:\\_projetos\\iman-webgeo\\iman-qgis-distro-agent\\installer\\payload\\QGIS-OSGeo4W-3.44.13-1.msi",
+    "MsiBytes":  582197248,
+    "MsiSha256":  "42E2F1A6047A827454BC991F8E8CAA069961B9CB4B877E1F5568A43D98844EB4",
+    "Destino":  "C:\\Users\\Francisco\\AppData\\Local\\InstitutoIMAN\\_spike016\\IMAN Terra\\qgis",
+    "Osgeo4wRoot":  "C:\\Users\\Francisco\\AppData\\Local\\InstitutoIMAN\\_spike016\\IMAN Terra\\qgis\\QGIS 3.44.13",
+    "ExitMsiexec":  0,
+    "SegundosExtracao":  300.1,
+    "TotalArquivos":  37338,
+    "TotalBytes":  2396693406,
+    "PostInstall":  false
+}

@@ -1,0 +1,19 @@
+﻿{
+    "PROJ_DATA":  "C:\\Users\\FRANCI~1\\AppData\\Local\\INSTIT~1\\_SPIKE~1\\IMANTE~1\\qgis\\QGIS34~1.13\\share\\proj",
+    "SSL_CERT_FILE":  "C:\\Users\\FRANCI~1\\AppData\\Local\\INSTIT~1\\_SPIKE~1\\IMANTE~1\\qgis\\QGIS34~1.13\\bin\\curl-ca-bundle.crt",
+    "GISBASE":  "C:\\Users\\FRANCI~1\\AppData\\Local\\INSTIT~1\\_SPIKE~1\\IMANTE~1\\qgis\\QGIS34~1.13\\apps\\grass\\grass85",
+    "OSGEO4W_ROOT":  "C:\\Users\\FRANCI~1\\AppData\\Local\\INSTIT~1\\_SPIKE~1\\IMANTE~1\\qgis\\QGIS34~1.13",
+    "PROJ_LIB":  null,
+    "GRASS_PYTHON":  "C:\\Users\\FRANCI~1\\AppData\\Local\\INSTIT~1\\_SPIKE~1\\IMANTE~1\\qgis\\QGIS34~1.13\\bin\\python3.exe",
+    "PYTHONEXECUTABLE":  "C:\\Users\\FRANCI~1\\AppData\\Local\\INSTIT~1\\_SPIKE~1\\IMANTE~1\\qgis\\QGIS34~1.13\\bin\\python3.exe",
+    "QT_PLUGIN_PATH":  "C:\\Users\\FRANCI~1\\AppData\\Local\\INSTIT~1\\_SPIKE~1\\IMANTE~1\\qgis\\QGIS34~1.13\\apps\\qgis-ltr\\qtplugins;C:\\Users\\FRANCI~1\\AppData\\Local\\INSTIT~1\\_SPIKE~1\\IMANTE~1\\qgis\\QGIS34~1.13\\apps\\qt5\\plugins",
+    "GS_LIB":  "C:\\Users\\FRANCI~1\\AppData\\Local\\INSTIT~1\\_SPIKE~1\\IMANTE~1\\qgis\\QGIS34~1.13\\apps\\gs\\lib",
+    "CURL_CA_BUNDLE":  "C:\\Users\\FRANCI~1\\AppData\\Local\\INSTIT~1\\_SPIKE~1\\IMANTE~1\\qgis\\QGIS34~1.13\\bin\\curl-ca-bundle.crt",
+    "GDAL_DRIVER_PATH":  "C:\\Users\\FRANCI~1\\AppData\\Local\\INSTIT~1\\_SPIKE~1\\IMANTE~1\\qgis\\QGIS34~1.13\\apps\\gdal\\lib\\gdalplugins",
+    "PDAL_DRIVER_PATH":  "C:\\Users\\FRANCI~1\\AppData\\Local\\INSTIT~1\\_SPIKE~1\\IMANTE~1\\qgis\\QGIS34~1.13\\apps\\pdal\\plugins",
+    "PYTHONHOME":  "C:\\Users\\FRANCI~1\\AppData\\Local\\INSTIT~1\\_SPIKE~1\\IMANTE~1\\qgis\\QGIS34~1.13\\apps\\Python312",
+    "PYTHONPATH":  "C:\\Users\\FRANCI~1\\AppData\\Local\\INSTIT~1\\_SPIKE~1\\IMANTE~1\\qgis\\QGIS34~1.13\\apps\\qgis-ltr\\python;C:\\Users\\FRANCI~1\\AppData\\Local\\INSTIT~1\\_SPIKE~1\\IMANTE~1\\qgis\\QGIS34~1.13\\apps\\grass\\grass85\\etc\\python;",
+    "GDAL_DATA":  "C:\\Users\\FRANCI~1\\AppData\\Local\\INSTIT~1\\_SPIKE~1\\IMANTE~1\\qgis\\QGIS34~1.13\\apps\\gdal\\share\\gdal",
+    "PATH":  "C:\\Users\\FRANCI~1\\AppData\\Local\\INSTIT~1\\_SPIKE~1\\IMANTE~1\\qgis\\QGIS34~1.13\\apps\\qgis-ltr\\bin;C:\\Users\\FRANCI~1\\AppData\\Local\\INSTIT~1\\_SPIKE~1\\IMANTE~1\\qgis\\QGIS34~1.13\\apps\\grass\\grass85\\lib;C:\\Users\\FRANCI~1\\AppData\\Local\\INSTIT~1\\_SPIKE~1\\IMANTE~1\\qgis\\QGIS34~1.13\\apps\\grass\\grass85\\bin;C:\\Users\\FRANCI~1\\AppData\\Local\\INSTIT~1\\_SPIKE~1\\IMANTE~1\\qgis\\QGIS34~1.13\\apps\\qt5\\bin;C:\\Users\\FRANCI~1\\AppData\\Local\\INSTIT~1\\_SPIKE~1\\IMANTE~1\\qgis\\QGIS34~1.13\\apps\\Python312\\Scripts;C:\\Users\\FRANCI~1\\AppData\\Local\\INSTIT~1\\_SPIKE~1\\IMANTE~1\\qgis\\QGIS34~1.13\\bin;C:\\WINDOWS\\system32;C:\\WINDOWS;C:\\WINDOWS\\system32\\WBem",
+    "QGIS_PREFIX_PATH":  "C:/Users/FRANCI~1/AppData/Local/INSTIT~1/_SPIKE~1/IMANTE~1/qgis/QGIS34~1.13/apps/qgis-ltr"
+}

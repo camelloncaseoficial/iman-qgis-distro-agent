@@ -1,0 +1,78 @@
+{
+  "rotulo": "relocado-estadoD-sem-share-proj",
+  "python": "C:\\Users\\FRANCI~1\\AppData\\Local\\INSTIT~1\\_SPIKE~1\\IMANTE~1\\qgis\\QGIS34~1.13\\bin\\python3.exe",
+  "OSGEO4W_ROOT": "C:\\Users\\FRANCI~1\\AppData\\Local\\INSTIT~1\\_SPIKE~1\\IMANTE~1\\qgis\\QGIS34~1.13",
+  "QGIS_PREFIX_PATH": "C:/Users/FRANCI~1/AppData/Local/INSTIT~1/_SPIKE~1/IMANTE~1/qgis/QGIS34~1.13/apps/qgis-ltr",
+  "PROJ_DATA": "C:\\Users\\FRANCI~1\\AppData\\Local\\INSTIT~1\\_SPIKE~1\\IMANTE~1\\qgis\\QGIS34~1.13\\share\\proj",
+  "PROJ_LIB": "",
+  "GDAL_DATA": "C:\\Users\\FRANCI~1\\AppData\\Local\\INSTIT~1\\_SPIKE~1\\IMANTE~1\\qgis\\QGIS34~1.13\\apps\\gdal\\share\\gdal",
+  "resultados": [
+    {
+      "id": "M5",
+      "status": "PASS",
+      "detalhe": "qgis.core importado; QgsApplication instanciada e inicializada",
+      "se_quebrado": "ImportError / 'DLL load failed' se as DLLs do Qt/QGIS nao estiverem no PATH da arvore, ou se QGIS_PREFIX_PATH apontar para outra arvore inexistente",
+      "extra": {
+        "QGIS_VERSION": "3.44.13-Solothurn",
+        "prefixPath": "C:/Users/FRANCI~1/AppData/Local/INSTIT~1/_SPIKE~1/IMANTE~1/qgis/QGIS34~1.13/apps/qgis-ltr",
+        "qgis.core em": "C:\\Users\\FRANCI~1\\AppData\\Local\\INSTIT~1\\_SPIKE~1\\IMANTE~1\\qgis\\QGIS34~1.13\\apps\\qgis-ltr\\python\\qgis\\core",
+        "pythonExecutable": "C:\\Users\\FRANCI~1\\AppData\\Local\\INSTIT~1\\_SPIKE~1\\IMANTE~1\\qgis\\QGIS34~1.13\\bin\\python3.exe"
+      }
+    },
+    {
+      "id": "M3",
+      "status": "PASS",
+      "detalhe": "EPSG:4674 (-38.5000, -3.7500) -> EPSG:31984 (555519.86, 9585490.54); esperado (555519.86, 9585490.54); erro (0.000 m, 0.000 m)",
+      "se_quebrado": "PROJ sem proj.db devolve CRS invalido (isValid()==False) ou levanta excecao; PROJ_DATA apontando para OUTRA arvore devolve coordenada que PARECE certa mas usa outro grid -> por isso a comparacao numerica com tolerancia de 1.0 m",
+      "extra": {
+        "E": 555519.856,
+        "N": 9585490.545,
+        "erro_E_m": 0.0003,
+        "erro_N_m": 0.0003,
+        "tolerancia_m": 1.0,
+        "descricao_31984": "SIRGAS 2000 / UTM zone 24S",
+        "PROJ_DATA": "C:\\Users\\FRANCI~1\\AppData\\Local\\INSTIT~1\\_SPIKE~1\\IMANTE~1\\qgis\\QGIS34~1.13\\share\\proj",
+        "PROJ_LIB": "<nao definida>",
+        "settingsDirPath": "C:\\Users\\Francisco\\AppData\\Local\\InstitutoIMAN\\_spike016\\perfil\\profiles\\spike016-estadoD\\profiles\\default/"
+      }
+    },
+    {
+      "id": "M3b",
+      "status": "FAIL",
+      "detalhe": "excecao: Traceback (most recent call last):\n  File \"D:\\_projetos\\iman-webgeo\\iman-qgis-distro-agent\\tools\\spike016\\asserts_pyqgis.py\", line 146, in m3b\n    dd = list(pyproj.datadir.get_data_dir().split(os.pathsep))\n              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\FRANCI~1\\AppData\\Local\\INSTIT~1\\_SPIKE~1\\IMANTE~1\\qgis\\QGIS34~1.13\\apps\\Python312\\Lib\\site-packages\\pyproj\\datadir.py\", line 114, in get_data_dir\n    raise DataDirError(\npyproj.exceptions.DataDirError: Valid PROJ data directory not found. Either set the path using the environmental variable PROJ_DATA (PROJ 9.1+) | PROJ_LIB (PROJ<9.1) or with `pyproj.datadir.set_data_dir`.\n",
+      "se_quebrado": "se o PROJ estiver lendo o share\\proj de OUTRA instalacao, este caminho aponta para fora da arvore relocada",
+      "extra": {}
+    },
+    {
+      "id": "M3c",
+      "status": "FAIL",
+      "detalhe": "SAD69 -> SIRGAS2000 em (-38.5000, -3.7500): deslocamento 0.00 m (dx=0.00 m, dy=0.00 m). Ballpark daria ~0 m.",
+      "se_quebrado": "sem proj.db o PROJ faz transformacao 'ballpark' (identidade) e devolve deslocamento ~0 m em vez do deslocamento real de datum: resultado ERRADO e silencioso, nao excecao",
+      "extra": {
+        "deslocamento_m": 0.0,
+        "dx_m": 0.0,
+        "dy_m": 0.0,
+        "limiar_m": 5.0
+      }
+    },
+    {
+      "id": "M4",
+      "status": "FAIL",
+      "detalhe": "excecao: Traceback (most recent call last):\n  File \"D:\\_projetos\\iman-webgeo\\iman-qgis-distro-agent\\tools\\spike016\\asserts_pyqgis.py\", line 221, in m4\n    srs.ImportFromEPSG(31984)\n  File \"C:\\Users\\FRANCI~1\\AppData\\Local\\INSTIT~1\\_SPIKE~1\\IMANTE~1\\qgis\\QGIS34~1.13\\apps\\Python312\\Lib\\site-packages\\osgeo\\osr.py\", line 1791, in ImportFromEPSG\n    return _osr.SpatialReference_ImportFromEPSG(self, *args)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nRuntimeError: PROJ: proj_create_from_database: Cannot find proj.db\n",
+      "se_quebrado": "sem GDAL_DATA correto o driver GTiff some (gdal.GetDriverByName devolve None) ou o CRS lido volta vazio/sem authority - por isso o teste exige EPSG:31984 de volta, e nao so 'abriu'",
+      "extra": {}
+    },
+    {
+      "id": "M7",
+      "status": "PASS",
+      "detalhe": "native:buffer(100 m) sobre 1 ponto -> 1 feicao, area=31412.77 m2 (teorica 31415.93, erro rel 0.0001); 747 algoritmos registrados",
+      "se_quebrado": "sem os provedores nativos registrados, processing.run levanta QgsProcessingException 'algorithm not found'; se a geometria/PROJ estiver errada a area do buffer sai diferente - por isso o teste confere a AREA, e nao so 'rodou'",
+      "extra": {
+        "n_algoritmos": 747,
+        "area_m2": 31412.773,
+        "area_teorica_m2": 31415.927,
+        "erro_relativo": 0.0001
+      }
+    }
+  ]
+}

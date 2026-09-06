@@ -1,0 +1,114 @@
+# RESUMO do log do msiexec /a (SPIKE #016)
+# Log completo: 209462 linhas / 86.7 MB - NAO versionado (DB-5).
+# Regenerar: tools/spike016/Build-QgisRelocado.ps1 grava o log completo em tools/spike016/evidencia/.
+
+﻿=== Verbose logging started: 06/09/2026  20:06:29  Build type: SHIP UNICODE 5.00.10011.00  Calling process: C:\WINDOWS\system32\msiexec.exe ===
+MSI (s) (9C:78) [20:06:29:728]: Note: 1: 2203 2: C:\WINDOWS\Installer\inprogressinstallinfo.ipi 3: -2147287038 
+MSI (s) (9C:78) [20:06:29:866]: Note: 1: 1402 2: HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer 3: 2 
+MSI (s) (9C:78) [20:06:35:763]: Command Line: TARGETDIR=C:\Users\Francisco\AppData\Local\InstitutoIMAN\_spike016\IMAN Terra\qgis ACTION=ADMIN CURRENTDIRECTORY=D:\_projetos\iman-webgeo\iman-qgis-distro-agent\tools\spike016 CLIENTUILEVEL=3 CLIENTPROCESSID=33236 
+MSI (s) (9C:78) [20:06:35:765]: MSI_LUA: Credential prompt not required, administrative installation creation or servicing
+MSI (s) (9C:78) [20:06:35:769]: Note: 1: 2262 2: AdminProperties 3: -2147287038 
+MSI (s) (9C:78) [20:06:35:769]: PROPERTY CHANGE: Adding ACTION property. Its value is 'ADMIN'.
+MSI (s) (9C:78) [20:06:35:845]: Note: 1: 2898 2: MS Sans Serif 3: MS Sans Serif 4: 0 5: 16 
+MSI (s) (9C:78) [20:06:35:871]: Note: 1: 1402 2: HKEY_CURRENT_USER\Software\Microsoft\MS Setup (ACME)\User Info 3: 2 
+MSI (s) (9C:78) [20:06:35:872]: Note: 1: 1402 2: HKEY_CURRENT_USER\Software\Microsoft\MS Setup (ACME)\User Info 3: 2 
+MSI (s) (9C:78) [20:06:35:873]: Note: 1: 2205 2:  3: PatchPackage 
+=== Logging started: 06/09/2026  20:06:35 ===
+MSI (s) (9C:78) [20:06:35:875]: Note: 1: 2203 2: C:\WINDOWS\Installer\inprogressinstallinfo.ipi 3: -2147287038 
+MSI (s) (9C:78) [20:06:35:875]: Note: 1: 2205 2:  3: LaunchCondition 
+MSI (s) (9C:78) [20:06:35:876]: Note: 1: 2228 2:  3: LaunchCondition 4: SELECT `Condition` FROM `LaunchCondition` 
+MSI (s) (9C:78) [20:06:35:910]: Doing action: ADMIN
+Action start 20:06:35: ADMIN.
+MSI (s) (9C:78) [20:06:35:926]: Note: 1: 1336 2: 2 3: G:\ 
+Action start 20:06:35: CostInitialize.
+MSI (s) (9C:78) [20:06:36:156]: Note: 1: 2205 2:  3: Patch 
+MSI (s) (9C:78) [20:06:36:156]: Note: 1: 2205 2:  3: PatchPackage 
+MSI (s) (9C:78) [20:06:36:156]: Note: 1: 2205 2:  3: MsiPatchHeaders 
+MSI (s) (9C:78) [20:06:36:156]: Note: 1: 2205 2:  3: __MsiPatchFileList 
+MSI (s) (9C:78) [20:06:36:156]: Note: 1: 2205 2:  3: PatchPackage 
+MSI (s) (9C:78) [20:06:36:156]: Note: 1: 2228 2:  3: PatchPackage 4: SELECT `DiskId`, `PatchId`, `LastSequence` FROM `Media`, `PatchPackage` WHERE `Media`.`DiskId`=`PatchPackage`.`Media_` ORDER BY `DiskId`  
+MSI (s) (9C:78) [20:06:36:158]: Note: 1: 2205 2:  3: Patch 
+Action ended 20:06:36: CostInitialize. Return value 1.
+MSI (s) (9C:78) [20:06:36:163]: Note: 1: 2205 2:  3: MsiAssembly 
+MSI (s) (9C:78) [20:06:36:163]: Note: 1: 2205 2:  3: Registry 
+MSI (s) (9C:78) [20:06:36:163]: Note: 1: 2205 2:  3: Registry 
+MSI (s) (9C:78) [20:06:36:163]: Note: 1: 2205 2:  3: Class 
+MSI (s) (9C:78) [20:06:36:163]: Note: 1: 2205 2:  3: Extension 
+MSI (s) (9C:78) [20:06:36:163]: Note: 1: 2205 2:  3: TypeLib 
+Action start 20:06:36: FileCost.
+Action ended 20:06:36: FileCost. Return value 1.
+MSI (s) (9C:78) [20:06:36:165]: Note: 1: 2205 2:  3: Patch 
+MSI (s) (9C:78) [20:06:36:232]: Note: 1: 2205 2:  3: Condition 
+Action start 20:06:36: CostFinalize.
+Action ended 20:06:43: CostFinalize. Return value 1.
+Action start 20:06:43: InstallValidate.
+MSI (s) (9C:78) [20:06:44:483]: Note: 1: 2205 2:  3: Registry 
+MSI (s) (9C:78) [20:06:44:483]: Note: 1: 2205 2:  3: BindImage 
+MSI (s) (9C:78) [20:06:44:483]: Note: 1: 2205 2:  3: ProgId 
+MSI (s) (9C:78) [20:06:44:483]: Note: 1: 2205 2:  3: PublishComponent 
+MSI (s) (9C:78) [20:06:44:483]: Note: 1: 2205 2:  3: SelfReg 
+MSI (s) (9C:78) [20:06:44:483]: Note: 1: 2205 2:  3: Extension 
+MSI (s) (9C:78) [20:06:44:483]: Note: 1: 2205 2:  3: Font 
+MSI (s) (9C:78) [20:06:44:483]: Note: 1: 2205 2:  3: Shortcut 
+MSI (s) (9C:78) [20:06:44:483]: Note: 1: 2205 2:  3: Class 
+MSI (s) (9C:78) [20:06:44:483]: Note: 1: 2205 2:  3: TypeLib 
+MSI (s) (9C:78) [20:06:44:486]: Note: 1: 2205 2:  3: _RemoveFilePath 
+MSI (s) (9C:78) [20:07:11:094]: Note: 1: 2205 2:  3: Registry 
+MSI (s) (9C:78) [20:07:11:094]: Note: 1: 2205 2:  3: BindImage 
+MSI (s) (9C:78) [20:07:11:094]: Note: 1: 2205 2:  3: ProgId 
+MSI (s) (9C:78) [20:07:11:094]: Note: 1: 2205 2:  3: PublishComponent 
+MSI (s) (9C:78) [20:07:11:094]: Note: 1: 2205 2:  3: SelfReg 
+MSI (s) (9C:78) [20:07:11:094]: Note: 1: 2205 2:  3: Extension 
+MSI (s) (9C:78) [20:07:11:094]: Note: 1: 2205 2:  3: Font 
+MSI (s) (9C:78) [20:07:11:094]: Note: 1: 2205 2:  3: Shortcut 
+MSI (s) (9C:78) [20:07:11:094]: Note: 1: 2205 2:  3: Class 
+MSI (s) (9C:78) [20:07:11:094]: Note: 1: 2205 2:  3: TypeLib 
+MSI (s) (9C:78) [20:07:11:095]: Note: 1: 2727 2:  
+MSI (s) (9C:78) [20:07:11:095]: Note: 1: 2205 2:  3: FilesInUse 
+MSI (s) (9C:78) [20:07:11:117]: Note: 1: 2727 2:  
+Action ended 20:07:11: InstallValidate. Return value 1.
+MSI (s) (9C:78) [20:07:11:254]: Note: 1: 2203 2: C:\WINDOWS\Installer\inprogressinstallinfo.ipi 3: -2147287038 
+MSI (s) (9C:78) [20:07:11:254]: Note: 1: 2203 2: C:\WINDOWS\Installer\inprogressinstallinfo.ipi 3: -2147287038 
+Action start 20:07:11: InstallInitialize.
+Action ended 20:07:11: InstallInitialize. Return value 1.
+MSI (s) (9C:78) [20:07:11:268]: Note: 1: 2205 2:  3: MsiPatchCertificate 
+MSI (s) (9C:78) [20:07:11:317]: Note: 1: 2262 2: SourceHash 3: -2147287038 
+Action start 20:07:11: InstallAdminPackage.
+Action ended 20:07:13: InstallAdminPackage. Return value 1.
+Action start 20:07:13: InstallFiles.
+MSI (s) (9C:78) [20:07:24:062]: Note: 1: 2205 2:  3: Patch 
+MSI (s) (9C:78) [20:07:24:062]: Note: 1: 2228 2:  3: Patch 4: SELECT `Patch`.`File_`, `Patch`.`Header`, `Patch`.`Attributes`, `Patch`.`Sequence`, `Patch`.`StreamRef_` FROM `Patch` WHERE `Patch`.`File_` = ? AND `Patch`.`#_MsiActive`=? ORDER BY `Patch`.`Sequence` 
+MSI (s) (9C:78) [20:07:24:062]: Note: 1: 2205 2:  3: MsiSFCBypass 
+MSI (s) (9C:78) [20:07:24:062]: Note: 1: 2228 2:  3: MsiSFCBypass 4: SELECT `File_` FROM `MsiSFCBypass` WHERE `File_` = ? 
+MSI (s) (9C:78) [20:07:24:062]: Note: 1: 2205 2:  3: MsiPatchHeaders 
+MSI (s) (9C:78) [20:07:24:062]: Note: 1: 2228 2:  3: MsiPatchHeaders 4: SELECT `Header` FROM `MsiPatchHeaders` WHERE `StreamRef` = ? 
+MSI (s) (9C:78) [20:07:24:998]: Note: 1: 2205 2:  3: PatchPackage 
+Action ended 20:07:34: InstallFiles. Return value 1.
+MSI (s) (9C:78) [20:07:34:519]: Note: 1: 2265 2:  3: -2147287035 
+MSI (s) (9C:78) [20:07:34:524]: Note: 1: 2318 2:  
+MSI (s) (9C:78) [20:07:34:533]: Note: 1: 2318 2:  
+MSI (s) (9C:78) [20:07:34:534]: Note: 1: 1402 2: HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Installer\Rollback\Scripts 3: 2 
+Action start 20:07:34: InstallFinalize.
+MSI (s) (9C:78) [20:07:34:546]: Note: 1: 2318 2:  
+MSI (s) (9C:78) [20:11:24:128]: Note: 1: 2265 2:  3: -2147287035 
+MSI (s) (9C:78) [20:11:24:133]: Note: 1: 2265 2:  3: -2147287035 
+MSI (s) (9C:78) [20:11:24:529]: Note: 1: 2318 2:  
+MSI (s) (9C:78) [20:11:24:537]: Note: 1: 2318 2:  
+Action ended 20:11:24: InstallFinalize. Return value 1.
+Action ended 20:11:24: ADMIN. Return value 1.
+Property(S): ALLUSERS = 1
+Property(S): TARGETDIR = C:\Users\Francisco\AppData\Local\InstitutoIMAN\_spike016\IMAN Terra\qgis\
+Property(S): SourceDir = D:\_projetos\iman-webgeo\iman-qgis-distro-agent\installer\payload\
+Property(S): ProductCode = {740D7A65-CBA3-1014-A0B5-B03A9B7608F5}
+Property(S): ProductName = QGIS 3.44.13 'Solothurn'
+Property(S): ProductVersion = 3.44.13
+Property(S): UpgradeCode = {740DE625-CBA3-1014-A0B5-B03A9B7608F5}
+Property(S): ACTION = ADMIN
+Property(S): OriginalDatabase = D:\_projetos\iman-webgeo\iman-qgis-distro-agent\installer\payload\QGIS-OSGeo4W-3.44.13-1.msi
+MSI (s) (9C:78) [20:11:24:911]: Note: 1: 1707 
+MSI (s) (9C:78) [20:11:24:913]: Windows Installer instaló el producto. Nombre del producto: QGIS 3.44.13 'Solothurn'. Versión del producto: 3.44.13. Idioma del producto: 1033. Fabricante: QGIS.org. Resultado de la instalación: 0.
+=== Logging stopped: 06/09/2026  20:11:24 ===
+MSI (s) (9C:54) [20:11:25:171]: Note: 1: 1402 2: HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Installer\Rollback\Scripts 3: 2 
+MSI (s) (9C:54) [20:11:25:172]: Note: 1: 2265 2:  3: -2147287035 
+MSI (s) (9C:54) [20:11:25:172]: Note: 1: 1402 2: HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Installer\Rollback\Scripts 3: 2 
+=== Verbose logging stopped: 06/09/2026  20:11:25 ===

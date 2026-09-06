@@ -1,0 +1,23 @@
+
+  SPIKE 016 - montando a arvore do QGIS RELOCADO (via A1)
+
+  payload : D:\_projetos\iman-webgeo\iman-qgis-distro-agent\installer\payload\QGIS-OSGeo4W-3.44.13-1.msi
+  tamanho : 582197248 bytes (555,23 MB)
+  sha-256 : 42E2F1A6047A827454BC991F8E8CAA069961B9CB4B877E1F5568A43D98844EB4
+  sha-256 confere com o briefing.
+  destino : C:\Users\Francisco\AppData\Local\InstitutoIMAN\_spike016\IMAN Terra\qgis
+
+  msiexec /a  (instalacao administrativa: extrai, NAO instala)
+  > msiexec.exe /a "D:\_projetos\iman-webgeo\iman-qgis-distro-agent\installer\payload\QGIS-OSGeo4W-3.44.13-1.msi" /qn TARGETDIR="C:\Users\Francisco\AppData\Local\InstitutoIMAN\_spike016\IMAN Terra\qgis" /L*v "D:\_projetos\iman-webgeo\iman-qgis-distro-agent\tools\spike016\evidencia\msiexec-admin-install.log"
+  exit code : 0
+  tempo     : 300,1 s
+
+  arvore    : 37338 arquivos / 2,232 GB
+  OSGEO4W_ROOT relocado : C:\Users\Francisco\AppData\Local\InstitutoIMAN\_spike016\IMAN Terra\qgis\QGIS 3.44.13
+  qgis-ltr-bin.exe      : C:\Users\Francisco\AppData\Local\InstitutoIMAN\_spike016\IMAN Terra\qgis\QGIS 3.44.13\bin\qgis-ltr-bin.exe
+  residual  : QGIS-OSGeo4W-3.44.13-1.msi (8,57 MB) - copia do MSI deixada pelo /a
+
+  postinstall PULADO por -PularPostInstall (arvore CRUA do /a).
+
+  resumo gravado em D:\_projetos\iman-webgeo\iman-qgis-distro-agent\tools\spike016\evidencia\build-relocado.json
+

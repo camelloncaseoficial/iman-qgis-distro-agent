@@ -1,0 +1,63 @@
+{
+  "nota": "Resumo do par antes/depois. Os manifestos completos tem ~6 MB cada (38.238 + 539 arquivos) e NAO sao versionados (DB-5); regerar com tools/spike016/Snapshot-Footprint.ps1.",
+  "captura_antes": "2026-09-06T23:29:05.5775286Z",
+  "captura_depois": "2026-09-06T23:29:35.6655331Z",
+  "maquina": "DESKTOP-N8388MN",
+  "usuario": "Francisco",
+  "AppDataQgis": {
+    "raiz": "C:\\Users\\Francisco\\AppData\\Roaming\\QGIS",
+    "comHash": true,
+    "arquivos_antes": 539,
+    "arquivos_depois": 539,
+    "bytes_antes": 7975097,
+    "bytes_depois": 7975097,
+    "adicionados": [],
+    "removidos": [],
+    "modificados": [],
+    "sem_hash_em_alguma_captura": 0
+  },
+  "ProgramFilesQgis": {
+    "raiz": "C:\\Program Files\\QGIS 3.44.13",
+    "comHash": false,
+    "arquivos_antes": 38238,
+    "arquivos_depois": 38238,
+    "bytes_antes": 2407754418,
+    "bytes_depois": 2407754418,
+    "adicionados": [],
+    "removidos": [],
+    "modificados": [],
+    "sem_hash_em_alguma_captura": 0
+  },
+  "Arp_antes": [
+    {
+      "Hive": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall",
+      "Chave": "{740D7A65-CBA3-1014-A0B5-B03A9B7608F5}",
+      "DisplayName": "QGIS 3.44.13 'Solothurn'",
+      "Versao": "3.44.13",
+      "Local": ""
+    },
+    {
+      "Hive": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall",
+      "Chave": "{7B3A9E42-1C6D-4E9F-9A21-6F2E5A1D8B34}_is1",
+      "DisplayName": "IMAN Terra",
+      "Versao": "0.3.0",
+      "Local": "C:\\Program Files\\IMAN Terra\\"
+    }
+  ],
+  "Arp_depois": [
+    {
+      "Hive": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall",
+      "Chave": "{740D7A65-CBA3-1014-A0B5-B03A9B7608F5}",
+      "DisplayName": "QGIS 3.44.13 'Solothurn'",
+      "Versao": "3.44.13",
+      "Local": ""
+    },
+    {
+      "Hive": "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall",
+      "Chave": "{7B3A9E42-1C6D-4E9F-9A21-6F2E5A1D8B34}_is1",
+      "DisplayName": "IMAN Terra",
+      "Versao": "0.3.0",
+      "Local": "C:\\Program Files\\IMAN Terra\\"
+    }
+  ]
+}
