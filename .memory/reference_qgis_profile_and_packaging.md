@@ -37,6 +37,47 @@
   silenciosos **testados** para a versão alvo.
 - Uninstall limpo; perfil isolado não removido à toa; nunca mexer na instalação do QGIS.
 
+## QGIS RELOCADO — cópia privada fora de Program Files (via A1)
+
+> Medido no **spike #016** (2026-09-06, `docs/verify/016-spike-qgis-relocado/`). Veredito:
+> **A1 VIÁVEL COM RESSALVA**, 8 de 8 asserções de produto com evidência.
+
+- **A árvore do OSGeo4W já é relocável por construção.** `bin\o4w_env.bat` deriva
+  `OSGEO4W_ROOT` de **`%~dp0`** (onde o arquivo *está*, não onde foi instalado) e **zera o
+  `PATH` herdado** antes de montar o seu. Todo o `etc\ini\*.bat` (`PROJ_DATA`, `GDAL_DATA`,
+  `GDAL_DRIVER_PATH`, `PYTHONHOME`, `PYTHONPATH`, `QT_PLUGIN_PATH`) e o `GISBASE` do GRASS são
+  relativos a `%OSGEO4W_ROOT%`. **Nenhum carrega caminho gravado no install.**
+- **`msiexec /a <msi> /qn TARGETDIR=<dir>` produz árvore EXECUTÁVEL e NÃO exige elevação**
+  (log: `MSI_LUA: Credential prompt not required, administrative installation creation`).
+  Exit `0`, ~300 s, **37.338 arquivos / 2,23 GB** para o `3.44.13`. A raiz do OSGeo4W fica em
+  `TARGETDIR\QGIS <versão>\` — **um nível abaixo** do `TARGETDIR`. Sobra uma cópia do MSI sem
+  os cabs (~8,6 MB) na raiz.
+- **O caminho absoluto do install existe, mas está fora do caminho do QGIS Desktop.** São
+  **85 arquivos `.tmpl`** em que o `textreplace` do `postinstall.bat` troca o token
+  **`@osgeo4w@`** pela raiz absoluta: 80 entry points em `apps\Python312\Scripts\`, mais
+  `qgis.reg`, `bin\setup.bat`, `bin\nc-config` e 2 templates do setuptools. **Nada disso é
+  usado por GUI, canvas, PROJ, GDAL, PyQGIS, Processing ou plugins.**
+- **Corolário: a instalação OFICIAL é que NÃO é relocável** — os 85 arquivos dela têm
+  `C:\PROGRA~1\QGIS34~1.13` cravado. **Copiar `C:\Program Files\QGIS ...` é a via errada;
+  extrair do MSI é a certa.**
+- **Não é preciso rodar o `postinstall.bat`.** Ele escreve FORA da árvore (`regedit /s qgis.reg`
+  em `HKCR`, `dllupdate -copy` no diretório do Windows, `xxmklink` no Menu Iniciar). Sem ele o
+  QGIS abre e funciona — medido.
+- **`PROJ_LIB` não é definida por nenhum `.bat` do OSGeo4W** (o QGIS 3.44 usa `PROJ_DATA`). É a
+  **única** variável que sobrevive a um ambiente contaminado por outra instalação. Hoje é
+  inerte (o `PROJ_DATA` vence no PROJ 9.8.1) — mas por conta do PROJ, não nossa. Limpar
+  explicitamente antes de subir custa uma linha.
+- **`OSGEO4W_ROOT` sai em forma 8.3** (`%%~fsi`). Caminho com espaço funciona. **Volume com
+  geração 8.3 desligada: NÃO testado.**
+- **⚠ RESSALVA — a árvore não se autodiagnostica.** Medido: sem `apps\qt5\plugins` a falha é
+  alta e visível (diálogo Win32 `#32770`, não chega à janela principal); sem `share\proj` grita
+  em `stderr` mas abre; **sem `apps\qgis-ltr\resources` o QGIS abre com cara de saudável e não
+  diz nada.** Quem empacotar A1 precisa de **verificação de integridade própria** — o QGIS não
+  avisa. STOP-AND-FLAG aberto com o arquiteto.
+- **Estado A (máquina sem QGIS nenhum) continua NÃO MEDIDO** — a bancada tem QGIS instalado e
+  desinstalá-lo é proibido. O que foi medido no lugar: o processo relocado carregou **355
+  módulos, 0 da instalação de terceiro**. Não substitui o estado A.
+
 ## Limites do no-fork (só a Opção 2 / fork resolve)
 
 - ~~Splash screen nativo de boot — só com fork~~ **CORRIGIDO pelo spike #004 (D-IMAN-027):**
