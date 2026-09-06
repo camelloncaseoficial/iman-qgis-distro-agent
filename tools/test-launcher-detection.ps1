@@ -29,8 +29,26 @@
  COMO ELE EXERCITA O CODIGO DE VERDADE
  -------------------------------------
  Chama o PROPRIO app\launcher\IMAN-Terra.bat com IMAN_TERRA_DETECT_ONLY=1 e
- com %ProgramFiles% apontado para uma raiz sintetica. Nada e instalado, nenhum
- QGIS e aberto e o perfil do usuario nao e tocado.
+ com as TRES raizes apontadas para diretorios sinteticos. Nada e instalado,
+ nenhum QGIS e aberto e o perfil do usuario nao e tocado.
+
+ POR QUE AS TRES, E NAO SO DUAS (D-IMAN-028/DB-20)
+ -------------------------------------------------
+ Ate a fatia #015 o wrapper sobrescrevia so %ProgramFiles% e
+ %ProgramFiles(x86)%. Isso tornava o teste CEGO ao DB-20 por construcao: ele
+ media a ORDEM das sondagens - que estava certa - e nunca a ORIGEM das raizes,
+ que era o defeito. O launcher sondava exclusivamente %ProgramFiles%, e num
+ processo de 32 bits o WOW64 aponta essa variavel para "Program Files (x86)",
+ onde o QGIS de 64 bits nao esta.
+
+ A ARMADILHA QUE O CONSERTO CRIOU, E POR ISSO ESTA FECHADA AQUI: o launcher
+ passou a PREFERIR %ProgramW6432%. Se o wrapper nao definisse essa variavel,
+ ela chegaria com o VALOR REAL DA MAQUINA ("C:\Program Files") e os casos
+ sinteticos passariam a achar o QGIS DE VERDADE desta bancada - que por acaso
+ e o proprio payload. Todos passariam PELO MOTIVO ERRADO e o arquivo inteiro
+ deixaria de medir qualquer coisa, inclusive o DB-14 que ele existe para
+ guardar. Por isso Set-Raizes define AS TRES em TODOS os casos: o launcher fica
+ isolado da maquina real por completo.
 
  USO
    .\tools\test-launcher-detection.ps1
@@ -75,16 +93,25 @@ function New-QgisFalso {
 }
 
 # Roda o launcher REAL com raizes sinteticas e devolve o caminho escolhido.
+#
+# AS TRES RAIZES SAO SEMPRE DEFINIDAS - ver "POR QUE AS TRES" no cabecalho.
+# Nenhuma delas pode vazar da maquina real para dentro do caso.
+#
+# O `< NUL` no `call` NAO e enfeite: quando o launcher nao acha QGIS nenhum ele
+# imprime a tela de diagnostico e chama `pause`. Sem a entrada redirecionada,
+# um caso que FALHA pendura o teste em vez de reportar a falha - e e justamente
+# no caso que falha que a saida importa.
 function Get-EscolhaDoLauncher {
-    param([string]$RaizPF, [string]$RaizPF86)
+    param([string]$RaizPF, [string]$RaizPF86, [string]$RaizW6432)
 
     $bat = @(
         '@echo off',
         "set `"ProgramFiles=$RaizPF`"",
         "set `"ProgramFiles(x86)=$RaizPF86`"",
+        "set `"ProgramW6432=$RaizW6432`"",
         'set "IMAN_TERRA_DETECT_ONLY=1"',
         'set "QGIS_BIN="',
-        "call `"$Launcher`""
+        "call `"$Launcher`" < NUL"
     ) -join "`r`n"
 
     $runner = Join-Path $Sandbox 'runner.bat'
@@ -151,6 +178,19 @@ $casos = @(
         Versoes  = @('3.34.15', '3.40.3')
         Esperado = 'QGIS 3.'
         Porque   = 'sem nada da nossa serie, abrir algo e melhor que nao abrir nada'
+    },
+    @{
+        # D-IMAN-028/DB-20. Este caso e o unico SENSIVEL a ORIGEM das raizes:
+        # ele poe ProgramFiles == ProgramFiles(x86) (a assinatura exata da visao
+        # WOW64, medida na bancada) e deixa o QGIS SO na raiz de 64 bits. Um
+        # launcher que sonde %ProgramFiles% nao acha nada e cai na tela de erro.
+        # Com a Entrega 1 REVERTIDA este caso TEM de falhar - se passar nos dois
+        # estados, nao e evidencia de nada e precisa ser refeito.
+        Nome     = 'WOW64 - processo de 32 bits: o QGIS so existe na raiz de 64 bits'
+        Versoes  = @($VersaoPayload, $RivalMesmaMinor)
+        Esperado = "QGIS $VersaoPayload"
+        Porque   = 'sondar %ProgramFiles% num processo de 32 bits cai em "Program Files (x86)", onde o QGIS nao esta (DB-20)'
+        Wow64    = $true
     }
 )
 
@@ -171,13 +211,24 @@ try {
         New-Item -ItemType Directory -Path $raiz, $raiz86 -Force | Out-Null
         New-QgisFalso -Raiz $raiz -Versoes $caso.Versoes
 
-        $escolhido = Get-EscolhaDoLauncher -RaizPF $raiz -RaizPF86 $raiz86
+        # Caso comum: processo de 64 bits, onde ProgramW6432 == ProgramFiles.
+        # Caso Wow64: ProgramFiles e ProgramFiles(x86) apontam para a MESMA raiz
+        # x86 (que nao tem QGIS nenhum) e so ProgramW6432 leva ao QGIS montado.
+        if ($caso.Wow64) {
+            $visao = 'PF=PF(x86)=<raiz x86 vazia>  PW6432=<raiz 64 com o QGIS>'
+            $escolhido = Get-EscolhaDoLauncher -RaizPF $raiz86 -RaizPF86 $raiz86 -RaizW6432 $raiz
+        }
+        else {
+            $visao = 'PF=PW6432=<raiz com o QGIS>  PF(x86)=<vazia>'
+            $escolhido = Get-EscolhaDoLauncher -RaizPF $raiz -RaizPF86 $raiz86 -RaizW6432 $raiz
+        }
         $nomePasta = if ($escolhido -match '\\(QGIS [^\\]+)\\bin\\') { $Matches[1] } else { $escolhido }
 
         $ok = $nomePasta.StartsWith($caso.Esperado)
 
         Write-Host ("  [{0}] {1}" -f $(if ($ok) { 'PASS' } else { 'FAIL' }), $caso.Nome) -ForegroundColor $(if ($ok) { 'Green' } else { 'Red' })
         Write-Host ("         montado  : " + (($caso.Versoes | ForEach-Object { "QGIS $_" }) -join ' + '))
+        Write-Host ("         visao    : " + $visao)
         Write-Host ("         esperado : " + $caso.Esperado + '*')
         Write-Host ("         escolhido: " + $nomePasta) -ForegroundColor $(if ($ok) { 'Gray' } else { 'Yellow' })
         if (-not $ok) {

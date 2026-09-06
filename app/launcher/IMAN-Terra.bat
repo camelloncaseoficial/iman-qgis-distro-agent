@@ -57,19 +57,53 @@ REM   com apenas   3.44.9 + 3.44.12           -> escolhia "QGIS 3.44.12" ('1' < 
 REM Ou seja: instalavamos 541 MB de QGIS testado e abriamos OUTRO, nao testado.
 REM
 REM Agora o caminho EXATO do payload vence, e o curinga e so ultimo recurso.
+
+REM -- RAIZ DE 64 BITS, RESOLVIDA EXPLICITAMENTE (D-IMAN-028/DB-20) ------------
+REM
+REM NAO use %ProgramFiles% para achar o QGIS. Num processo de 32 BITS o WOW64
+REM aponta %ProgramFiles% para "C:\Program Files (x86)" - o MESMO valor de
+REM %ProgramFiles(x86)% - e o QGIS de 64 bits nao esta la. Medido nesta bancada
+REM em 2026-09-03, com o launcher INSTALADO e IMAN_TERRA_DETECT_ONLY=1:
+REM
+REM   pai 64-bit (System32\cmd.exe)  -> QGIS_EXE=C:\Program Files\QGIS 3.44.13\...
+REM   pai 32-bit (SysWOW64\cmd.exe)  -> "O QGIS nao foi encontrado", exit 1
+REM
+REM O MESMO comando, a MESMA maquina, o MESMO QGIS instalado. O que muda e a
+REM visao das variaveis de ambiente herdada do processo pai.
+REM
+REM POR QUE ISSO APARECEU AGORA (DB-20): o Setup.exe do Inno e um binario de
+REM 32 BITS ("Setup version: Inno Setup version 7.1.0 (32-bit)" no log do
+REM proprio build) e a entrada [Run] usa shellexec. O checkbox final "Abrir o
+REM %PRODUCT_NAME% agora" nasce FILHO desse processo e herda a visao
+REM redirecionada; o atalho do Menu Iniciar nasce do Explorer, que e de 64 bits,
+REM e por isso funcionava. O sintoma era indistinguivel de "o QGIS nao esta
+REM instalado".
+REM
+REM POR QUE O CONSERTO E AQUI, E NAO NA CHAMADA: forcar um filho de 64 bits no
+REM [Run] resolveria so ESTE chamador. O launcher e o ponto de entrada do
+REM produto; qualquer pai de 32 bits - atalho de terceiro, agendador, outro
+REM instalador - reproduziria o defeito.
+REM
+REM %ProgramW6432% e definida NOS DOIS mundos (32 e 64 bits) e sempre aponta
+REM para a raiz de 64 bits. Ela so nao existe no Windows de 32 bits - e la
+REM %ProgramFiles% E a raiz certa, que e exatamente o fallback abaixo.
+set "PF64=%ProgramW6432%"
+if not defined PF64 set "PF64=%ProgramFiles%"
+set "PF86=%ProgramFiles(x86)%"
+
 set "QGIS_EXE="
 
 REM (1) Override explicito do operador - sempre ganha.
 if defined QGIS_BIN if exist "%QGIS_BIN%" set "QGIS_EXE=%QGIS_BIN%"
 
 REM (2) O QGIS que ESTE produto instalou e no qual ele foi testado.
-if not defined QGIS_EXE call :find_qgis "%ProgramFiles%\QGIS %QGIS_VERSION%\bin\qgis-ltr-bin.exe"
-if not defined QGIS_EXE call :find_qgis "%ProgramFiles%\QGIS %QGIS_VERSION%\bin\qgis-bin.exe"
+if not defined QGIS_EXE call :find_qgis "%PF64%\QGIS %QGIS_VERSION%\bin\qgis-ltr-bin.exe"
+if not defined QGIS_EXE call :find_qgis "%PF64%\QGIS %QGIS_VERSION%\bin\qgis-bin.exe"
 
 REM (3) Mesma minor (ex.: outro patch 3.44.x): degrada pouco e e melhor que
 REM     cair numa serie diferente, onde QSS e dashboard podem quebrar calados.
-if not defined QGIS_EXE call :find_in_root "%ProgramFiles%" "qgis-ltr-bin.exe" "%QGIS_MINOR%"
-if not defined QGIS_EXE call :find_in_root "%ProgramFiles%" "qgis-bin.exe" "%QGIS_MINOR%"
+if not defined QGIS_EXE call :find_in_root "%PF64%" "qgis-ltr-bin.exe" "%QGIS_MINOR%"
+if not defined QGIS_EXE call :find_in_root "%PF64%" "qgis-bin.exe" "%QGIS_MINOR%"
 
 REM (4) OSGeo4W tem caminho fixo: teste direto.
 if not defined QGIS_EXE call :find_qgis "C:\OSGeo4W\bin\qgis-ltr-bin.exe"
@@ -78,26 +112,46 @@ if not defined QGIS_EXE call :find_qgis "C:\OSGeo4W\bin\qgis-bin.exe"
 REM (5) ULTIMO RECURSO: qualquer "QGIS *". A ordem aqui e alfabetica e NAO
 REM     e ordem de versao - so se chega neste ponto quando nada acima existe,
 REM     e entao abrir algo e melhor que nao abrir nada.
-if not defined QGIS_EXE call :find_in_root "%ProgramFiles%" "qgis-ltr-bin.exe" ""
-if not defined QGIS_EXE call :find_in_root "%ProgramFiles%" "qgis-bin.exe" ""
-if not defined QGIS_EXE call :find_in_root "%ProgramFiles(x86)%" "qgis-ltr-bin.exe" ""
-if not defined QGIS_EXE call :find_in_root "%ProgramFiles(x86)%" "qgis-bin.exe" ""
+if not defined QGIS_EXE call :find_in_root "%PF64%" "qgis-ltr-bin.exe" ""
+if not defined QGIS_EXE call :find_in_root "%PF64%" "qgis-bin.exe" ""
+REM %PF86% CONTINUA como ultimo recurso (nao remover): um QGIS de 32 bits alheio
+REM ainda e melhor que nenhum QGIS.
+if not defined QGIS_EXE call :find_in_root "%PF86%" "qgis-ltr-bin.exe" ""
+if not defined QGIS_EXE call :find_in_root "%PF86%" "qgis-bin.exe" ""
 
-REM Com o instalador bundlado (D-IMAN-028), chegar aqui NAO e mais o caso normal
-REM de "o usuario nao instalou o QGIS": o instalador do %PRODUCT_NAME% instala o
-REM QGIS %QGIS_VERSION% junto e ABORTA se isso falhar. Se ainda assim nao ha QGIS,
-REM o mais provavel e que alguem o desinstalou depois. A mensagem mudou de
-REM "instale o QGIS" para "reinstale o %PRODUCT_NAME%", que e a acao certa agora.
+REM A MENSAGEM E DIAGNOSTICO, NAO CHUTE (D-IMAN-028/DB-20).
+REM A versao anterior AFIRMAVA uma causa - "o QGIS foi removido, reinstale o
+REM %PRODUCT_NAME%" - sem mostrar o que tinha olhado. Sob o defeito do DB-20 o
+REM QGIS ESTAVA instalado: a causa afirmada era falsa e a acao recomendada
+REM (reinstalar) nao podia funcionar, e o diagnostico foi para o lado errado.
+REM Agora a tela LISTA AS RAIZES efetivamente sondadas e a versao procurada -
+REM quem le ve na hora se as duas raizes vieram IGUAIS, que e a assinatura da
+REM visao WOW64.
+REM
+REM !PF64! e !PF86! usam expansao ATRASADA de proposito: os valores contem
+REM parenteses ("C:\Program Files (x86)") e, com %VAR% dentro de um bloco
+REM ( ... ), o ')' do valor fecharia o bloco na hora de PARSEAR.
 if not defined QGIS_EXE (
   echo.
   echo   [%PRODUCT_NAME%] O QGIS nao foi encontrado nesta maquina.
   echo.
-  echo   O %PRODUCT_NAME% ^(powered by QGIS^) instala o QGIS %QGIS_VERSION% junto
-  echo   com ele. Nao encontrar o QGIS agora indica que ele foi removido depois
-  echo   da instalacao.
+  echo   Procurei o QGIS %QGIS_VERSION% ^(e qualquer %QGIS_MINOR%.x^) nestas raizes:
   echo.
-  echo   O que fazer: reinstale o %PRODUCT_NAME% - ele reinstala o QGIS.
-  echo   Se voce ja tem um QGIS noutro lugar, aponte-o com a variavel QGIS_BIN.
+  echo     [64 bits] !PF64!
+  echo     [32 bits] !PF86!
+  echo     [OSGeo4W] C:\OSGeo4W
+  echo.
+  echo   Se as duas primeiras aparecem IGUAIS acima, este processo esta vendo o
+  echo   sistema como 32 bits e nao enxerga "C:\Program Files". Transcreva esta
+  echo   tela: e ela que identifica o problema.
+  echo.
+  echo   Se voce ja tem um QGIS noutro lugar, aponte o executavel com a variavel
+  echo   QGIS_BIN. Exemplo:
+  echo     set "QGIS_BIN=C:\Program Files\QGIS %QGIS_VERSION%\bin\qgis-ltr-bin.exe"
+  echo.
+  echo   O %PRODUCT_NAME% ^(powered by QGIS^) instala o QGIS %QGIS_VERSION% junto
+  echo   com ele. Se o QGIS foi mesmo removido depois, reinstalar o
+  echo   %PRODUCT_NAME% recoloca-o.
   echo.
   pause
   exit /b 1

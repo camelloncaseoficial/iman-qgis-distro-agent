@@ -43,8 +43,8 @@ são curtas e focadas.
 
 | Rodada | Estado inicial da máquina | O que prova | Passos |
 |---|---|---|---|
-| **M1** | **sem QGIS nenhum** | **o caminho feliz principal** — instalar um arquivo e abrir | 1 a 15 |
-| **M2a** | QGIS **exatamente 3.44.13** já instalado | o instalador **pula** o QGIS (e prova que pulou) | 16 |
+| **M1** | **sem QGIS nenhum** | **o caminho feliz principal** — instalar um arquivo e abrir | 1 a 15 (inclui **5b**) |
+| **M2a** | QGIS **exatamente 3.44.13** já instalado | o instalador **pula** o QGIS (e prova que pulou) | 16 e **16b** |
 | **M2b** | QGIS **3.44.12** já instalado | **coexistência** + o launcher abre o **nosso** QGIS | 17 |
 | **M4** | falha forçada no meio da instalação do QGIS | **aborta** deixando a máquina como estava | 18 |
 
@@ -248,9 +248,62 @@ cd $env:USERPROFILE\Desktop\bl7
 
 ---
 
+## 5b. O CHECKBOX FINAL do instalador — o caminho que o `DB-20` quebrou
+
+> ### ⚠ Este passo nasceu de um defeito que atravessou QUATRO fatias sem roteiro
+>
+> O `[Run]` do instalador — o checkbox **"Abrir o IMAN Terra agora"**, que fica **ticado por
+> padrão** e é a **primeira coisa** que o técnico faz ao terminar a instalação — **nunca teve
+> passo neste checklist**. O §6 sempre mandou abrir **pelo atalho do Menu Iniciar**. Foi
+> exatamente o caminho não-roteirizado que quebrou (`D-IMAN-028`/**DB-20**, 2026-09-03): o
+> produto abria uma janela de console dizendo que **o QGIS não foi encontrado** — numa máquina
+> onde ele acabara de ser instalado pelo próprio instalador.
+>
+> **Os dois caminhos têm PAIS DIFERENTES, e é essa diferença que o defeito explora.** O checkbox
+> nasce filho do `Setup.exe` do Inno, que é um binário de **32 bits**; o atalho do §6 nasce do
+> **Explorer**, que é de **64 bits**. Sob a visão de 32 bits, `%ProgramFiles%` aponta para
+> `Program Files (x86)`, onde o QGIS não está. **Um passo NÃO substitui o outro** — quem
+> "otimizar" juntando os dois reabre o buraco por onde o `DB-20` entrou.
+
+**Faça:** na última página do wizard, **DEIXE o checkbox "Abrir o IMAN Terra agora" TICADO** e
+clique em **Concluir**. Não abra nada pelo atalho ainda — isso é o §6.
+
+| # | Asserção | Resultado |
+|---|---|---|
+| 5b.1 | O checkbox **"Abrir o IMAN Terra agora"** aparece **já ticado** | `PASS / FAIL / N/E` |
+| 5b.2 | Depois do `Concluir`, **o IMAN Terra abre** (splash e janela do produto) | `PASS / FAIL / N/E` |
+| 5b.3 | **NÃO** apareceu janela preta de console com mensagem de erro | `PASS / FAIL / N/E` |
+| 5b.4 | Se apareceu console: o texto **literal** transcrito abaixo | `RELATADO` |
+
+> **`5b.2` e `5b.3` são asserções separadas de propósito.** Uma janela de console que pisca e
+> some **não é** "abriu"; e um produto que abre **depois** de uma tela de erro também **não é**
+> `PASS`. O veredito tem de distinguir os dois — foi a ausência dessa distinção que deixou o
+> `DB-20` passar por "o QGIS não deve estar instalado".
+
+- **Texto LITERAL do console, se ele apareceu** — é ele que identifica o `DB-20` se voltar:
+
+  `______________________________________________________________________________`
+
+  `______________________________________________________________________________`
+
+  `______________________________________________________________________________`
+
+> **O que procurar nesse texto.** A tela de diagnóstico do launcher **lista as raízes que ele
+> sondou**. Se as linhas `[64 bits]` e `[32 bits]` vierem **IGUAIS**, é o `DB-20` de volta: o
+> processo está enxergando o sistema como de 32 bits. Transcreva as **três** linhas de raiz na
+> íntegra, e também a versão do QGIS que a tela diz ter procurado.
+
+- Screenshot: `05c-checkbox-final.png` · Caso: **M1** · Asserção: **DB-20**
+
+---
+
 ## 6. Primeiro run — cronometrado, na ordem
 
 **Faça:** abra pelo atalho do Menu Iniciar. **Marque o tempo** até a janela ficar utilizável.
+
+> **Este passo NÃO substitui o §5b, nem é substituído por ele.** O atalho nasce do **Explorer**
+> (64 bits); o checkbox final do instalador nasce do `Setup.exe` do Inno (**32 bits**). O `DB-20`
+> quebrou **só um dos dois** exatamente por causa dessa diferença de pai. Rode os **dois**.
 
 | # | O que deve aparecer | Resultado |
 |---|---|---|
@@ -566,6 +619,44 @@ Select-String -Path C:\bl7\m2a-setup.log -Pattern 'PULANDO|Encadeando'
 >   linha da tabela acima deixa de ser hipótese.
 
 - Screenshot: `16-m2a-pulou.png` · Caso: **M2a** · Asserção: **DB-16**
+
+---
+
+## 16b. O checkbox final, também aqui — o `DB-20` na rodada M2a
+
+> **Por que repetir o §5b nesta rodada.** O caminho do `[Run]` é o mesmo, mas o **estado da
+> máquina** não: aqui o QGIS já existia antes, o instalador **pulou** o encadeamento e a etapa de
+> instalação do QGIS **não rodou**. É um percurso de código diferente até o mesmo checkbox, e o
+> `DB-20` foi relatado justamente numa máquina que **já tinha** o QGIS. Marcar `PASS` no §5b não
+> cobre esta rodada.
+
+**Faça:** ao fim da instalação, **DEIXE o checkbox "Abrir o IMAN Terra agora" TICADO** e clique em
+**Concluir**.
+
+| # | Asserção | Resultado |
+|---|---|---|
+| 16b.1 | Depois do `Concluir`, **o IMAN Terra abre** | `PASS / FAIL / N/E` |
+| 16b.2 | **NÃO** apareceu janela preta de console com mensagem de erro | `PASS / FAIL / N/E` |
+| 16b.3 | O QGIS que abriu é o **da máquina** (`C:\Program Files\QGIS 3.44.13`) | `PASS / FAIL / N/E` |
+
+**Como provar o 16b.3 sem depender de olho:** com o produto aberto, rode
+
+```powershell
+Get-Process qgis-ltr-bin, qgis-bin -ErrorAction SilentlyContinue | Select-Object Id, Path
+```
+
+- Caminho observado: `________________________________`
+- **Texto LITERAL do console, se ele apareceu:**
+
+  `______________________________________________________________________________`
+
+  `______________________________________________________________________________`
+
+> **O passo do atalho continua valendo e continua SEPARADO.** Se quiser conferir os dois nesta
+> rodada, feche o produto e abra de novo **pelo atalho do Menu Iniciar**: pais diferentes
+> (`Setup.exe` de 32 bits × Explorer de 64 bits), evidências diferentes. Ver o aviso do §5b.
+
+- Screenshot: `16b-m2a-checkbox-final.png` · Caso: **M2a** · Asserção: **DB-20**
 
 ---
 
