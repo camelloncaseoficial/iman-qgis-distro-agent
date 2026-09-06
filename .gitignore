@@ -52,3 +52,8 @@ docs/.thumbnail
 
 # Binario QGIS patchado do spike #004 (nao versionar binario GPL modificado)
 spike/**/dist/
+
+# SPIKE #016 - diretorio de trabalho do spike: guarda o log do msiexec (86 MB)
+# e os manifestos completos de footprint (~6 MB cada). A evidencia CURADA e
+# versionada vive em docs/verify/016-spike-qgis-relocado/evidencia/.
+tools/spike016/evidencia/
