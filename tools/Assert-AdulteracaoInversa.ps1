@@ -53,7 +53,10 @@ $Reversoes = @(
        De='QDockWidget::title {';
        Para="QDockWidget { titlebar-close-icon: none; }`nQDockWidget::title {" },
 
-    @{ Id='D2';  Assercao='A02'; Arquivo=$PLUGIN;
+    # Acoplamento ESPERADO e declarado: o criterio do A03 e RELATIVO ("o campo
+    # nao passa de 3x a largura de antes"), e quem define a largura de partida
+    # e justamente o piso do D2. Tirar o piso acende os dois.
+    @{ Id='D2';  Assercao='A02'; Arquivo=$PLUGIN; Acoplamento=@('A03');
        De='piso = fm.horizontalAdvance(COORD_REFERENCIA) + cromo + 2';
        Para='piso = 0  # REVERTIDO' },
 
@@ -74,17 +77,40 @@ $Reversoes = @(
        De='        return re.sub(r''QGIS(\s*)$'', brand.PRODUCT_NAME + r''\1'', titulo)';
        Para='        return brand.WINDOW_TITLE  # REVERTIDO' },
 
-    @{ Id='D6';  Assercao='A06'; Arquivo=$PLUGIN;
+    # Acoplamento ESPERADO: o A07 assere a politica INTEIRA, e o estado E4
+    # ("criou um projeto -> canvas") e justamente o que o D6 conserta. Os dois
+    # cobrirem o mesmo estado e desenho, nao acidente.
+    @{ Id='D6';  Assercao='A06'; Arquivo=$PLUGIN; Acoplamento=@('A07');
        De="        # E4 - criou um projeto -> canvas. Antes desta fatia era _show_home(),`n        # e o comando `"Novo projeto`" parecia inerte (D6).`n        if not self._pousou:`n            return`n        self._show_canvas()";
        Para="        if not self._pousou:`n            return`n        self._show_home()  # REVERTIDO" },
 
-    @{ Id='D7';  Assercao='A07b'; Arquivo=$PLUGIN; Fase='segunda';
-       De='            QTimer.singleShot(2500, self._decide_pouso)';
-       Para='            self._pousou = True  # REVERTIDO (pouso por evento)' },
+    # D7 - LIMITE DECLARADO. Reverter o pouso-por-estado para pouso-por-evento
+    # NAO re-arma o gatilho no codigo de hoje: medido tres vezes seguidas, o
+    # A07b continuou PASS. O gatilho original era uma CORRIDA entre o evento de
+    # arranque e o QTimer de 900 ms, e as mudancas de D8 e D12 deslocaram esse
+    # tempo. Como o gate nao consegue reproduzir a corrida, ele prova o que
+    # consegue: que o A07b ESTA VIVO - forcando um pouso errado, ele acende.
+    # Isso NAO prova que o _decide_pouso e o que mantem o A07b verde.
+    @{ Id='D7-vivacidade'; Assercao='A07b'; Arquivo=$PLUGIN; Fase='segunda';
+       De='            self._show_home()        # E1 - o pouso';
+       Para='            self._show_canvas()  # POUSO ERRADO DE PROPOSITO' },
 
+    # D8 - o revert precisa reintroduzir a constante E RENDERIZA-LA. So
+    # declarar TEMPLATES nao acende o A08, porque nada dela chegaria a tela -
+    # e a assercao mede o que CHEGA A TELA, nao o que existe no codigo.
     @{ Id='D8';  Assercao='A08'; Arquivo=$DASH;
-       De='MAX_RECENTES = 6';
-       Para="MAX_RECENTES = 6`nTEMPLATES = [(`"Projeto cadastral vazio`", `"EPSG:31984`")]  # REVERTIDO" },
+       De='def recentes_reais(limite=MAX_RECENTES):';
+       Para=@'
+TEMPLATES = [("Projeto cadastral vazio", "EPSG:31984"),
+             ("Memorial descritivo", "Vertices - Azimutes")]
+
+
+def recentes_reais(limite=MAX_RECENTES):
+    return list(TEMPLATES)  # REVERTIDO: dado inventado de volta na tela
+
+
+def _recentes_reais_original(limite=MAX_RECENTES):
+'@ },
 
     @{ Id='D9';  Assercao='A09'; Arquivo=$BRAND;
        De='VERSION = "0.3.0"';
@@ -190,15 +216,21 @@ foreach ($rev in $Reversoes) {
     $voltou = ($status -eq 'FAIL')
 
     # quem mais mudou de status em relacao a referencia?
+    $esperados = @()
+    if ($rev.Acoplamento) { $esperados = $rev.Acoplamento }
     $arrastou = @()
+    $arrastouEsperado = @()
     foreach ($k in $h.Keys) {
         if ($k -eq $rev.Assercao) { continue }
-        if ($refTodos.ContainsKey($k) -and $h[$k] -ne $refTodos[$k]) { $arrastou += $k }
+        if ($refTodos.ContainsKey($k) -and $h[$k] -ne $refTodos[$k]) {
+            if ($esperados -contains $k) { $arrastouEsperado += $k } else { $arrastou += $k }
+        }
     }
 
     $ok = $voltou -and ($arrastou.Count -eq 0)
     $linhas += [pscustomobject]@{ Defeito=$rev.Id; Assercao=$rev.Assercao
-        StatusDaAssercao=$status; Voltou=$voltou; Arrastou=$arrastou; Ok=$ok }
+        StatusDaAssercao=$status; Voltou=$voltou; Arrastou=$arrastou
+        ArrastouEsperado=$arrastouEsperado; Ok=$ok }
 
     if (-not $voltou) {
         $reprovas += ("{0}: {1} NAO voltou a vermelho (status {2}) - assercao morta" -f $rev.Id, $rev.Assercao, $status)
@@ -206,6 +238,9 @@ foreach ($rev in $Reversoes) {
     } elseif ($arrastou.Count -gt 0) {
         $reprovas += ("{0}: arrastou junto {1}" -f $rev.Id, ($arrastou -join ', '))
         Escreve ("     {0} voltou a FAIL, mas arrastou: {1}" -f $rev.Assercao, ($arrastou -join ', ')) 'Red'
+    } elseif ($arrastouEsperado.Count -gt 0) {
+        Escreve ("     {0} voltou a FAIL; junto veio {1}, acoplamento DECLARADO" -f
+            $rev.Assercao, ($arrastouEsperado -join ', ')) 'Green'
     } else {
         Escreve ("     {0} voltou a FAIL, e so ela" -f $rev.Assercao) 'Green'
     }
