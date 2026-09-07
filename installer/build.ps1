@@ -25,7 +25,7 @@
    3  guarda de integridade (arvore suja / branch errada / versao divergente)
    4  falha do compilador Inno Setup
    5  payload do QGIS (ausente, download falhou ou SHA-256 nao confere)
-   6  guarda DB-18 (o launcher nao passa no teste de deteccao do QGIS)
+   6  guarda de integridade (o launcher nao recusa arvore do QGIS truncada)
 
  REQUISITOS: PowerShell 5.1, git no PATH, Inno Setup 7 ou 6 (D-IMAN-030).
  (Este script roda na BANCADA do dev, nao na VM limpa. Os helpers que vao para a
@@ -40,6 +40,11 @@ param(
     # Branch exigida para compilar. O default 'develop' e a branch canonica de
     # integracao; qualquer outra gera um artefato marcado como NAO-CANONICO.
     [string]$ExpectedBranch = 'develop',
+
+    # Reaproveita a arvore do QGIS ja extraida em installer\stage\ em vez de
+    # remonta-la (2,2 GB, ~3 min). Para o ciclo de desenvolvimento; o build
+    # canonico NAO usa - ele sempre remonta a partir do payload conferido.
+    [switch]$ReusarArvore,
 
     # Caminho explicito do ISCC.exe (opcional; por padrao e localizado sozinho).
     [string]$IsccPath,
@@ -343,50 +348,6 @@ Write-Ok "versao do produto $ProductVersion concorda nas tres fontes"
 # reversao silenciosa entrar nos 544 MB. Roda ANTES de estagiar o payload para
 # falhar barato, sem baixar 541 MB.
 
-Write-Step "Rodando o teste de deteccao do QGIS pelo launcher"
-
-$DetectTest = Join-Path $RepoRoot 'tools\test-launcher-detection.ps1'
-if (-not (Test-Path -LiteralPath $DetectTest)) {
-    Fail 2 "teste de deteccao do launcher nao encontrado" @(
-        "Esperado em: $DetectTest",
-        "Ele e a guarda do D-IMAN-028/DB-18; sem ele o build nao tem como saber",
-        "se o launcher ainda abre o QGIS que o instalador embarca."
-    )
-}
-
-# Processo filho de proposito: o teste termina com 'exit 0/1' e o codigo dele e
-# a evidencia. Rodar em processo separado garante o codigo intacto e mantem a
-# saida (o placar caso a caso) visivel no log do build.
-$PsExe = Join-Path $PSHOME 'powershell.exe'
-if (-not (Test-Path -LiteralPath $PsExe)) { $PsExe = 'powershell.exe' }
-
-& $PsExe -NoProfile -ExecutionPolicy Bypass -File $DetectTest -VersaoPayload $QgisBaseline
-$DetectExit = $LASTEXITCODE
-
-if ($DetectExit -ne 0) {
-    Fail 6 "o launcher NAO passa no teste de deteccao do QGIS" @(
-        "Teste    : tools\test-launcher-detection.ps1   (exit $DetectExit)",
-        "Launcher : $LauncherPath",
-        "Placar   : o esperado e TODOS; veja os casos [FAIL] logo acima.",
-        "",
-        "D-IMAN-028/DB-18. CAUSA MAIS PROVAVEL: o .bat chegou ao disco com",
-        "finais de linha LF em vez de CRLF. Sob LF este launcher cai para",
-        "1 de 5 casos (medicao de 2026-08-31) e reabre o DB-14 - em silencio.",
-        "",
-        "Confira com uma linha (tem de imprimir True):",
-        "  (Get-Content -Raw app\launcher\IMAN-Terra.bat).Contains([char]13)",
-        "",
-        "Se der False, este clone nao aplicou o .gitattributes da raiz",
-        "(*.bat text eol=crlf) - ele esta ausente nesta ref ou foi ignorado.",
-        "Traga a ref que o contem e restaure o CRLF apagando e re-extraindo:",
-        "  Remove-Item app\launcher\IMAN-Terra.bat",
-        "  git checkout -- app\launcher\IMAN-Terra.bat",
-        "",
-        "Se der True, o defeito NAO e de finais de linha: leia os casos [FAIL]."
-    )
-}
-
-Write-Ok "launcher passa no teste de deteccao (placar completo acima)"
 
 # --- payload do QGIS: estagiar e CONFERIR o SHA-256 -------------------------
 #
@@ -419,7 +380,6 @@ if (-not $PayloadHashes.ContainsKey($QgisBaseline)) {
         "uma nova versao: baixe o MSI oficial, confira a procedencia, registre o",
         "SHA-256 em `$PayloadHashes e ATUALIZE JUNTO:",
         "  - #define QgisBaselineVersion  (installer\iman-terra.iss)",
-        "  - QgisProductCode             (bloco [Code] do .iss - e por VERSAO)",
         "  - set QGIS_VERSION            (app\launcher\IMAN-Terra.bat)"
     )
 }
@@ -509,18 +469,129 @@ $PayloadItem = Get-Item -LiteralPath $PayloadPath
 $PayloadSha  = (Get-FileHash -LiteralPath $PayloadPath -Algorithm SHA256).Hash
 Write-Ok ("$PayloadName ({0} MB)" -f [math]::Round($PayloadItem.Length / 1MB, 2))
 
-# O ProductCode que o .iss usa para decidir "pular ou instalar" (M2a) e por
-# VERSAO. Ele vai para o BUILD_INFO porque, sem ele, a evidencia da VM nao
-# permite reconstruir POR QUE o instalador pulou (ou nao pulou) o QGIS.
-$pcMatch = [regex]::Match($issText, "(?m)^\s*QgisProductCode\s*=\s*'([^']+)'")
-if (-not $pcMatch.Success) {
-    Fail 2 "QgisProductCode nao encontrado no bloco [Code] do .iss" @(
-        "Arquivo: $IssPath",
-        "Esperada uma linha:  QgisProductCode = '{GUID}';",
-        "Ela e especifica da VERSAO embarcada (D-IMAN-028/DB-16)."
+# --- ARVORE PRIVADA DO QGIS (via A1, fatia #019) -----------------------------
+#
+# O QgisProductCode SAIU daqui: com a via A1 nao ha mais "pular ou instalar" -
+# nao existe ProductCode a casar, porque o QGIS nao e instalado, e EXTRAIDO.
+#
+# O que entra no lugar: montar a arvore com `msiexec /a` a partir do payload
+# recem-conferido, e gerar o manifesto de integridade que o launcher confere na
+# maquina do usuario. Medido no spike #016: ~300 s, 37.337 arquivos, 2,23 GB,
+# SEM ELEVACAO.
+
+Write-Step "Montando a arvore privada do QGIS $QgisBaseline"
+
+$QgisTreeRoot     = Join-Path $RepoRoot ("installer\stage\qgis\QGIS {0}" -f $QgisBaseline)
+$QgisManifestPath = Join-Path $RepoRoot 'installer\stage\qgis-manifest.txt'
+$Extrator         = Join-Path $RepoRoot 'installer\New-ArvoreQgis.ps1'
+
+if (-not (Test-Path -LiteralPath $Extrator)) {
+    Fail 2 "extrator da arvore do QGIS nao encontrado" @("Esperado em: $Extrator")
+}
+
+# -ReusarArvore existe para o ciclo de desenvolvimento: extrair 2,2 GB a cada
+# build tornaria o build caro o bastante para ninguem rodar. NAO e o default -
+# o build canonico sempre remonta.
+$argsExtrator = @(
+    '-Msi', $PayloadPath, '-Versao', $QgisBaseline,
+    '-ShaDoPayload', $PayloadSha, '-Destino', $QgisTreeRoot,
+    '-Manifesto', $QgisManifestPath
+)
+if ($ReusarArvore) { $argsExtrator += '-Reaproveitar' }
+
+$PsExeTree = Join-Path $PSHOME 'powershell.exe'
+if (-not (Test-Path -LiteralPath $PsExeTree)) { $PsExeTree = 'powershell.exe' }
+& $PsExeTree -NoProfile -ExecutionPolicy Bypass -File $Extrator @argsExtrator
+if ($LASTEXITCODE -ne 0) {
+    Fail 5 "falha ao montar a arvore privada do QGIS" @(
+        "Extrator: $Extrator   (exit $LASTEXITCODE)",
+        "Destino : $QgisTreeRoot",
+        "",
+        "Sem a arvore o instalador sairia 'com o QGIS embarcado' e vazio."
     )
 }
-$QgisProductCode = $pcMatch.Groups[1].Value
+
+# A contagem do manifesto e a mesma que o launcher vai conferir. Se ela nao
+# casar com a arvore AQUI, nao vai casar na maquina do usuario tambem - e o
+# produto se recusaria a abrir depois de instalado.
+$QgisTreeFiles = @(Get-ChildItem -LiteralPath $QgisTreeRoot -Recurse -File -Force).Count
+$QgisTreeBytes = 0
+Get-ChildItem -LiteralPath $QgisTreeRoot -Recurse -File -Force |
+    ForEach-Object { $QgisTreeBytes += $_.Length }
+$manTotal = [regex]::Match((Get-Content -LiteralPath $QgisManifestPath -Raw), '(?m)^TOTAL\|(\d+)\|(\d+)$')
+if (-not $manTotal.Success) {
+    Fail 5 "manifesto sem a linha TOTAL" @("Arquivo: $QgisManifestPath")
+}
+if ([int]$manTotal.Groups[1].Value -ne $QgisTreeFiles) {
+    Fail 5 "o manifesto nao descreve a arvore que esta no disco" @(
+        "Manifesto diz : $($manTotal.Groups[1].Value) arquivos",
+        "Arvore tem    : $QgisTreeFiles arquivos",
+        "",
+        "Compilar assim produziria um instalador que o proprio launcher recusa",
+        "a abrir depois de instalado."
+    )
+}
+Write-Ok ("arvore: {0} arquivos / {1:N3} GB" -f $QgisTreeFiles, ($QgisTreeBytes / 1GB))
+Write-Ok "manifesto de integridade gerado e conferido contra a arvore"
+
+Write-Step "Rodando o teste da GUARDA DE INTEGRIDADE do launcher"
+
+# Esta guarda SUBSTITUI a do teste de deteccao (Fail 6 ate a fatia #018). Ela
+# nao foi removida - trocou de OBJETO. Com a via A1 nao ha mais QGIS a detectar
+# na maquina; o que passa a poder dar errado e a arvore chegar TRUNCADA, e esse
+# e o pior defeito que este produto pode ter:
+#
+#   spike #016, com share\proj ausente:
+#     CRS validos? SAD69=True SIRGAS=True UTM=True   <- a API AFIRMA saude
+#     DESLOCAMENTO = 0,00 m  (o correto sao ~57 m)   <- e devolve valor ERRADO
+#
+# Num produto de REURB isso vira coordenada errada em memorial descritivo. Por
+# isso o launcher confere o manifesto e RECUSA abrir - e por isso o build so
+# passa se essa recusa estiver comprovadamente funcionando.
+#
+# Roda ANTES de compilar (a arvore ja esta estagiada) para falhar barato.
+
+$ManifestTest = Join-Path $RepoRoot 'tools\test-launcher-manifest.ps1'
+if (-not (Test-Path -LiteralPath $ManifestTest)) {
+    Fail 2 "teste da guarda de integridade nao encontrado" @(
+        "Esperado em: $ManifestTest",
+        "Sem ele o build nao tem como saber se o launcher ainda recusa abrir",
+        "sobre uma arvore do QGIS truncada."
+    )
+}
+
+# Processo filho de proposito: o teste termina com 'exit 0/1' e o codigo dele e
+# a evidencia. Rodar em processo separado garante o codigo intacto e mantem a
+# saida (o placar caso a caso) visivel no log do build.
+$PsExe = Join-Path $PSHOME 'powershell.exe'
+if (-not (Test-Path -LiteralPath $PsExe)) { $PsExe = 'powershell.exe' }
+
+& $PsExe -NoProfile -ExecutionPolicy Bypass -File $ManifestTest -Arvore $QgisTreeRoot -Manifesto $QgisManifestPath
+$ManifestExit = $LASTEXITCODE
+
+if ($ManifestExit -ne 0) {
+    Fail 6 "a guarda de integridade do launcher NAO cumpre o contrato" @(
+        "Teste    : tools\test-launcher-manifest.ps1   (exit $ManifestExit)",
+        "Launcher : $LauncherPath",
+        "Arvore   : $QgisTreeRoot",
+        "Placar   : o esperado e TODOS; veja os casos [FAIL] logo acima.",
+        "",
+        "O que isso significa: o produto abriria sobre uma copia truncada do",
+        "QGIS. Ele nao daria erro - devolveria COORDENADA ERRADA, em silencio.",
+        "",
+        "CAUSA MAIS PROVAVEL, se o caso T1 falhou: o .bat chegou ao disco com",
+        "finais de linha LF em vez de CRLF, e o cmd.exe nao executa os blocos",
+        "com parenteses. Confira com uma linha (tem de imprimir True):",
+        "  (Get-Content -Raw app\launcher\IMAN-Terra.bat).Contains([char]13)",
+        "",
+        "Se der False, este clone nao aplicou o .gitattributes da raiz",
+        "(*.bat text eol=crlf). Restaure o CRLF apagando e re-extraindo:",
+        "  Remove-Item app\launcher\IMAN-Terra.bat",
+        "  git checkout -- app\launcher\IMAN-Terra.bat"
+    )
+}
+
+Write-Ok "a guarda recusa abrir sobre arvore quebrada (placar completo acima)"
 
 # --- localizacao do ISCC -----------------------------------------------------
 
@@ -756,15 +827,24 @@ $lines = @(
     "Build canonico        : $canonico$canonicoNota",
     "",
     "-----------------------------------------------------------------------",
-    "QGIS EMBARCADO (D-IMAN-028 / via A2a)",
-    "Este instalador NAO exige QGIS previamente instalado: ele instala o QGIS",
-    "abaixo, offline, encadeando o MSI oficial nao modificado.",
+    "QGIS EMBARCADO (D-IMAN-028 / via A1 - arvore privada)",
+    "Este instalador NAO instala o QGIS ao lado e NAO exige QGIS previamente",
+    "instalado: ele CARREGA uma copia privada do QGIS, que vive dentro do",
+    "produto em {app}\qgis e sai junto no uninstall. Nada em Program Files,",
+    "nada no registro, nenhuma elevacao.",
     "",
     "QGIS embarcado        : $QgisBaseline",
-    "Payload               : $PayloadName",
+    "Arvore (arquivos)     : $QgisTreeFiles",
+    "Arvore (bytes)        : $QgisTreeBytes",
+    "Manifesto             : {app}\qgis-manifest.txt",
+    "",
+    "ANCORA DE PROCEDENCIA - a arvore foi extraida com 'msiexec /a' DESTE",
+    "payload oficial, sem modificacao. E o SHA-256 abaixo que amarra a arvore",
+    "embarcada ao binario publicado pelo QGIS.ORG:",
+    "",
+    "Payload de origem     : $PayloadName",
     "Payload SHA-256       : $PayloadSha",
     "Payload (bytes)       : $($PayloadItem.Length)",
-    "ProductCode do QGIS   : $QgisProductCode",
     "Origem oficial        : $PayloadUrl",
     "-----------------------------------------------------------------------",
     "",
