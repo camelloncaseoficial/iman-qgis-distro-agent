@@ -59,8 +59,13 @@ QStatusBar QLineEdit, QStatusBar QComboBox {
    Aquela linha nao escondia o botao de fechar - APAGAVA o icone dele, deixando
    um alvo de clique invisivel de 4 px. Medido: tinta 0/80, altura 4 px contra
    15 px do botao de flutuar ao lado.
-   */
-QDockWidget::title { background-color: #F5F7F2; color: #155F3D; padding: 6px 10px; font-weight: 600; letter-spacing: .3px; border-bottom: 1px solid #E2E5DE; }
+   D4 (#017/A04): o `padding: 6px 10px` cortava o glifo do titulo ao meio. A
+   altura da faixa de titulo o Qt calcula a partir da fonte, e padding vertical
+   nao a fazia crescer - so comia o espaco do texto. Vale a regra derivada no
+   contrato: propriedade que muda GEOMETRIA num widget que o QGIS ja
+   dimensionou e mudanca de comportamento disfarcada de cor.
+   O recuo horizontal fica (nao mexe na altura); o vertical sai. */
+QDockWidget::title { background-color: #F5F7F2; color: #155F3D; padding-left: 10px; padding-right: 10px; font-weight: 600; letter-spacing: .3px; border-bottom: 1px solid #E2E5DE; }
 QDockWidget > QWidget { background-color: #FFFFFF; }
 
 /* ---- Arvore/lista/tabela: conteudo CLARO, hover/selecao em verde pastel ---- */
