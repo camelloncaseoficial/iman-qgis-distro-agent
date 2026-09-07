@@ -54,8 +54,12 @@ QStatusBar QLineEdit, QStatusBar QComboBox {
     background-color: #FFFFFF; color: #1A231D; border: 1px solid #D0D5C9; border-radius: 7px; padding: 2px 8px;
 }
 
-/* ---- Docks / paineis: header CLARO, texto verde de marca, cantos suaves ---- */
-QDockWidget { titlebar-close-icon: none; }
+/* ---- Docks / paineis: header CLARO, texto verde de marca, cantos suaves ----
+   D1 (#017/A01): NAO reintroduzir `QDockWidget { titlebar-close-icon: none; }`.
+   Aquela linha nao escondia o botao de fechar - APAGAVA o icone dele, deixando
+   um alvo de clique invisivel de 4 px. Medido: tinta 0/80, altura 4 px contra
+   15 px do botao de flutuar ao lado.
+   */
 QDockWidget::title { background-color: #F5F7F2; color: #155F3D; padding: 6px 10px; font-weight: 600; letter-spacing: .3px; border-bottom: 1px solid #E2E5DE; }
 QDockWidget > QWidget { background-color: #FFFFFF; }
 
