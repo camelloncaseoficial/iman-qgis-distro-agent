@@ -158,6 +158,22 @@ Name: "{autoprograms}\Desinstalar {#ProductName}"; Filename: "{uninstallexe}"
 [Run]
 Filename: "{app}\launcher\IMAN-Terra.bat"; Description: "Abrir o {#ProductName} agora"; Flags: postinstall shellexec skipifsilent nowait
 
+[UninstallDelete]
+; A ARVORE DO QGIS SAI INTEIRA, e nao so os arquivos que o Inno instalou.
+;
+; MEDIDO em 2026-09-07, num ciclo real de instalar -> abrir -> desinstalar
+; nesta bancada: o uninstall deixou 817 arquivos / 14,69 MB para tras, TODOS
+; .pyc. O Python grava bytecode em __pycache__ dentro da propria arvore ao
+; importar, e o Inno so remove o que ele proprio instalou - esses .pyc nasceram
+; depois, entao nao estavam na lista dele.
+;
+; Sem esta linha, cada instalar-usar-desinstalar deixaria um sedimento crescente
+; no perfil do usuario. Com ela, {app}\qgis sai inteiro. E seguro apagar por
+; caminho: esse diretorio e 100% nosso - foi criado por este instalador e nao ha
+; nada do usuario la dentro (os dados dele vivem no perfil isolado, em
+; %APPDATA%, que continua intocado).
+Type: filesandordirs; Name: "{app}\qgis"
+
 ; NOTA: nao ha secao [UninstallDelete] para %APPDATA%\{#PublisherDir}\{#ProductName}.
 ; Isso e PROPOSITAL (BL-3): o perfil isolado do usuario e seus dados NAO sao
 ; apagados no uninstall. Removem-se apenas os arquivos instalados em {app}.

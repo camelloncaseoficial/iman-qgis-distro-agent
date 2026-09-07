@@ -149,7 +149,7 @@ Caso 'T3' 'apps\gdal\share\gdal TRUNCADO em 1 arquivo -> recusa' {
     $origem = $alvo.FullName
     { Move-Item -LiteralPath $guardado -Destination $origem -Force }.GetNewClosure()
 } {
-    param($r) ($r.Codigo -eq 1) -and ($r.Saida -match 'gdal') -and ($r.Saida -match 'esperados')
+    param($r) ($r.Codigo -eq 1) -and ($r.Saida -match 'gdal') -and ($r.Saida -match 'faltam ao menos')
 }
 
 # ------------------------------------------------------------------ T4

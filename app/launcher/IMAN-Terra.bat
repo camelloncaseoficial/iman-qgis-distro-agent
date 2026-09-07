@@ -201,9 +201,20 @@ if not exist "%QGIS_ROOT%\%REL%\" (
 )
 set "N=0"
 for /f %%N in ('dir /a-d /b /s "%QGIS_ROOT%\%REL%" 2^>nul ^| "%WFIND%" /c /v ""') do set "N=%%N"
-if not "!N!"=="%ESPERADO%" (
+REM PISO, nao igualdade. A arvore NAO e somente-leitura em uso: medido em
+REM 2026-09-07, na segunda abertura do produto instalado, apps\Python312 tinha
+REM 20.111 arquivos contra os 19.666 do manifesto - 445 .pyc que o proprio
+REM Python grava em __pycache__ ao importar, mais um is-*.tmp que o Inno deixou
+REM para tras na instalacao. Nenhum dos dois e truncamento.
+REM
+REM Com igualdade exata, o produto ABRIA UMA VEZ e se recusava a abrir na
+REM segunda - o pior falso positivo possivel. A guarda existe para pegar copia
+REM TRUNCADA, e truncar sempre diminui a contagem; crescer nunca e truncar.
+REM Adulteracao de conteudo continua coberta pelo SHA-256 dos arquivos
+REM criticos, que e comparacao exata.
+if !N! LSS %ESPERADO% (
   set /a FALHAS+=1
-  set "DETALHE=!DETALHE! [%REL%: !N! arquivos, esperados %ESPERADO%]"
+  set "DETALHE=!DETALHE! [%REL%: !N! arquivos, faltam ao menos %ESPERADO%]"
 )
 exit /b 0
 
