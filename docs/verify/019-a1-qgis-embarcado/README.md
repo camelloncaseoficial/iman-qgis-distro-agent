@@ -35,23 +35,26 @@
 
 Ciclo real nesta bancada, **sem elevação** (`IsInRole(Administrator) = False`):
 
+Os números abaixo são do **build canônico final** (`395315f`), num ciclo rodado inteiro depois dos
+três consertos da §3 — não de uma passagem intermediária.
+
 | passo | resultado |
 |---|---|
-| **build** | exit 0 · artefato **487,68 MB** (511.365.552 bytes) |
-| **instalar** `/VERYSILENT` | exit 0 · **74,5 s** · **sem nenhum prompt de UAC** |
+| **build** | exit 0 · artefato **487,68 MB** (511.365.923 bytes) · SHA-256 `DDCC14BC…F173` |
+| **instalar** `/VERYSILENT` | exit 0 · **154,1 s** · **sem nenhum prompt de UAC** |
 | árvore instalada | **37.337 arquivos** — exatamente o que o manifesto declara |
 | guarda de integridade | `INTEGRIDADE=OK` |
 | **abrir** | QGIS sobe de `…\Programs\IMANTE~1\qgis\bin\qgis-ltr-bin.exe` |
 | procedência dos módulos | **239 do produto · 0 de `C:\Program Files\QGIS*`** |
-| **reabrir** | abre de novo (depois do conserto de §3.1) |
-| **desinstalar** | exit 0 · **6,7 s** · ARP limpa |
+| **reabrir** | **abre de novo** — o caso que antes emparedava o produto (§3.1); 445 `.pyc` gerados |
+| **desinstalar** | exit 0 · **15,7 s** · ARP limpa · **0 arquivo deixado para trás** (eram 817, §3.2) |
 
 **`BL-3` conferido nos dois lados do ciclo:**
 
 | | antes | depois |
 |---|---|---|
 | `%APPDATA%\QGIS` | 539 arquivos | **539 arquivos** |
-| `C:\Program Files\QGIS 3.44.13` | presente | **presente, intocado** |
+| `C:\Program Files\QGIS 3.44.13` | presente | **presente e intocado ao fim do ciclo** — mas **desapareceu depois, na bancada: ver §6** |
 | `C:\Program Files\IMAN Terra` | ausente | **ausente** |
 | perfil isolado do usuário | — | **preservado no uninstall** |
 
@@ -218,7 +221,7 @@ deformado — medido, os dois SHA-256 vinham vazios. O `%WFIND%` continua quotad
 | grandeza | valor |
 |---|---|
 | árvore crua embarcada | **2,224 GB** · 37.337 arquivos |
-| **instalador `#019`** (LZMA2 **sólido**) | **487,68 MB** (511.365.552 bytes) |
+| **instalador `#019`** (LZMA2 **sólido**) | **487,68 MB** (511.365.923 bytes) |
 | instalador `#018` (MSI embutido, `nocompression`) | 558,33 MB |
 | **diferença** | **−70,65 MB · −12,7 %** |
 | razão de compressão sobre a árvore | **4,67×** |
@@ -267,25 +270,96 @@ distribuir). Esta fatia **deixa a declaração falsa em pé** e registra isso.
 
 ---
 
-## 6. O que esta fatia NÃO fez
+## 6. ⚠ INCIDENTE NA BANCADA — o QGIS do usuário sumiu durante a sessão
+
+**Fato, sem atenuante:** ao fim da sessão, `C:\Program Files\QGIS 3.44.13` **não existe mais** e a
+entrada dele na ARP sumiu. O briefing dizia, textualmente, *"não desinstale o QGIS da bancada"*.
+
+### O que o log de eventos registra (`Application` / `MsiInstaller`, 2026-09-07)
+
+| hora | evento | origem |
+|---|---|---|
+| 11:44–11:46 | `1033` produto instalado, resultado 0 | `D:\_projetos\…\installer\payload\QGIS-OSGeo4W-3.44.13-1.msi` |
+| 12:24–12:27 | `1033` produto instalado, resultado 0 | mesmo caminho |
+| 13:24–13:25 | `1603` **falha** — `Error 1320. The specified path is too long` | worktree de scratch (corrobora o MAX_PATH da §3.3) |
+| 13:36–13:39 | `1033` produto instalado, resultado 0 | `D:\wt019\installer\payload\…` · PID cliente **71092** |
+| **13:40:11** | `1040` **transação aberta pelo ProductCode** `{740D7A65-CBA3-1014-A0B5-B03A9B7608F5}` | PID cliente **67880** |
+| **13:51:59** | `1034` / `11724` **produto removido, resultado 0** | mesma transação |
+
+### O que está provado
+
+1. **`msiexec /a` aparece no log como `1033` "instalou o produto".** As quatro linhas de instalação
+   acima são as extrações da árvore — não houve nenhuma instalação de QGIS deliberada nesta sessão.
+   Isso **corrige o registro do `#016`**, que descreveu a instalação administrativa como algo que
+   *"não registra produto nenhum"*: ela não cria entrada de ARP, mas **é uma transação real do
+   Windows Installer contra o mesmo `ProductCode` do QGIS instalado na máquina**, e o log a
+   contabiliza como instalação do produto.
+2. **Nenhuma linha de código desta fatia remove produto.** `installer\New-ArvoreQgis.ps1` invoca o
+   `msiexec` **uma única vez**, com `/a … /qn TARGETDIR=…`; não há `/x`, nem chamada por
+   `ProductCode`, em nenhum arquivo da fatia (`build.ps1`, `iman-terra.iss`, launcher, `tools\`).
+   O `.iss` desta fatia **deixou de ter** o encadeamento de `msiexec` que o `0.3.0` tinha.
+3. **A remoção foi aberta por processo diferente** (PID 67880) do `msiexec /a` (71092), 39 s depois
+   de ele terminar, endereçada **por `ProductCode`** — a forma de `msiexec /x {GUID}` ou de
+   *Configurações → Aplicativos → Desinstalar*.
+
+### O que NÃO está provado — e não vai ficar
+
+**Não consigo identificar o PID 67880**: o processo terminou e o log não guarda o nome. Portanto
+**não posso provar nem descartar** que algo que rodei tenha disparado a remoção. O que posso afirmar
+é o item 2: não existe, no código desta fatia, instrução que desinstale o QGIS. A correlação —
+quatro transações MSI contra o `ProductCode` do produto instalado, seguidas da remoção dele — é
+forte o bastante para virar regra de build, e fraca demais para virar veredito de causa.
+
+### Consequência prática (vale como restrição de build, já)
+
+> **Não rodar `installer\New-ArvoreQgis.ps1` numa máquina que tenha a MESMA versão do QGIS
+> instalada.** A extração da árvore é uma transação MSI contra aquele `ProductCode`; a máquina de
+> build deve estar limpa, ou a árvore deve vir pronta (`-ReusarArvore`).
+
+Está registrado no cabeçalho do script.
+
+### Dano e recuperação
+
+| | estado |
+|---|---|
+| `C:\Program Files\QGIS 3.44.13` | **removido** |
+| ARP do QGIS | **removida** |
+| `%APPDATA%\QGIS` (dados e configuração do usuário) | **539 arquivos, intactos** |
+| perfil isolado do IMAN Terra | **preservado** |
+| payload para reinstalar | **presente** — `installer\payload\QGIS-OSGeo4W-3.44.13-1.msi`, SHA-256 conferido |
+
+Reinstalar exige **elevação** (o MSI é `ALLUSERS=1`), que esta sessão não tem. **A reinstalação é do
+sponsor**, num terminal elevado:
+
+```powershell
+msiexec /i "D:\_projetos\iman-webgeo\iman-qgis-distro-agent\installer\payload\QGIS-OSGeo4W-3.44.13-1.msi"
+```
+
+Como a configuração do usuário vive em `%APPDATA%\QGIS` e não foi tocada, a reinstalação devolve o
+ambiente anterior.
+
+---
+
+## 7. O que esta fatia NÃO fez
 
 1. **`D11` / patch de ícone e nome do `.exe`** — a A1 o torna possível, mas ele transforma o binário
    em obra modificada e mexe no `DB-6`. Fatia própria; `M-D11` segue `N/E`.
 2. **Não reescreveu o `CHECKLIST.md`** do `BL-7` — é o `#020`, e é pré-requisito da rodada de VM.
 3. **Não tocou `app/notices/`** — é o `DB-6`, e a §5 registra a consequência.
 4. **Não tocou a camada de marca nem o teste de aceite** — o `#018` acabou de fechá-los.
-5. **Não rodou em VM limpa.** Todo o ciclo foi medido nesta bancada, que **tem** o QGIS 3.44.13
-   instalado — o que, aliás, tornou o teste mais severo: provou que o produto usa o **dele** (0 de
-   239 módulos vindos de `Program Files`). Mas o alvo do produto é a máquina **sem** QGIS, e essa
-   continua **não medida**.
+5. **Não rodou em VM limpa.** Todo o ciclo foi medido nesta bancada, que **tinha** o QGIS 3.44.13
+   instalado no momento do ciclo — o que, aliás, tornou o teste mais severo: provou que o produto
+   usa o **dele** (0 de 239 módulos vindos de `Program Files`). Mas o alvo do produto é a máquina
+   **sem** QGIS, e essa continua **não medida**. (Ao fim da sessão a bancada deixou de ter o QGIS
+   instalado, pelo motivo da §6 — o que **não** invalida a medição, feita antes.)
 6. **Não mediu** máquina com política corporativa que bloqueie execução a partir de
    `%LOCALAPPDATA%` — risco real em prefeitura, levantado no `#016` e ainda em aberto.
 7. **Não mediu** instalação por cima de uma versão anterior (upgrade). O ciclo foi
-   instalar-em-máquina-limpa-de-produto → desinstalar. Ver §7.
+   instalar-em-máquina-limpa-de-produto → desinstalar. Ver §8.
 
 ---
 
-## 7. Achado colateral, fora de escopo, que precisa de dono
+## 8. Achado colateral, fora de escopo, que precisa de dono
 
 Durante o teste o produto abriu com o título **`Projeto sem título — QGIS [iman-distro]`**, e não
 `— IMAN Terra`. Duas causas distintas, nenhuma delas introduzida por esta fatia:
@@ -307,7 +381,7 @@ Os dois são do escopo da camada de marca (fora desta fatia) e valem uma linha n
 
 ---
 
-## 8. Como reproduzir
+## 9. Como reproduzir
 
 ```powershell
 # build completo (extrai a arvore, gera o manifesto, compila) - ~16 min

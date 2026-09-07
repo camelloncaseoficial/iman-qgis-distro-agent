@@ -8,8 +8,10 @@
  O QUE FAZ
    1. confere o payload ja estagiado (SHA-256 vindo do build.ps1);
    2. extrai a arvore com `msiexec /a` - instalacao administrativa, que
-      EXTRAI sem instalar, sem elevacao e sem registrar produto nenhum
-      (medido no #016: exit 0, ~300 s, 37.338 arquivos, 2,23 GB);
+      EXTRAI sem instalar e sem elevacao (medido no #016: exit 0, ~300 s,
+      37.338 arquivos, 2,23 GB). ATENCAO: ela NAO cria entrada de ARP, mas
+      E UMA TRANSACAO REAL do Windows Installer contra o ProductCode do
+      QGIS - ver a restricao de bancada logo abaixo;
    3. remove a copia residual do MSI que o /a deixa na raiz do TARGETDIR
       (8,57 MB que nao servem para rodar);
    4. gera o MANIFESTO DE INTEGRIDADE que o launcher confere na maquina do
@@ -21,6 +23,19 @@
    devolve deslocamento de datum de 0,00 m onde o correto sao ~57 m. Uma
    copia truncada nao aparece como erro: aparece como COORDENADA ERRADA num
    memorial descritivo. Num produto de REURB e o defeito mais caro que existe.
+
+ RESTRICAO DE BANCADA - NAO RODAR ONDE O QGIS ESTIVER INSTALADO
+   Este script abre uma transacao do Windows Installer contra o MESMO
+   ProductCode {740D7A65-CBA3-1014-A0B5-B03A9B7608F5} do QGIS 3.44.13
+   oficial. Na sessao do #019, quatro extracoes rodaram numa bancada que
+   tinha esse QGIS instalado e, ao fim, a instalacao dele havia sido
+   REMOVIDA por uma transacao aberta por outro processo (log de eventos em
+   docs/verify/019-a1-qgis-embarcado/README.md, secao 6). A causa nao ficou
+   provada - nao ha nenhum `msiexec /x` neste repo - mas a correlacao basta
+   para a regra:
+
+     rode este script numa maquina de build SEM o QGIS instalado,
+     ou reaproveite a arvore ja extraida com `build.ps1 -ReusarArvore`.
 
  O QUE ELE NAO FAZ
    nao roda o `etc\postinstall.bat` (o #016 mediu que ele nao e necessario, e
@@ -98,7 +113,7 @@ if ($jaExiste -and $Reaproveitar) {
 
     # ----------------------------------------------------------- 3. extracao
     # `/a` = instalacao administrativa: extrai a arvore para TARGETDIR sem
-    # instalar, sem registrar ProductCode e SEM ELEVACAO. Medido no #016 - o
+    # instalar, sem criar entrada de ARP e SEM ELEVACAO. Medido no #016 - o
     # log traz "MSI_LUA: Credential prompt not required, administrative
     # installation creation or servicing".
     $logMsi = Join-Path $paiDestino 'msiexec-admin-install.log'

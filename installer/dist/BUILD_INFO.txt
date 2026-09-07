@@ -4,33 +4,42 @@ Este arquivo amarra o instalador ao commit que o gerou. Sem ele, um .exe
 numa VM e apenas um binario sem procedencia.
 
 Artefato              : Instituto-IMAN-IMAN-Terra-Setup-0.3.0.exe
-SHA-256               : D34E16620C72D6F710EEB095A2E946D3D91867BB99C5DD8681ABF5276C3C82DD
-Tamanho (bytes)       : 585456051
+SHA-256               : DDCC14BCDE61472460C538F491A5D5DBC6B9D3394AD4B621AE8C1CAE80E9F173
+Tamanho (bytes)       : 511365923
 
 ProductVersion        : 0.3.0
-Commit                : cb9d3b1686be4107c1d05d3550f3e976915417bd
-Commit (curto)        : cb9d3b1
-Data do commit        : 2026-09-06T17:38:58-03:00
-Branch                : develop
-Build canonico        : SIM
+Commit                : 395315f6f488476c735d1cd891f9447d9f808ae3
+Commit (curto)        : 395315f
+Data do commit        : 2026-09-07T12:59:51-03:00
+Branch                : feat/019-a1-qgis-embarcado
+Build canonico        : NAO  <<< artefato de branch de trabalho, nao de integracao
 
 -----------------------------------------------------------------------
-QGIS EMBARCADO (D-IMAN-028 / via A2a)
-Este instalador NAO exige QGIS previamente instalado: ele instala o QGIS
-abaixo, offline, encadeando o MSI oficial nao modificado.
+QGIS EMBARCADO (D-IMAN-028 / via A1 - arvore privada)
+Este instalador NAO instala o QGIS ao lado e NAO exige QGIS previamente
+instalado: ele CARREGA uma copia privada do QGIS, que vive dentro do
+produto em {app}\qgis e sai junto no uninstall. Nada em Program Files,
+nada no registro, nenhuma elevacao.
 
 QGIS embarcado        : 3.44.13
-Payload               : QGIS-OSGeo4W-3.44.13-1.msi
+Arvore (arquivos)     : 37337
+Arvore (bytes)        : 2387710878
+Manifesto             : {app}\qgis-manifest.txt
+
+ANCORA DE PROCEDENCIA - a arvore foi extraida com 'msiexec /a' DESTE
+payload oficial, sem modificacao. E o SHA-256 abaixo que amarra a arvore
+embarcada ao binario publicado pelo QGIS.ORG:
+
+Payload de origem     : QGIS-OSGeo4W-3.44.13-1.msi
 Payload SHA-256       : 42E2F1A6047A827454BC991F8E8CAA069961B9CB4B877E1F5568A43D98844EB4
 Payload (bytes)       : 582197248
-ProductCode do QGIS   : {740D7A65-CBA3-1014-A0B5-B03A9B7608F5}
 Origem oficial        : https://download.qgis.org/downloads/QGIS-OSGeo4W-3.44.13-1.msi
 -----------------------------------------------------------------------
 
-QGIS na bancada       : C:\Program Files\QGIS 3.44.13
+QGIS na bancada       : nao detectado
 Compilador            : Inno Setup 7.1.0
 Compilador (caminho)  : C:\Program Files\Inno Setup 7\ISCC.exe
-Data/hora do build    : 2026-09-06 17:58:25 -03:00
+Data/hora do build    : 2026-09-07 13:57:33 -03:00
 
 -----------------------------------------------------------------------
 SOBRE REPRODUTIBILIDADE
