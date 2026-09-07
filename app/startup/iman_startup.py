@@ -4,10 +4,17 @@
 Executado pelo QGIS via `--code app/startup/iman_startup.py`. Responsabilidades
 LEVES (a experiência maior mora no plugin de marca `iman_brand`):
 
-1. Ajustar o título da janela para `WINDOW_TITLE` (fonte única de marca, BL-4).
+1. Ativar o TEMA DE UI próprio (`themes/IMAN Terra` no perfil isolado) — D12.
 2. Aplicar o tema QSS institucional à janela principal, ANEXANDO ao stylesheet do
    QGIS (não substitui os estilos nativos) e reaplicando após a UI assentar.
 3. Trocar o ícone da janela/taskbar para o emblema IMAN.
+
+O TÍTULO DA JANELA NÃO É ESCRITO AQUI (D5, fatia #018). Ele tinha duas fontes —
+esta e `iman_brand.py::_apply_title` — e as duas cravavam a mesma string
+estática por cima do título que o QGIS acabara de compor, apagando o nome do
+projeto aberto. Agora existe uma fonte só: o gancho `windowTitleChanged` do
+plugin de marca, que troca apenas o SUFIXO. Não reintroduza `setWindowTitle`
+neste arquivo.
 
 Limite honesto (BL-5): o **splash nativo de boot** ("QGIS x.y Bratislava LTR") e os
 **ícones de ação da toolbar** são do core do QGIS e só mudam na Opção 2 (fork) —
@@ -25,6 +32,11 @@ from qgis.PyQt.QtGui import QIcon
 from qgis.utils import iface
 
 _IMAN_MARK = "/* IMAN-THEME */"
+
+# D12 (#017/A12) - o tema de icones/UI do produto e um tema PROPRIO, instalado
+# no userThemesFolder do PERFIL ISOLADO. Nunca em C:\Program Files\QGIS* -
+# sob o ramo DB-16 isso sobrescreveria o QGIS do proprio usuario (BL-3).
+TEMA_UI = "IMAN Terra"
 
 
 def _brand():
@@ -54,14 +66,40 @@ def _app_home():
     return os.environ.get("IMAN_TERRA_HOME")
 
 
+def _caminho_do_tema():
+    """`<perfil>/themes/<TEMA_UI>` — o que o QGIS chama de userThemesFolder."""
+    return os.path.join(_profile_dir(), "themes", TEMA_UI)
+
+
+def _aplica_tema_ui():
+    """Ativa o tema PRÓPRIO do produto (D12).
+
+    Antes desta fatia o tema em uso era o `default` do QGIS e não existia
+    nenhum tema no perfil — ou seja, toda a iconografia da UI era a do QGIS,
+    logo incluído. Agora o produto tem tema próprio, e ele mora no perfil
+    isolado: `QgsApplication.userThemesFolder()`.
+    """
+    try:
+        if not os.path.isdir(_caminho_do_tema()):
+            return False
+        QgsApplication.setUITheme(TEMA_UI)
+        return QgsApplication.themeName() == TEMA_UI
+    except Exception:
+        return False
+
+
 def _read_qss(brand):
-    qss_path = os.path.join(_profile_dir(), "QGIS", "iman-theme.qss")
-    if os.path.exists(qss_path):
-        try:
-            with open(qss_path, "r", encoding="utf-8") as fh:
-                return fh.read()
-        except Exception:
-            pass
+    # O QSS de marca É o style.qss do tema (fonte única). O caminho antigo
+    # (<perfil>/QGIS/iman-theme.qss) fica como fallback para perfis criados
+    # antes da fatia #018.
+    for qss_path in (os.path.join(_caminho_do_tema(), "style.qss"),
+                     os.path.join(_profile_dir(), "QGIS", "iman-theme.qss")):
+        if os.path.exists(qss_path):
+            try:
+                with open(qss_path, "r", encoding="utf-8") as fh:
+                    return fh.read()
+            except Exception:
+                pass
     if brand is not None:
         # Fallback mínimo derivado das constantes (caso o .qss não venha no perfil).
         # Cores vêm da fonte única brand.py (paleta oficial travada, BL-4).
@@ -130,14 +168,14 @@ def main():
         return
     win = iface.mainWindow()
     brand = _brand()
-    title = brand.WINDOW_TITLE if brand else "IMAN Terra — powered by QGIS"
 
     _set_app_user_model_id()
+    _aplica_tema_ui()
 
     def apply_identity():
-        # Titulo + icone da janela/taskbar. O QGIS reescreve titulo/icone TARDE no
-        # boot (achado dos spikes #004/#005), entao reaplicamos algumas vezes.
-        win.setWindowTitle(title)
+        # Só o ícone. O QGIS reescreve o ícone TARDE no boot (achado dos spikes
+        # #004/#005), então reaplicamos algumas vezes. O TÍTULO é do plugin de
+        # marca, fonte única (D5).
         _apply_window_icon(win)
 
     apply_identity()

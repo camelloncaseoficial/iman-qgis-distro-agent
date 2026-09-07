@@ -14,20 +14,64 @@ APIs públicas do QGIS/Qt (BL-6). Marca da fonte única `brand.py` (BL-4). Nada 
 se apresenta como QGIS oficial (BL-1/BL-2).
 """
 import os
+import re
 import webbrowser
 
-from qgis.PyQt.QtCore import Qt, QUrl, QTimer, QSize
+from qgis.PyQt.QtCore import Qt, QUrl, QTimer, QSize, QObject, QEvent
 from qgis.PyQt.QtGui import QIcon, QPixmap, QDesktopServices
 from qgis.PyQt.QtWidgets import (
     QAction, QDockWidget, QWidget, QVBoxLayout, QStackedWidget, QMessageBox,
-    QToolButton, QMenu, QToolBar,
+    QToolButton, QMenu, QToolBar, QLabel, QLineEdit, QStyle, QStyleOptionFrame,
 )
+
+from qgis.core import QgsProject
 
 from . import brand
 from . import dashboard
+from . import sobre
 
 _DIR = os.path.dirname(__file__)
 _RES = os.path.join(_DIR, "resources")
+
+# --- Status bar: o campo de coordenadas (D2/D3) -------------------------------
+# O QGIS dimensiona esse campo pela metrica do texto que ele mesmo escreve, e
+# nao tem piso nem teto: vazio, encolhe para 24 px; exibindo a EXTENSAO de um
+# projeto sem camadas, o texto vem em DBL_MAX e o campo vai a milhares de px.
+# A camada de marca, que estilizou o campo, assume as duas pontas.
+COORD_REFERENCIA = "555519,9  9585490,5"                             # D2 - piso
+EXTENSAO_REFERENCIA = "555519,9  9585490,5 : 557706,8  9587051,2"    # D3 - teto
+
+
+class _ContemLargura(QObject):
+    """Mantem o campo de coordenadas entre um piso e um teto (D2 e D3).
+
+    Chamar setMinimumWidth/setMaximumWidth uma vez nao basta: o QGIS
+    redimensiona o campo a cada troca de texto e a cada troca de projeto, e
+    desfaz os dois limites. Medido em 2026-09-07: depois de um ciclo abrir
+    projeto -> projeto novo, o campo voltava de 122 px para 24 px. Este filtro
+    reimpoe os limites no proximo evento de geometria.
+    """
+
+    def __init__(self, alvo, piso, teto, parent=None):
+        super().__init__(parent)
+        self._alvo = alvo
+        self._piso = int(piso)
+        self._teto = int(teto)
+
+    def eventFilter(self, obj, ev):
+        if obj is self._alvo and ev.type() in (
+                QEvent.Resize, QEvent.LayoutRequest, QEvent.Show,
+                QEvent.PolishRequest):
+            try:
+                if self._alvo.minimumWidth() < self._piso:
+                    self._alvo.setMinimumWidth(self._piso)
+                if self._alvo.minimumWidth() > self._teto:
+                    self._alvo.setMinimumWidth(self._teto)
+                if self._alvo.maximumWidth() > self._teto:
+                    self._alvo.setMaximumWidth(self._teto)
+            except Exception:
+                pass
+        return False
 
 
 def _res(name):
@@ -49,6 +93,11 @@ class ImanBrandPlugin:
         self._guard = None
         self._reinstalls = 0
         self._hidden_toolbars = []
+        self._contem_coords = None
+        self._campo_coords = None
+        self._retitulando = False
+        self._pousou = False
+        self._acao_sobre_ajuda = None
 
     # ------------------------------------------------------------------ setup
     def initGui(self):
@@ -73,7 +122,8 @@ class ImanBrandPlugin:
         # IMAN"), no lugar de 5 ícones repetidos.
         self._build_menu_button(icon)
 
-        self._apply_title()
+        self._instala_sobre_no_ajuda()
+        self._instala_titulo()
         for sig, slot in (("projectRead", self._on_project_read),
                           ("newProjectCreated", self._on_new_project)):
             try:
@@ -85,6 +135,7 @@ class ImanBrandPlugin:
         # das toolbars nativas ruidosas + banner de versão (Fase 3).
         QTimer.singleShot(900, self._install_center)
         QTimer.singleShot(1600, self._declutter_toolbars)
+        QTimer.singleShot(1800, self._ajusta_campo_de_coordenadas)
         QTimer.singleShot(2200, self._version_banner)
 
     def _build_menu_button(self, icon):
@@ -128,6 +179,51 @@ class ImanBrandPlugin:
         except Exception:
             pass
 
+    # ------------------------------------------------- status bar (D2 / D3)
+    def _campo_de_coordenadas(self):
+        """O QLineEdit do QgsStatusBarCoordinatesWidget: irmao de 'mCoordsLabel'."""
+        try:
+            lbl = self.iface.mainWindow().statusBar().findChild(QLabel, "mCoordsLabel")
+            if lbl is None:
+                return None
+            return lbl.parentWidget().findChild(QLineEdit)
+        except Exception:
+            return None
+
+    def _ajusta_campo_de_coordenadas(self):
+        """Reserva o piso (D2) e impoe o teto (D3) do campo de coordenadas.
+
+        D2 - vazio, o campo encolhe para 24 px e nao cabe uma coordenada. Quem
+        estilizou o campo assume reservar espaco para o texto que o produto
+        exibe: a coordenada em EPSG:31984, a projecao padrao da distro.
+        D3 - exibindo a extensao de um projeto sem camadas, o QGIS escreve
+        DBL_MAX e o campo cresce sem teto, arrastando a janela principal para
+        fora da tela. O teto e a extensao plausivel; o excedente e cortado no
+        campo em vez de deformar a janela.
+        """
+        le = self._campo_de_coordenadas()
+        if le is None:
+            return
+        try:
+            fm = le.fontMetrics()
+            # cromo = o que a borda/o tema consomem, medido no proprio widget
+            opt = QStyleOptionFrame()
+            le.initStyleOption(opt)
+            interno = le.style().subElementRect(
+                QStyle.SE_LineEditContents, opt, le).width()
+            cromo = max(0, le.width() - interno)
+
+            piso = fm.horizontalAdvance(COORD_REFERENCIA) + cromo + 2
+            teto = fm.horizontalAdvance(EXTENSAO_REFERENCIA) + cromo + 2
+
+            le.setMinimumWidth(piso)
+            le.setMaximumWidth(teto)
+            self._contem_coords = _ContemLargura(le, piso, teto, self.iface.mainWindow())
+            le.installEventFilter(self._contem_coords)
+            self._campo_coords = le
+        except Exception:
+            pass
+
     def _version_banner(self):
         try:
             bar = self.iface.messageBar()
@@ -140,11 +236,74 @@ class ImanBrandPlugin:
         except Exception:
             pass
 
-    def _apply_title(self):
+    def _instala_sobre_no_ajuda(self):
+        """Poe "Sobre o <produto>" no menu Ajuda (D10).
+
+        O Sobre existia so no dropdown da toolbar, tres niveis abaixo em
+        `Complementos > IMAN Terra >`. Existia e funcionava - so nao estava
+        onde se procura. Medido no #017: zero ocorrencias no menu Ajuda.
+
+        O Sobre NATIVO do QGIS continua no mesmo menu, ao lado. BL-1.
+        """
         try:
-            self.iface.mainWindow().setWindowTitle(brand.WINDOW_TITLE)
+            menu = self.iface.helpMenu()
+            if menu is None:
+                return
+            self._acao_sobre_ajuda = QAction(
+                QIcon(_res("icon.png")),
+                "Sobre o %s" % brand.PRODUCT_NAME,
+                self.iface.mainWindow())
+            self._acao_sobre_ajuda.triggered.connect(self.show_about)
+            menu.addAction(self._acao_sobre_ajuda)
+        except Exception:
+            self._acao_sobre_ajuda = None
+
+    # --------------------------------------------- titulo da janela (D5)
+    #
+    # O titulo NAO e nosso para escrever - so o sufixo e. Quem sabe qual
+    # projeto esta aberto, se ha alteracao nao salva e como isso se escreve no
+    # idioma do usuario e o QGIS. Antes desta fatia a camada de marca cravava
+    # `WINDOW_TITLE` por cima, de DUAS fontes independentes (aqui e no
+    # iman_startup.py), e o resultado era regressao, nao ausencia: medido em
+    # 2026-09-07, o QGIS tinha escrito "spike017-projeto-alfa - QGIS" e a
+    # marca apagava, deixando "IMAN Terra - powered by QGIS" em todo estado.
+    #
+    # Agora existe UMA fonte: este gancho, que reage ao titulo que o QGIS
+    # acabou de compor e troca apenas o sufixo.
+    def _instala_titulo(self):
+        try:
+            win = self.iface.mainWindow()
+            win.windowTitleChanged.connect(self._retitula)
+            self._retitula(win.windowTitle())
         except Exception:
             pass
+
+    @staticmethod
+    def compoe_titulo(titulo):
+        """"<Projeto> - QGIS"  ->  "<Projeto> - IMAN Terra".
+
+        Ancorado no FIM: so o sufixo sai. Se o titulo ja termina com o nome do
+        produto, nada muda - e por isso o gancho nao se realimenta.
+        """
+        if not titulo:
+            return titulo
+        return re.sub(r'QGIS(\s*)$', brand.PRODUCT_NAME + r'\1', titulo)
+
+    def _retitula(self, titulo=None):
+        if self._retitulando:
+            return
+        try:
+            win = self.iface.mainWindow()
+            atual = titulo if titulo is not None else win.windowTitle()
+            novo = self.compoe_titulo(atual)
+            if novo and novo != atual:
+                self._retitulando = True
+                try:
+                    win.setWindowTitle(novo)
+                finally:
+                    self._retitulando = False
+        except Exception:
+            self._retitulando = False
 
     def _add_action(self, icon, text, callback, tip=""):
         action = QAction(icon, text, self.iface.mainWindow())
@@ -171,7 +330,10 @@ class ImanBrandPlugin:
             win.setCentralWidget(stack)
             self.stack, self.canvas_page, self.home_page = stack, central, home
             self.mode = "central"
-            self._show_home()                              # sem projeto -> home
+            self._show_home()                              # provisorio
+            # O POUSO e decidido por ESTADO, depois que o arranque assenta -
+            # nunca por evento. Ver _decide_pouso.
+            QTimer.singleShot(2500, self._decide_pouso)
             # Guardrail: reasserção defensiva do contrato de central widget.
             self._guard = QTimer(win)
             self._guard.timeout.connect(self._reassert)
@@ -219,15 +381,53 @@ class ImanBrandPlugin:
             except Exception:
                 pass
 
+    # ------------------------------------------- politica do miolo (D6/D7)
+    #
+    # Regra unica, escrita em docs/branding-contract.md §1.8: a home e o
+    # POUSO; qualquer acao de projeto leva ao CANVAS; "Inicio" traz a home de
+    # volta. Nada mais move o miolo.
+    #
+    # `_pousou` existe porque no arranque o QGIS emite eventos de projeto
+    # ANTES de a home existir. Sem essa guarda, o estado E1 (o produto abre
+    # sem projeto -> home) dependeria de quem chega primeiro, o evento ou o
+    # QTimer de 900 ms - e "depende" e exatamente como o D7 nasce.
+    def _decide_pouso(self):
+        """Decide E1/E7 pelo ESTADO, uma vez, quando o arranque assenta.
+
+        D7, reproduzido em 2026-09-07 na SEGUNDA execucao com o perfil ja
+        usado: o QGIS emite `newProjectCreated` para o projeto vazio inicial
+        DEPOIS que a home foi instalada. Reagindo a esse evento como se fosse
+        acao do usuario (E4 -> canvas), a home saia do miolo e o que aparecia
+        era a welcome NATIVA do QGIS na pagina 0. Medido: pagina
+        'centralwidget', welcome nativa visivel, home escondida.
+
+        Reagir a evento e frageil por construcao - o resultado depende de quem
+        chega primeiro. Aqui o pouso olha o ESTADO: se ha projeto carregado,
+        canvas (E7); se nao ha, home (E1). Depois disso os eventos passam a
+        valer, porque a partir dai eles sao mesmo do usuario.
+        """
+        try:
+            tem_projeto = bool(QgsProject.instance().fileName())
+        except Exception:
+            tem_projeto = False
+        if tem_projeto:
+            self._show_canvas()      # E7 - o QGIS restaurou um projeto
+        else:
+            self._show_home()        # E1 - o pouso
+        self._pousou = True
+
     def _on_project_read(self):
-        # projeto aberto (com conteúdo) -> o canvas assume o miolo
-        self._apply_title()
+        # E2/E3/E5 - abriu um projeto -> canvas
+        if not self._pousou:
+            return
         self._show_canvas()
 
     def _on_new_project(self):
-        # File ▸ Novo (projeto vazio) -> a home volta ao miolo
-        self._apply_title()
-        self._show_home()
+        # E4 - criou um projeto -> canvas. Antes desta fatia era _show_home(),
+        # e o comando "Novo projeto" parecia inerte (D6).
+        if not self._pousou:
+            return
+        self._show_canvas()
 
     # ------------------------------------------- fallback: dock (Sonda C)
     def _install_dock_fallback(self, reason):
@@ -307,29 +507,9 @@ class ImanBrandPlugin:
             webbrowser.open(url)
 
     def show_about(self):
-        box = QMessageBox(self.iface.mainWindow())
-        box.setWindowTitle("Sobre — %s" % brand.PRODUCT_NAME)
-        box.setIconPixmap(QPixmap(_res("icon.png")).scaledToWidth(72, Qt.SmoothTransformation))
-        box.setTextFormat(Qt.RichText)
-        box.setText(
-            "<h3 style='color:%s'>%s</h3>"
-            "<p>%s</p>"
-            "<p><b>%s</b><br>%s</p>"
-            "<hr>"
-            "<p style='color:%s'>%s</p>"
-            "<p style='font-size:10px;color:%s'>Versão %s · sem fork do QGIS "
-            "(Opção 1). Splash de marca, tema, ícone da janela, a home de boas-vindas "
-            "e este \"Sobre\" são entregues <b>sem recompilar</b> o QGIS. Limites "
-            "remanescentes (baixo valor, documentados) — ícone do arquivo executável "
-            "e nome interno do processo — só numa distribuição bundlada/Opção 2.</p>" % (
-                brand.COLOR_PRIMARY_DEEP, brand.PRODUCT_NAME, brand.PRODUCT_SUBTITLE,
-                brand.PUBLISHER, brand.ORG_FULL,
-                brand.COLOR_SECONDARY, brand.CREDITS_QGIS.replace("\n", "<br>"),
-                brand.COLOR_SECONDARY, brand.VERSION,
-            )
-        )
-        box.setStandardButtons(QMessageBox.Ok)
-        box.exec_()
+        """Janela propria, nao mais um QMessageBox (D10)."""
+        dlg = sobre.SobreDialog(self.iface.mainWindow())
+        dlg.exec_()
 
     # ---------------------------------------------------------------- unload
     def unload(self):
@@ -345,6 +525,10 @@ class ImanBrandPlugin:
                 getattr(self.iface, sig).disconnect(slot)
             except Exception:
                 pass
+        try:
+            self.iface.mainWindow().windowTitleChanged.disconnect(self._retitula)
+        except Exception:
+            pass
         # restaura o central widget nativo do QGIS
         if self.mode == "central" and self.stack is not None and self.canvas_page is not None:
             try:
@@ -363,6 +547,24 @@ class ImanBrandPlugin:
             except Exception:
                 pass
             self.dock = None
+        # tira a acao do menu Ajuda (D10)
+        if self._acao_sobre_ajuda is not None:
+            try:
+                self.iface.helpMenu().removeAction(self._acao_sobre_ajuda)
+            except Exception:
+                pass
+            self._acao_sobre_ajuda = None
+        # solta o campo de coordenadas (D2/D3)
+        if self._campo_coords is not None:
+            try:
+                if self._contem_coords is not None:
+                    self._campo_coords.removeEventFilter(self._contem_coords)
+                self._campo_coords.setMinimumWidth(0)
+                self._campo_coords.setMaximumWidth(16777215)
+            except Exception:
+                pass
+            self._campo_coords = None
+            self._contem_coords = None
         # restaura as toolbars nativas que o declutter ocultou
         for tb in self._hidden_toolbars:
             try:

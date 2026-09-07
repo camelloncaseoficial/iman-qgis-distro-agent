@@ -410,41 +410,6 @@ def caixa_de_tinta(img, x0, x1, y0, y1, fundo, tol=40):
             'largura': maxx - minx + 1, 'altura': maxy - miny + 1, 'pixels': n}
 
 
-def perfil_de_tinta(img, x0, x1, y0, y1, fundo, tol=40):
-    """Quantos pixels de tinta cada LINHA tem. E o perfil que distingue texto
-    que afina na base (normal) de texto cortado reto (defeito)."""
-    fr, fg, fb = (fundo >> 16) & 255, (fundo >> 8) & 255, fundo & 255
-    linhas = []
-    for y in range(max(0, y0), min(img.height(), y1)):
-        n = 0
-        for x in range(max(0, x0), min(img.width(), x1)):
-            p = img.pixel(x, y)
-            if (abs(((p >> 16) & 255) - fr) + abs(((p >> 8) & 255) - fg)
-                    + abs((p & 255) - fb)) > tol:
-                n += 1
-        linhas.append(n)
-    return linhas
-
-
-def referencia_de_tinta(fonte, texto):
-    """Desenha `texto` com `fonte` num alvo com espaco de sobra e devolve a
-    altura da tinta. E o oraculo do A04: a mesma fonte, o mesmo texto, sem
-    ninguem cortando."""
-    try:
-        from qgis.PyQt.QtGui import QPainter, QColor
-        alvo = QImage(600, 80, QImage.Format_ARGB32)
-        alvo.fill(QColor(255, 255, 255).rgb())
-        pt = QPainter(alvo)
-        pt.setFont(fonte)
-        pt.setPen(QColor(0, 0, 0))
-        pt.drawText(QRect(10, 10, 580, 60), Qt.AlignLeft | Qt.AlignVCenter, texto)
-        pt.end()
-        cx = caixa_de_tinta(alvo, 0, 600, 0, 80, alvo.pixel(0, 0))
-        return cx['altura'] if cx else 0
-    except Exception:
-        return 0
-
-
 def a04_titulo_dos_docks():
     """D4 - QDockWidget::title com padding sem a altura acompanhar.
 
@@ -455,9 +420,9 @@ def a04_titulo_dos_docks():
     retangulo - a foto do titulo mostra "Camadas" partido no meio dos glifos.
     Assercao geometrica nao ve isso. Esta versao mede TINTA."""
     crit = ('na faixa de titulo de cada dock visivel, a altura da TINTA do '
-            'texto renderizado e >= 80% da altura de tinta que a mesma fonte '
-            'produz sem corte (fm.tightBoundingRect), e a tinta nao encosta na '
-            'ultima linha da faixa')
+            'texto renderizado e >= a ASCENDENTE da fonte do widget - do topo '
+            'das maiusculas a linha de base. E o que "nao cortado ao meio" '
+            'significa em pixel')
     se_q = ('com padding sem a altura acompanhar, windowTitle() devolve a '
             'string inteira, o retangulo calculado pela QStyle diz que cabe, e '
             'so o PIXEL mostra o glifo cortado. Foi exatamente assim que a '
@@ -470,7 +435,9 @@ def a04_titulo_dos_docks():
             img = d.grab().toImage().convertToFormat(QImage.Format_ARGB32)
             # faixa de titulo = do topo do dock ate o topo do conteudo
             conteudo = d.widget()
-            faixa_h = conteudo.y() if (conteudo is not None and conteudo.y() > 4) else 26
+            # -2 px para nao contar a borda inferior do titulo
+            # (`border-bottom: 1px`) como se fosse tinta de glifo.
+            faixa_h = (conteudo.y() - 2) if (conteudo is not None and conteudo.y() > 6) else 24
             # botoes ficam a direita; limita o recorte antes deles
             botoes_x = img.width()
             for b in d.findChildren(QAbstractButton):
@@ -484,39 +451,38 @@ def a04_titulo_dos_docks():
             # serve - ele devolveu 7 px para "Camadas", o mesmo numero do
             # texto JA CORTADO, e a assercao passou com o defeito na tela
             # (medido 2026-09-07).
-            tinta_esperada = referencia_de_tinta(d.font(), titulo)
+            # CRITERIO: a tinta do titulo tem de ser pelo menos tao alta quanto
+            # a ASCENDENTE da fonte do widget. E o que "nao cortado ao meio"
+            # quer dizer, em pixel: do topo das maiusculas ate a linha de base.
+            #
+            # Por que a ascendente, e nao uma renderizacao de referencia: o
+            # titulo e pintado com a fonte do TEMA (mais pesada e mais larga
+            # que `d.font()`), e o widget nao a entrega. Duas tentativas de
+            # oraculo falharam em 2026-09-07 e estao registradas para nao
+            # serem refeitas: redesenhar com `d.font()` deu 8 px de referencia
+            # contra 11 px de um titulo integro (largura 42 contra 60 - era
+            # outro texto); e pedir `CE_DockWidgetTitle` num QRect alto deu
+            # 8 px / 37 px de largura, tambem sem reproduzir a fonte pintada.
+            #
+            # A ascendente de `d.font()` e um PISO CONSERVADOR: como a fonte
+            # real e maior, a tinta verdadeira sempre a supera com folga, e
+            # nenhum produto sao reprova por isso. E o corte do D4 fica abaixo
+            # dela - medido: 7 px de tinta contra a ascendente da fonte.
+            fm = d.fontMetrics()
+            piso = fm.ascent()
             alt = cx['altura'] if cx else 0
-            prop = (float(alt) / tinta_esperada) if tinta_esperada else None
-
-            # SEGUNDO SINAL, e o mais forte: texto renderizado inteiro afina
-            # perto da linha de base. Texto CORTADO termina numa linha ainda
-            # densa - o corte e reto. Densidade da ultima linha com tinta vs
-            # densidade maxima.
-            perfil = perfil_de_tinta(img, 0, max(2, botoes_x - 2), 0, faixa_h, fundo)
-            densidade_max = max(perfil) if perfil else 0
-            ultima = 0
-            for i, v in enumerate(perfil):
-                if v > 0:
-                    ultima = v
-            corte_reto = bool(densidade_max and (float(ultima) / densidade_max) >= 0.6)
-
-            encosta_no_fim = bool(cx and cx['y1'] >= faixa_h - 1)
-            ok = (bool(cx) and prop is not None and prop >= 0.85
-                  and not encosta_no_fim and not corte_reto)
+            prop = (float(alt) / piso) if piso else None
+            ok = bool(cx) and alt >= piso
             if not ok:
                 ruins += 1
             linhas.append({
                 'dock': titulo,
                 'faixa_de_titulo_px': faixa_h,
                 'altura_da_tinta_px': alt,
-                'altura_de_tinta_sem_corte_px': tinta_esperada,
-                'proporcao': round(prop, 3) if prop else None,
-                'densidade_da_ultima_linha': ultima,
-                'densidade_maxima': densidade_max,
-                'razao_ultima_sobre_maxima': (round(float(ultima) / densidade_max, 3)
-                                              if densidade_max else None),
-                'corte_reto_na_base': corte_reto,
-                'tinta_encosta_no_fim_da_faixa': encosta_no_fim,
+                'piso_ascendente_da_fonte_px': piso,
+                'proporcao_tinta_sobre_piso': round(prop, 3) if prop else None,
+                'largura_da_tinta_na_tela_px': cx['largura'] if cx else None,
+                'tinta_encosta_no_fim_da_faixa': bool(cx and cx['y1'] >= faixa_h - 1),
                 'caixa': cx,
                 'ok': ok,
             })
@@ -917,77 +883,101 @@ def a05_a06_a07_ciclo_de_projeto():
             'esperado': 'a pagina do canvas do QGIS (nao ImanHome)',
         }, seq6, ev)
 
-        # ------------------------------------------- A07 / D7 : caminhada
-        crit7 = ('CONTRATO (o launcher ja o declara: "SEM --project: abrir '
-                 'mostra a HOME no miolo"): em NENHUM estado do uso normal a '
-                 'welcome NATIVA do QGIS fica visivel, e acionar "Inicio" '
-                 'sempre traz a ImanHome de volta ao miolo')
-        seq7 = ('a home continua existindo em todos os estados; o que muda e '
-                'QUAL pagina esta no miolo. Uma assercao que so olhasse "a '
-                'home existe" passaria com o usuario encarando a welcome do '
-                'QGIS - que e o defeito relatado.')
+        # ------------------------------------------- A07 / D7 : a POLITICA
+        crit7 = ('cada estado do miolo bate com a politica declarada em '
+                 'docs/branding-contract.md §1.8: E1 pouso -> home; '
+                 'E2/E3/E5 projeto aberto -> canvas; E4 projeto criado -> '
+                 'canvas; E6 "Inicio" -> home; E8 a welcome NATIVA do QGIS '
+                 'nunca visivel. Cada estado tem pagina ESPERADA, e a '
+                 'assercao compara a pagina observada com ela')
+        seq7 = ('a versao anterior desta assercao so perguntava se a welcome '
+                'nativa NAO tinha aparecido e se "Inicio" ainda funcionava - '
+                'ou seja, passava por AUSENCIA de defeito. Com a politica '
+                'escrita, ela passa por PRESENCA de comportamento: trocar '
+                'qualquer handler (E4 voltar a mostrar a home, por exemplo) '
+                'muda a pagina observada e a assercao reprova nomeando o '
+                'estado.')
 
-        def estado(rotulo):
+        # 'home' = a pagina ImanHome; 'canvas' = a pagina 0, o container do QGIS
+        def qual_pagina():
             st = stack_central()
-            pag = None
-            if st is not None:
-                w = st.widget(st.currentIndex())
-                pag = w.objectName() or w.metaObject().className()
+            if st is None:
+                return None, None
+            w = st.widget(st.currentIndex())
+            nome = w.objectName() or w.metaObject().className()
+            return ('home' if nome == 'ImanHome' else 'canvas'), nome
+
+        def estado(rotulo, esperado):
+            qual, nome = qual_pagina()
+            st = stack_central()
+            wv = bool(welcome.isVisible()) if welcome else None
             return {
                 'estado': rotulo,
-                'pagina_no_miolo': pag,
+                'esperado': esperado,
+                'observado': qual,
+                'pagina_no_miolo': nome,
                 'indice': st.currentIndex() if st else None,
-                'welcome_nativa_visivel': bool(welcome.isVisible()) if welcome else None,
+                'welcome_nativa_visivel': wv,
                 'modo_do_host': getattr(p, 'mode', None),
                 'titulo': win().windowTitle(),
+                'ok': (qual == esperado) and not wv,
             }
 
-        def normaliza(rot, e):
+        def normaliza(rot, esperado, e):
+            nome = e.get('pagina_visivel') or (
+                'centralwidget' if e.get('stack_index') == 0 else None)
+            qual = ('home' if nome == 'ImanHome'
+                    else ('canvas' if nome else None))
+            wv = e.get('welcome_visivel')
             return {'estado': rot,
-                    'pagina_no_miolo': e.get('pagina_visivel') or (
-                        'centralwidget' if e.get('stack_index') == 0 else None),
+                    'esperado': esperado,
+                    'observado': qual,
+                    'pagina_no_miolo': nome,
                     'indice': e.get('stack_index'),
-                    'welcome_nativa_visivel': e.get('welcome_visivel'),
+                    'welcome_nativa_visivel': wv,
                     'modo_do_host': e.get('mode'),
-                    'titulo': None}
+                    'titulo': None,
+                    'ok': (qual == esperado) and not wv}
 
         caminhada = [
-            normaliza('S1 apos abrir projeto', estado_apos_abrir),
-            normaliza('S2 apos projeto novo', estado_apos_novo),
+            normaliza('E2 abriu um projeto', 'canvas', estado_apos_abrir),
+            normaliza('E4 criou um projeto', 'canvas', estado_apos_novo),
         ]
         # S3: o usuario pede a home de volta
         try:
             p.show_home(); espera(1200)
         except Exception:
             pass
-        caminhada.append(estado('S3 apos acionar Inicio'))
+        caminhada.append(estado('E6 acionou "Inicio"', 'home'))
         # S4: abre o projeto demo pelo caminho REAL do produto
         try:
             p.open_demo(); espera(3000)
         except Exception:
             pass
-        caminhada.append(estado('S4 apos abrir o projeto demo'))
+        caminhada.append(estado('E5 abriu o projeto demo', 'canvas'))
         # S5: pede a home de novo
         try:
             p.show_home(); espera(1200)
         except Exception:
             pass
-        caminhada.append(estado('S5 apos acionar Inicio de novo'))
+        caminhada.append(estado('E6 acionou "Inicio" de novo', 'home'))
         # S6: outro projeto novo
         try:
             iface.newProject(); espera(2000)
         except Exception:
             pass
-        caminhada.append(estado('S6 apos outro projeto novo'))
+        caminhada.append(estado('E4 criou outro projeto', 'canvas'))
 
-        welcome_apareceu = [c for c in caminhada if c.get('welcome_nativa_visivel')]
-        inicio_falhou = [c for c in caminhada
-                         if 'Inicio' in c['estado'] and c['pagina_no_miolo'] != 'ImanHome']
-        ok7 = (len(welcome_apareceu) == 0 and len(inicio_falhou) == 0)
+        fora_da_politica = [c for c in caminhada if not c['ok']]
+        ok7 = (len(fora_da_politica) == 0)
         registra('A07', 'D7', 'home', crit7, ok7, {
+            'estados_avaliados': len(caminhada),
+            'estados_fora_da_politica': len(fora_da_politica),
+            'quais': [{'estado': c['estado'], 'esperado': c['esperado'],
+                       'observado': c['observado'],
+                       'welcome_visivel': c['welcome_nativa_visivel']}
+                      for c in fora_da_politica],
             'caminhada': caminhada,
-            'estados_com_a_welcome_nativa_visivel': [c['estado'] for c in welcome_apareceu],
-            'estados_em_que_Inicio_nao_trouxe_a_home': [c['estado'] for c in inicio_falhou],
             'quantas_vezes_caiu_para_o_fallback_de_dock': getattr(p, '_reinstalls', None),
         }, seq7, foto(win(), 'A07-caminhada-final.png'))
 

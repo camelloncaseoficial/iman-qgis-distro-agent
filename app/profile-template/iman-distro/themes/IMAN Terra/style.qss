@@ -50,13 +50,29 @@ QStatusBar::item { border: none; }
 QStatusBar QLabel { color: #5E6A61; }
 QStatusBar QToolButton { color: #1A231D; }
 QStatusBar QToolButton:hover { background-color: rgba(16,40,30,0.06); }
+/* D2 (#017/A02): NAO reintroduzir `padding` aqui. O QGIS dimensiona o campo
+   de coordenadas pela metrica da fonte e FIXA a largura (min == max). Num
+   widget de largura fixa, padding do QSS e subtracao: os 2px 8px mais a borda
+   comiam 18 dos 24 px, deixando 6 px uteis para uma coordenada que precisa de
+   104 - cabia 1 caractere de 19. So a borda (2 px) fica; o resto e recuo que
+   o campo nao tem para dar. Quem reserva a largura do texto e o plugin de
+   marca (_ajusta_campo_de_coordenadas), nao o tema. */
 QStatusBar QLineEdit, QStatusBar QComboBox {
-    background-color: #FFFFFF; color: #1A231D; border: 1px solid #D0D5C9; border-radius: 7px; padding: 2px 8px;
+    background-color: #FFFFFF; color: #1A231D; border: 1px solid #D0D5C9; border-radius: 7px;
 }
 
-/* ---- Docks / paineis: header CLARO, texto verde de marca, cantos suaves ---- */
-QDockWidget { titlebar-close-icon: none; }
-QDockWidget::title { background-color: #F5F7F2; color: #155F3D; padding: 6px 10px; font-weight: 600; letter-spacing: .3px; border-bottom: 1px solid #E2E5DE; }
+/* ---- Docks / paineis: header CLARO, texto verde de marca, cantos suaves ----
+   D1 (#017/A01): NAO reintroduzir `QDockWidget { titlebar-close-icon: none; }`.
+   Aquela linha nao escondia o botao de fechar - APAGAVA o icone dele, deixando
+   um alvo de clique invisivel de 4 px. Medido: tinta 0/80, altura 4 px contra
+   15 px do botao de flutuar ao lado.
+   D4 (#017/A04): o `padding: 6px 10px` cortava o glifo do titulo ao meio. A
+   altura da faixa de titulo o Qt calcula a partir da fonte, e padding vertical
+   nao a fazia crescer - so comia o espaco do texto. Vale a regra derivada no
+   contrato: propriedade que muda GEOMETRIA num widget que o QGIS ja
+   dimensionou e mudanca de comportamento disfarcada de cor.
+   O recuo horizontal fica (nao mexe na altura); o vertical sai. */
+QDockWidget::title { background-color: #F5F7F2; color: #155F3D; padding-left: 10px; padding-right: 10px; font-weight: 600; letter-spacing: .3px; border-bottom: 1px solid #E2E5DE; }
 QDockWidget > QWidget { background-color: #FFFFFF; }
 
 /* ---- Arvore/lista/tabela: conteudo CLARO, hover/selecao em verde pastel ---- */

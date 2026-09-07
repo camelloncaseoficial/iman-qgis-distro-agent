@@ -269,6 +269,64 @@ if ($LauncherQgis -ne $QgisBaseline) {
 }
 Write-Ok "launcher e .iss concordam em QGIS $QgisBaseline"
 
+# ---------------------------------------------------------------------------
+# GUARDA DE VERSAO DO PRODUTO (D9, fatia #018)
+#
+# O sponsor instalou o 0.3.0 e o produto disse na cara dele que era 0.1.0: o
+# .iss dizia uma coisa e o brand.py/metadata.txt diziam outra. A fonte unica e
+# o #define ProductVersion do .iss, que este script ja leu. As outras duas
+# DERIVAM dela - e derivar so vale se divergir doer.
+#
+# Conserto que depende de alguem lembrar nao e conserto: divergencia aqui e
+# Fail 3, no mesmo espirito da guarda de QGIS_VERSION acima.
+# ---------------------------------------------------------------------------
+Write-Step "conferindo a versao do produto nas tres fontes (D9)"
+
+$BrandPath = Join-Path $RepoRoot 'app\profile-template\iman-distro\python\plugins\iman_brand\brand.py'
+$MetaPath  = Join-Path $RepoRoot 'app\profile-template\iman-distro\python\plugins\iman_brand\metadata.txt'
+
+foreach ($p in @($BrandPath, $MetaPath)) {
+    if (-not (Test-Path -LiteralPath $p)) {
+        Fail 2 "arquivo de versao do produto nao encontrado" @("Esperado em: $p")
+    }
+}
+
+$bm = [regex]::Match((Get-Content -LiteralPath $BrandPath -Raw),
+                     '(?m)^\s*VERSION\s*=\s*"([^"]+)"')
+if (-not $bm.Success) {
+    Fail 3 "VERSION nao encontrada em brand.py" @(
+        "Arquivo: $BrandPath",
+        "Esperada uma linha:  VERSION = `"<versao>`"",
+        "Ela espelha o #define ProductVersion do .iss (D-IMAN-033/D9)."
+    )
+}
+$BrandVersion = $bm.Groups[1].Value.Trim()
+
+$mm = [regex]::Match((Get-Content -LiteralPath $MetaPath -Raw),
+                     '(?m)^\s*version\s*=\s*(.+?)\s*$')
+if (-not $mm.Success) {
+    Fail 3 "version nao encontrada em metadata.txt" @(
+        "Arquivo: $MetaPath",
+        "Esperada uma linha:  version=<versao>"
+    )
+}
+$MetaVersion = $mm.Groups[1].Value.Trim()
+
+if (($BrandVersion -ne $ProductVersion) -or ($MetaVersion -ne $ProductVersion)) {
+    Fail 3 "versao do produto divergente entre as tres fontes" @(
+        "installer\iman-terra.iss   #define ProductVersion : $ProductVersion   (FONTE UNICA)",
+        "...\iman_brand\brand.py      VERSION                : $BrandVersion",
+        "...\iman_brand\metadata.txt  version                : $MetaVersion",
+        "",
+        "O instalador entregaria uma versao e o produto exibiria outra - na",
+        "home, no Sobre e no banner. Foi o defeito D9 do 0.3.0: instalado",
+        "0.3.0, exibido 0.1.0.",
+        "",
+        "A fonte unica e o .iss. Corrija brand.py e metadata.txt para $ProductVersion."
+    )
+}
+Write-Ok "versao do produto $ProductVersion concorda nas tres fontes"
+
 # --- guarda 5: o launcher PASSA no teste de deteccao? -----------------------
 #
 # D-IMAN-028/DB-18: a guarda 4 confere a versao ESCRITA no launcher; esta roda

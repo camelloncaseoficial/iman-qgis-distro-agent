@@ -1,0 +1,423 @@
+{
+  "quando": "2026-09-07T11:11:46.587925",
+  "qgis": "3.44.13-Solothurn",
+  "startup_real": "ok",
+  "baseline": {
+    "perfil": "C:\\Users\\Francisco\\AppData\\Local\\InstitutoIMAN\\_aceite017\\perfil\\profiles\\iman-distro/",
+    "perfil_e_iman_distro": true,
+    "plugin_carregado": true,
+    "plugin_classe": "ImanBrandPlugin",
+    "plugin_mode": "central",
+    "qss_tamanho": 9359,
+    "qss_marcado": true,
+    "home_instalada": true,
+    "docks_visiveis": 2,
+    "qgis": "3.44.13-Solothurn",
+    "startup_real": "D:\\_projetos\\iman-webgeo\\iman-qgis-distro-agent\\app\\startup\\iman_startup.py",
+    "falhas": [],
+    "valido": true
+  },
+  "abortado": false,
+  "fase": "primeira",
+  "notas": [],
+  "resultados": [
+    {
+      "id": "A01",
+      "defeito": "D1",
+      "regiao": "títulos e botões de dock",
+      "criterio": "todo dock visivel tem botao de fechar VISIVEL, HABILITADO, com icone que desenha pixel, e com altura >= 60% da do botao de flutuar ao lado (o irmao nao tocado pelo QSS e a regua)",
+      "status": "PASS",
+      "medido": {
+        "docks_avaliados": 2,
+        "docks_com_problema": 0,
+        "detalhe": [
+          {
+            "dock": "Camadas",
+            "visivel": true,
+            "habilitado": true,
+            "icone_nulo": false,
+            "pixels_de_tinta": 117,
+            "pixels_totais": 304,
+            "altura_fechar": 15,
+            "altura_flutuar": 15,
+            "proporcao": 1.0,
+            "ok": true
+          },
+          {
+            "dock": "Navegador",
+            "visivel": true,
+            "habilitado": true,
+            "icone_nulo": false,
+            "pixels_de_tinta": 117,
+            "pixels_totais": 304,
+            "altura_fechar": 15,
+            "altura_flutuar": 15,
+            "proporcao": 1.0,
+            "ok": true
+          }
+        ]
+      },
+      "se_quebrado": "com titlebar-close-icon:none o botao continua existindo, visivel e habilitado - so nao desenha nada e encolhe. Uma assercao que perguntasse \"o botao existe?\" passaria com o defeito presente.",
+      "evidencia": "A01-dock-titulo.png"
+    },
+    {
+      "id": "A04",
+      "defeito": "D4",
+      "regiao": "títulos e botões de dock",
+      "criterio": "na faixa de titulo de cada dock visivel, a altura da TINTA do texto renderizado e >= a ASCENDENTE da fonte do widget - do topo das maiusculas a linha de base. E o que \"nao cortado ao meio\" significa em pixel",
+      "status": "PASS",
+      "medido": {
+        "docks_avaliados": 2,
+        "docks_com_problema": 0,
+        "detalhe": [
+          {
+            "dock": "Camadas",
+            "faixa_de_titulo_px": 17,
+            "altura_da_tinta_px": 11,
+            "piso_ascendente_da_fonte_px": 9,
+            "proporcao_tinta_sobre_piso": 1.222,
+            "largura_da_tinta_na_tela_px": 60,
+            "tinta_encosta_no_fim_da_faixa": false,
+            "caixa": {
+              "x0": 18,
+              "y0": 5,
+              "x1": 77,
+              "y1": 15,
+              "largura": 60,
+              "altura": 11,
+              "pixels": 294
+            },
+            "ok": true
+          },
+          {
+            "dock": "Navegador",
+            "faixa_de_titulo_px": 17,
+            "altura_da_tinta_px": 12,
+            "piso_ascendente_da_fonte_px": 9,
+            "proporcao_tinta_sobre_piso": 1.333,
+            "largura_da_tinta_na_tela_px": 73,
+            "tinta_encosta_no_fim_da_faixa": true,
+            "caixa": {
+              "x0": 18,
+              "y0": 5,
+              "x1": 90,
+              "y1": 16,
+              "largura": 73,
+              "altura": 12,
+              "pixels": 383
+            },
+            "ok": true
+          }
+        ]
+      },
+      "se_quebrado": "com padding sem a altura acompanhar, windowTitle() devolve a string inteira, o retangulo calculado pela QStyle diz que cabe, e so o PIXEL mostra o glifo cortado. Foi exatamente assim que a primeira versao desta assercao passou com o defeito na tela.",
+      "evidencia": "A04-titulo-dock.png"
+    },
+    {
+      "id": "A02",
+      "defeito": "D2",
+      "regiao": "status bar · coordenadas",
+      "criterio": "o campo de coordenadas cabe a coordenada canonica do produto ('555519,9  9585490,5', EPSG:31984) inteira: largura util de texto >= largura que a fonte precisa",
+      "status": "PASS",
+      "medido": {
+        "texto_atual": "",
+        "coordenada_canonica": "555519,9  9585490,5",
+        "caracteres_da_canonica": 19,
+        "caracteres_que_cabem": 19,
+        "largura_util_px": 106,
+        "largura_necessaria_px": 104,
+        "faltam_px": 0,
+        "largura_do_widget_px": 122,
+        "largura_minima_fixada_px": 122,
+        "largura_maxima_fixada_px": 236,
+        "sizeHint_px": 105
+      },
+      "se_quebrado": "com o padding do QSS num widget de largura FIXA, o campo continua visivel e o texto continua \"presente\" na API - so nao cabe na tela. Uma assercao sobre le.text() passaria com o defeito.",
+      "evidencia": "A02-coordenadas.png"
+    },
+    {
+      "id": "A08",
+      "defeito": "D8",
+      "regiao": "home",
+      "criterio": "nenhuma string das constantes RECENTS/TEMPLATES/CHIPS do dashboard.py alcanca a tela; e nenhum widget se pinta como clicavel (regra :hover propria) sem ser clicavel de verdade",
+      "status": "PASS",
+      "medido": {
+        "strings_inventadas_no_codigo": 0,
+        "strings_inventadas_na_tela": 0,
+        "amostra": [],
+        "widgets_com_falso_afordance": 0,
+        "quais": [],
+        "widgets_clicaveis_de_verdade": 4
+      },
+      "se_quebrado": "a maquete \"funciona\": os QLabel existem e o layout fica bonito. Uma assercao do tipo \"a home tem conteudo\" passaria justamente porque o conteudo inventado esta la.",
+      "evidencia": "A08-home.png"
+    },
+    {
+      "id": "A09",
+      "defeito": "D9",
+      "regiao": "versão",
+      "criterio": "a versao EXIBIDA na home e a mesma que o instalador entrega (ProductVersion do .iss)",
+      "status": "PASS",
+      "medido": {
+        "fontes": {
+          "exibida_na_home": "0.3.0",
+          "brand.py": "0.3.0",
+          "metadata.txt": "0.3.0",
+          "iss ProductVersion": "0.3.0"
+        },
+        "valores_distintos": [
+          "0.3.0"
+        ],
+        "quantas_fontes_em_desacordo": 1
+      },
+      "se_quebrado": "as duas fontes existem e sao strings validas; nada quebra. Uma assercao \"a home mostra uma versao\" passaria exibindo a versao errada - que e exatamente o defeito.",
+      "evidencia": "A09-versao-na-home.png"
+    },
+    {
+      "id": "A10",
+      "defeito": "D10",
+      "regiao": "Sobre",
+      "criterio": "o menu Ajuda contem uma acao \"Sobre o <produto>\" - o lugar onde o usuario procura. O Sobre NATIVO do QGIS continua la (BL-1)",
+      "status": "PASS",
+      "medido": {
+        "acoes_do_menu_ajuda": [
+          "Conteúdo da Ajuda",
+          "Documentação de API do C++",
+          "Documentação de API do PyQGIS",
+          "",
+          "Complementos",
+          "",
+          "Reportar um problema",
+          "Doe para o QGIS",
+          "Envolva-se",
+          "Precisa de Suporte Comercial?",
+          "Membros de Suporte do QGIS",
+          "",
+          "Página do QGIS",
+          "Verificar a versão do QGIS",
+          "",
+          "Sobre",
+          "Sobre o IMAN Terra"
+        ],
+        "sobre_do_produto_no_ajuda": [
+          "Sobre o IMAN Terra"
+        ],
+        "sobre_nativo_do_qgis_presente": [
+          "Sobre",
+          "Sobre o IMAN Terra"
+        ],
+        "onde_a_acao_esta_hoje": [
+          "Complementos > IMAN Terra > Sobre o IMAN Terra"
+        ]
+      },
+      "se_quebrado": "a acao existe e funciona; so nao esta onde se procura. Uma assercao \"a acao Sobre existe\" passaria com o defeito presente, porque ela existe mesmo - dentro do dropdown da toolbar.",
+      "evidencia": "A10-menubar.png"
+    },
+    {
+      "id": "A11",
+      "defeito": "D11 (parcial)",
+      "regiao": "ícone de janela/taskbar",
+      "criterio": "o icone DA JANELA e o emblema IMAN, nao o do QGIS. A identidade de agrupamento da barra de tarefas e medida no passo manual M-D11",
+      "status": "PASS",
+      "medido": {
+        "icone_da_janela_nulo": false,
+        "tamanhos_disponiveis": [
+          [
+            512,
+            512
+          ]
+        ],
+        "semelhanca_com_o_logo_do_qgis": 0.09130859375,
+        "AppUserModelID_do_processo": "InstitutoIMAN.IMANTerra.Distro.1",
+        "nome_do_processo": "python3.exe",
+        "AVISO": "cobre so o icone da JANELA. O agrupamento da barra de tarefas depende do AppUserModelID ter sido definido ANTES de a janela nascer, e isso nao e observavel de dentro do processo - ver M-D11."
+      },
+      "se_quebrado": "o icone da janela pode estar certo e a taskbar continuar errada - sao coisas diferentes. Por isso esta assercao NAO cobre o D11 inteiro, e o que falta esta declarado como N/E, nao como PASS.",
+      "evidencia": "A11-janela.png"
+    },
+    {
+      "id": "M-D11",
+      "defeito": "D11",
+      "regiao": "ícone de janela/taskbar",
+      "criterio": "PASSO MANUAL: com o IMAN Terra aberto, olhar o icone na barra de tarefas do Windows. CRITERIO: e o emblema IMAN, nao o do QGIS. Falha se aparecer o logo do QGIS.",
+      "status": "N/E",
+      "medido": {
+        "motivo": "nao observavel de dentro do processo"
+      },
+      "se_quebrado": "o AppUserModelID e lido pelo shell no momento em que a janela nasce; medir a variavel depois nao diz o que o shell usou.",
+      "evidencia": ""
+    },
+    {
+      "id": "A12",
+      "defeito": "D12",
+      "regiao": "tema de ícones",
+      "criterio": "nenhum widget VISIVEL da chrome exibe o logo do QGIS; e o tema de icones em uso e um tema proprio instalado no userThemesFolder do perfil (nunca em C:\\Program Files\\QGIS*)",
+      "status": "PASS",
+      "medido": {
+        "widgets_visiveis_exibindo_o_logo_do_qgis": 0,
+        "quais": [],
+        "tema_de_icones_em_uso": "IMAN Terra",
+        "userThemesFolder": "C:\\Users\\Francisco\\AppData\\Local\\InstitutoIMAN\\_aceite017\\perfil\\profiles\\iman-distro//themes",
+        "temas_instalados_no_perfil": [
+          "IMAN Terra"
+        ],
+        "tema_e_proprio_do_produto": true,
+        "referencia_do_logo": "C:/PROGRA~1/QGIS34~1.13/apps/qgis-ltr/.\\images\\icons\\qgis-icon-16x16.png"
+      },
+      "se_quebrado": "o logo do QGIS e um icone valido que renderiza bem - nada falha. Uma assercao \"os icones carregam\" passaria exibindo o logo do QGIS na cara do usuario.",
+      "evidencia": "A12-chrome.png"
+    },
+    {
+      "id": "A05",
+      "defeito": "D5",
+      "regiao": "título da janela",
+      "criterio": "abrir o projeto X faz o titulo da janela CONTER o nome de X, mantendo a marca; criar um projeto novo MUDA o titulo",
+      "status": "PASS",
+      "medido": {
+        "titulo_no_inicio": "spike017-projeto-alfa — IMAN Terra",
+        "titulo_apos_abrir_projeto": "spike017-projeto-alfa — IMAN Terra",
+        "titulo_apos_projeto_novo": "Projeto sem título — IMAN Terra",
+        "projeto_aberto": "spike017-projeto-alfa",
+        "titulo_contem_o_nome_do_projeto": true,
+        "titulo_mudou_ao_criar_novo": true
+      },
+      "se_quebrado": "o titulo estatico e uma string valida e bonita - nada falha. Uma assercao \"o titulo contem IMAN Terra\" passaria em 100% dos casos, inclusive com o titulo nunca mudando, que e o defeito.",
+      "evidencia": "A05-apos-abrir-projeto.png"
+    },
+    {
+      "id": "A06",
+      "defeito": "D6",
+      "regiao": "home",
+      "criterio": "depois de criar um projeto novo, o miolo mostra o CANVAS - o usuario ve que algo aconteceu",
+      "status": "PASS",
+      "medido": {
+        "pagina_no_miolo_apos_novo_projeto": "centralwidget",
+        "indice_no_stack": 0,
+        "esperado": "a pagina do canvas do QGIS (nao ImanHome)"
+      },
+      "se_quebrado": "a home continua desenhando normalmente; nenhuma excecao. Uma assercao \"a home aparece\" passaria exatamente no defeito, que e a home aparecer quando nao devia.",
+      "evidencia": "A06-apos-novo-projeto.png"
+    },
+    {
+      "id": "A07",
+      "defeito": "D7",
+      "regiao": "home",
+      "criterio": "cada estado do miolo bate com a politica declarada em docs/branding-contract.md §1.8: E1 pouso -> home; E2/E3/E5 projeto aberto -> canvas; E4 projeto criado -> canvas; E6 \"Inicio\" -> home; E8 a welcome NATIVA do QGIS nunca visivel. Cada estado tem pagina ESPERADA, e a assercao compara a pagina observada com ela",
+      "status": "PASS",
+      "medido": {
+        "estados_avaliados": 6,
+        "estados_fora_da_politica": 0,
+        "quais": [],
+        "caminhada": [
+          {
+            "estado": "E2 abriu um projeto",
+            "esperado": "canvas",
+            "observado": "canvas",
+            "pagina_no_miolo": "centralwidget",
+            "indice": 0,
+            "welcome_nativa_visivel": false,
+            "modo_do_host": "central",
+            "titulo": null,
+            "ok": true
+          },
+          {
+            "estado": "E4 criou um projeto",
+            "esperado": "canvas",
+            "observado": "canvas",
+            "pagina_no_miolo": "centralwidget",
+            "indice": 0,
+            "welcome_nativa_visivel": false,
+            "modo_do_host": "central",
+            "titulo": null,
+            "ok": true
+          },
+          {
+            "estado": "E6 acionou \"Inicio\"",
+            "esperado": "home",
+            "observado": "home",
+            "pagina_no_miolo": "ImanHome",
+            "indice": 1,
+            "welcome_nativa_visivel": false,
+            "modo_do_host": "central",
+            "titulo": "Projeto sem título — IMAN Terra",
+            "ok": true
+          },
+          {
+            "estado": "E5 abriu o projeto demo",
+            "esperado": "canvas",
+            "observado": "canvas",
+            "pagina_no_miolo": "centralwidget",
+            "indice": 0,
+            "welcome_nativa_visivel": false,
+            "modo_do_host": "central",
+            "titulo": "IMAN Terra — Boas-vindas (powered by QGIS) — IMAN Terra",
+            "ok": true
+          },
+          {
+            "estado": "E6 acionou \"Inicio\" de novo",
+            "esperado": "home",
+            "observado": "home",
+            "pagina_no_miolo": "ImanHome",
+            "indice": 1,
+            "welcome_nativa_visivel": false,
+            "modo_do_host": "central",
+            "titulo": "IMAN Terra — Boas-vindas (powered by QGIS) — IMAN Terra",
+            "ok": true
+          },
+          {
+            "estado": "E4 criou outro projeto",
+            "esperado": "canvas",
+            "observado": "canvas",
+            "pagina_no_miolo": "centralwidget",
+            "indice": 0,
+            "welcome_nativa_visivel": false,
+            "modo_do_host": "central",
+            "titulo": "Projeto sem título — IMAN Terra",
+            "ok": true
+          }
+        ],
+        "quantas_vezes_caiu_para_o_fallback_de_dock": 0
+      },
+      "se_quebrado": "a versao anterior desta assercao so perguntava se a welcome nativa NAO tinha aparecido e se \"Inicio\" ainda funcionava - ou seja, passava por AUSENCIA de defeito. Com a politica escrita, ela passa por PRESENCA de comportamento: trocar qualquer handler (E4 voltar a mostrar a home, por exemplo) muda a pagina observada e a assercao reprova nomeando o estado.",
+      "evidencia": "A07-caminhada-final.png"
+    },
+    {
+      "id": "A03",
+      "defeito": "D3",
+      "regiao": "status bar · alternância",
+      "criterio": "depois de acionar o botao de alternar coordenada/extensao, o rodape continua desenhando (>1 cor), o campo continua visivel, e a largura do campo nao passa de 3x a de antes",
+      "status": "PASS",
+      "medido": {
+        "largura_util_da_tela": 1536,
+        "antes": {
+          "largura_campo": 122,
+          "texto": "",
+          "largura_da_janela": 1164,
+          "largura_da_status_bar": 1164,
+          "cores_no_rodape": 64
+        },
+        "depois": {
+          "largura_campo": 236,
+          "tamanho_do_texto": 1245,
+          "texto_inicio": "179769313486231570814527423731704356798070567525844996598917",
+          "largura_da_janela": 1164,
+          "largura_da_status_bar": 1164,
+          "cores_no_rodape": 64,
+          "campo_visivel": true
+        },
+        "campo_estourou": false,
+        "janela_ficou_maior_que_a_tela": false,
+        "rodape_ficou_uniforme": false,
+        "NOTA": "este passo roda POR ULTIMO de proposito: em 2026-09-07 ele levou a janela principal de 1001 para 10413 px e contaminou as assercoes seguintes."
+      },
+      "se_quebrado": "se o campo estourar, a largura cresce sem limite e o resto da status bar e empurrado para fora; se o rodape \"ficar branco\", a imagem da status bar passa a ter 1 cor so. Uma assercao que so olhasse isVisible() passaria nos dois casos.",
+      "evidencia": "A03-rodape-depois.png"
+    }
+  ],
+  "placar": {
+    "total": 13,
+    "PASS": 12,
+    "FAIL": 0,
+    "N/E": 1
+  }
+}

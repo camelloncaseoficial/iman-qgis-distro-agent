@@ -20,7 +20,7 @@ Declarado no topo, não escondido no rodapé:
 | **Ícone do executável** (`qgis-ltr-bin.exe`) | está compilado no binário | só Opção 2 (fork) — é o `DB-4`, e tem consequência de licença |
 | **Nome interno do processo** | idem | Opção 2 |
 | **About nativo do QGIS** | diálogo do core | Opção 2 — e **por BL-1 ele fica**, não se remove |
-| **Ícones de ação da toolbar** | vêm do tema de ícones do QGIS | alcançável no-fork via tema próprio no `userThemesFolder` — **ainda não feito** (é o `D12`) |
+| **Ícones de ação da toolbar** | vêm do tema de ícones do QGIS | o tema próprio **já existe e está ativo** (`#018`/`D12`); falta popular o `icons/` dele — ver §1.7 |
 | **Agrupamento na barra de tarefas** | o shell do Windows lê o `AppUserModelID` no instante em que a janela nasce | depende de a identidade ser definida **antes** do processo criar a janela; hoje o startup roda via `--code`, tarde demais (`D11`) |
 | **Chrome pixel-idêntica ao comp** | QSS colore, não reestrutura layout | teto já declarado no `#006` |
 
@@ -52,7 +52,7 @@ manuais com critério explícito.
 
 | a marca possui | do QGIS, não se toca | asserção |
 |---|---|---|
-| Fundo, cor do texto, borda superior, aparência do campo (`QStatusBar QLineEdit`) | **A largura do campo de coordenadas** — o QGIS a calcula pela métrica da fonte e a fixa (`min == max`). Quem estiliza **tem de caber dentro dela** | `A02` |
+| Fundo, cor do texto, borda superior, aparência do campo (`QStatusBar QLineEdit`) · **e o piso e o teto de largura do campo** (ver abaixo) | **O texto** que o QGIS escreve no campo, e quando o escreve | `A02` |
 | Nada mais | **O botão de alternar coordenada/extensão** e o conteúdo que ele escreve no campo | `A03` |
 
 > **CONTRATO EXPLÍCITO (V.2).** O campo de coordenadas **cabe a coordenada canônica do produto
@@ -60,9 +60,17 @@ manuais com critério explícito.
 > projeção que o produto declara como padrão. E **continua cabendo depois de acionar o botão ao
 > lado**, sem que o campo empurre o resto do rodapé para fora da janela.
 >
-> Regra derivada, para quem for consertar: **num widget de largura fixa, `padding` do QSS é
-> subtração.** O QGIS dimensionou o campo para o texto; cada pixel de padding é um pixel a menos de
-> texto visível.
+> Regra derivada: **num widget de largura fixa, `padding` do QSS é subtração.** O QGIS dimensiona o
+> campo pela métrica do texto; cada pixel de padding é um pixel a menos de texto visível. Por isso o
+> `padding` saiu dessa regra em `#018`.
+>
+> **Propriedade assumida em `#018`, e é uma exceção deliberada à regra de ouro do §2.** O QGIS
+> dimensiona o campo **sem piso e sem teto**: vazio, ele encolhe a 24 px; exibindo a extensão de um
+> projeto sem camadas, o texto vem em `DBL_MAX` e ele cresce a milhares de pixels, arrastando a
+> janela para fora da tela. A camada de marca — que estilizou o campo — passa a **impor as duas
+> pontas**: piso = a coordenada canônica; teto = uma extensão plausível. É mudança de geometria num
+> widget do QGIS, feita de propósito, documentada aqui, e reimposta por filtro de evento porque o
+> QGIS desfaz os limites a cada troca de texto.
 
 ### 1.4 Títulos e botões de painel (`QDockWidget`)
 
@@ -88,9 +96,13 @@ manuais com critério explícito.
 > **CONTRATO EXPLÍCITO.** Abrir o projeto `X` faz o título **conter `X`**; criar um projeto novo
 > **muda** o título. A marca compõe com o que o QGIS escreveu — **não sobrescreve**.
 >
-> **Fonte única obrigatória.** Hoje há **duas**: `iman_startup.py` (5 aplicações, até 4 s) e
-> `iman_brand.py::_apply_title` (a cada `projectRead`/`newProjectCreated`). Duas fontes que escrevem
-> a mesma string estática é o mecanismo do `D5`. O contrato exige **uma**.
+> **Fonte única obrigatória — e cumprida em `#018`.** Havia **duas**: `iman_startup.py`
+> (5 aplicações, até 4 s) e `iman_brand.py::_apply_title` (a cada
+> `projectRead`/`newProjectCreated`). As duas cravavam a mesma string estática por cima do que o
+> QGIS acabara de compor — o `D5` era **regressão**, não ausência. Sobrou **uma**: o gancho
+> `windowTitleChanged` do plugin, que troca só o sufixo, ancorado no fim da string. O
+> `iman_startup.py` **não escreve mais título nenhum** e traz um aviso no cabeçalho para não
+> reintroduzirem `setWindowTitle` ali.
 
 ### 1.6 Ícone de janela e de barra de tarefas
 
@@ -110,8 +122,14 @@ manuais com critério explícito.
 | Um tema de ícones próprio, instalado no **`QgsApplication.userThemesFolder()` do perfil isolado** | O conjunto de ícones do QGIS, que continua no lugar como base | `A12` |
 
 > **CONTRATO EXPLÍCITO e `BL-3` inegociável.** O tema próprio vai para o `userThemesFolder` **do
-> perfil** — medido no `#017`: `<perfil>/themes`. **NUNCA** em `C:\Program Files\QGIS*`. Enquanto o
-> tema próprio não existir, o produto exibe o conjunto de ícones do QGIS inteiro, logo incluído.
+> perfil** — medido: `<perfil>/themes`. **NUNCA** em `C:\Program Files\QGIS*`; sob o ramo `DB-16`
+> escrever lá sobrescreveria o QGIS do próprio usuário.
+>
+> **Estado em `#018`:** o tema **`IMAN Terra` existe no perfil e está ativo** — o `style.qss` dele é
+> o QSS de marca (movido para lá, fonte única, sem cópia). **Limite declarado:** o diretório
+> `icons/` do tema ainda está **vazio**. Um tema do QGIS usa `icons/` para sobrescrever a
+> iconografia de chrome (setas, fechar, olho, alças) — trocar esses SVGs é o passo seguinte e não
+> foi feito aqui: um `close.svg` malfeito reabriria o `D1`.
 
 ### 1.8 Home (o miolo)
 
@@ -120,18 +138,30 @@ manuais com critério explícito.
 | A página `ImanHome` no `QStackedWidget` central | **A página 0 do stack**, que é o container central do QGIS (canvas + welcome nativa). A marca a *empilha*, não a substitui | `A06`, `A07` |
 | O conteúdo da home | — | `A08` |
 
-> **CONTRATO EXPLÍCITO — três regras, e elas se contradizem hoje:**
+> **CONTRATO EXPLÍCITO — a política do miolo, estado a estado.**
 >
-> 1. **A home é a tela de pouso.** Abrir o IMAN Terra sem projeto mostra a home. (O launcher já o
->    declara: *"SEM `--project`: abrir mostra a HOME de boas-vindas no miolo"*.)
-> 2. **Criar um projeto novo leva ao canvas.** O usuário acabou de pedir um projeto; repor a home
->    por cima faz o comando parecer inerte. (É o `D6`.)
-> 3. **A welcome nativa do QGIS nunca fica visível.** A home a substitui; ver as duas é ver dois
->    produtos.
+> Uma regra, em uma frase: **a home é o pouso; qualquer ação de projeto leva ao canvas; "Início"
+> traz a home de volta.** Fora isso, nenhuma outra coisa move o miolo.
 >
-> 4. **Zero dado inventado alcança a tela.** Nenhuma string de `RECENTS`/`TEMPLATES` hardcoded, e
->    todo cartão que parece clicável **tem receptor conectado**. Uma maquete que finge ser produto é
->    pior que uma tela vazia — o sponsor abriu quatro projetos que não existem.
+> | # | estado | o que o miolo mostra | por quê |
+> |---|---|---|---|
+> | E1 | o produto abre, sem projeto | **home** | é o pouso. O launcher já declara: *"SEM `--project`: abrir mostra a HOME no miolo"* |
+> | E2 | um projeto **com conteúdo** é aberto | **canvas** | o usuário quer o mapa, não a recepção |
+> | E3 | um projeto **vazio** é aberto | **canvas** | idem — quem abre um projeto pediu para trabalhar |
+> | E4 | um projeto é **criado** (`Projeto ▸ Novo`) | **canvas** | o usuário acabou de pedir um projeto; repor a home faz o comando parecer inerte — é o `D6` |
+> | E5 | o **projeto demo** é aberto pela home | **canvas** | é E2 |
+> | E6 | **"Início"** é acionado | **home** | é a única ação que traz a home de volta, e ela sempre traz |
+> | E7 | **2ª execução**, perfil já usado | **E1 ou E2**, pela mesma regra: se o QGIS restaurar um projeto, canvas; se abrir vazio, home | não existe regra especial de "segunda vez" — é isso que o `D7` alega, e o contrato nega |
+> | E8 | qualquer estado | a **welcome nativa do QGIS nunca fica visível** | ver as duas recepções é ver dois produtos |
+>
+> **Determinismo do pouso.** No arranque o QGIS emite eventos de projeto antes de a home existir. A
+> política só vale depois que o miolo está montado: os handlers ignoram eventos até o pouso
+> acontecer. Sem isso, E1 depende de quem chega primeiro — e "depende" é como o `D7` nasce.
+>
+> **Zero dado inventado alcança a tela.** Nenhuma string de `RECENTS`/`TEMPLATES`/`CHIPS`
+> hardcoded, e nada que se pinte como clicável sem ser. Uma maquete que finge ser produto é pior
+> que uma tela vazia — o sponsor abriu quatro projetos que não existem. Lista vazia se mostra
+> **vazia, com estado próprio**; nunca preenchida com exemplo.
 
 ### 1.9 Sobre
 
@@ -162,8 +192,9 @@ manuais com critério explícito.
 > não atinge "a aparência" — atinge **widgets nomeados**, inclusive os que o QGIS usa para funções
 > que não são de marca. Antes de acrescentar regra, ela entra aqui.
 
-`app/profile-template/iman-distro/QGIS/iman-theme.qss` — **50 regras, 23 classes Qt**, medido em
-2026-09-07:
+`app/profile-template/iman-distro/themes/IMAN Terra/style.qss` — **49 regras, 23 classes Qt**
+(medido em 2026-09-07; o arquivo era `QGIS/iman-theme.qss` até o `#018` mover o QSS de marca para
+dentro do tema de UI próprio, ver §1.7):
 
 | classe Qt | seletores usados | o que a regra atinge além da cor | risco |
 |---|---|---|---|
@@ -171,8 +202,8 @@ manuais com critério explícito.
 | `QMenu` | `QMenu`, `::item`, `::item:selected`, `::separator` | padding, raio | baixo |
 | `QToolBar` | `QToolBar`, `::separator` | spacing, padding | baixo |
 | `QToolButton` | `QToolButton`, `:hover`, `:checked`, `:pressed`, `::menu-button` | borda do botão de menu | **médio** — `::menu-button { border: none }` afeta todo dropdown de toolbar |
-| `QStatusBar` | `QStatusBar`, `::item`, ` QLabel`, ` QToolButton`, ` QToolButton:hover`, ` QLineEdit`, ` QComboBox` | **`padding: 2px 8px` + borda em campo de LARGURA FIXA** | **ALTO — é o `D2`/`D3`** |
-| `QDockWidget` | `QDockWidget`, `::title`, `> QWidget` | **`titlebar-close-icon: none` apaga o botão de fechar**; `padding` no `::title` sem altura corta o glifo | **ALTO — é o `D1`/`D4`** |
+| `QStatusBar` | `QStatusBar`, `::item`, ` QLabel`, ` QToolButton`, ` QToolButton:hover`, ` QLineEdit`, ` QComboBox` | ~~`padding: 2px 8px`~~ **removido em `#018`**; resta a borda | era **ALTO — o `D2`** |
+| `QDockWidget` | `::title`, `> QWidget` | ~~`titlebar-close-icon: none`~~ e ~~`padding` vertical no `::title`~~ **removidos em `#018`**; resta o recuo horizontal | era **ALTO — o `D1`/`D4`** |
 | `QTreeView` `QListView` `QTableView` | base, `::item`, `:hover`, `:selected` | padding e raio do item | baixo |
 | `QHeaderView` | `::section` | padding, bordas | baixo |
 | `QTabBar` | `::tab`, `:selected`, `:hover` | padding, raio | baixo |
@@ -196,7 +227,7 @@ Medido em 2026-09-07: o corpo do QSS usa **12 cores**; **todas as 12** existem e
 ```bash
 python - <<'EOF'
 import re, io
-qss = re.sub(r'/\*.*?\*/', '', io.open('app/profile-template/iman-distro/QGIS/iman-theme.qss',
+qss = re.sub(r'/\*.*?\*/', '', io.open('app/profile-template/iman-distro/themes/IMAN Terra/style.qss',
                                        encoding='utf-8').read(), flags=re.S)
 brand = io.open('app/profile-template/iman-distro/python/plugins/iman_brand/brand.py', encoding='utf-8').read()
 ds    = io.open('docs/design-system.md', encoding='utf-8').read()
@@ -213,22 +244,27 @@ EOF
 
 | região | asserção | defeito que ela pega | estado em 2026-09-07 |
 |---|---|---|---|
-| títulos e botões de dock | `A01` | `D1` botão de fechar apagado | **FAIL** |
-| títulos e botões de dock | `A04` | `D4` título cortado | **FAIL** |
-| status bar · coordenadas | `A02` | `D2` campo espremido | **FAIL** |
-| status bar · alternância | `A03` | `D3` campo estoura, rodapé some | **FAIL** |
-| título da janela | `A05` | `D5` título estático, duas fontes | **FAIL** |
-| home | `A06` | `D6` "Novo projeto" parece inerte | **FAIL** |
-| home | `A07` / `A07b` | `D7` a home some depois do 1º uso | **PASS — não reproduzido** |
-| home | `A08` | `D8` maquete com dados inventados | **FAIL** |
-| versão | `A09` | `D9` versão mente | **FAIL** |
-| Sobre | `A10` | `D10` Sobre escondido | **FAIL** |
-| ícone de janela/taskbar | `A11` + `M-D11` | `D11` ícone do QGIS na taskbar | **PASS (parcial) + N/E** |
-| tema de ícones | `A12` | `D12` ícones do QGIS na UI | **FAIL** |
+| títulos e botões de dock | `A01` | `D1` botão de fechar apagado | **PASS** |
+| títulos e botões de dock | `A04` | `D4` título cortado | **PASS** |
+| status bar · coordenadas | `A02` | `D2` campo espremido | **PASS** |
+| status bar · alternância | `A03` | `D3` campo estoura, rodapé some | **PASS** |
+| título da janela | `A05` | `D5` título estático, duas fontes | **PASS** |
+| home | `A06` | `D6` "Novo projeto" parece inerte | **PASS** |
+| home | `A07` / `A07b` | `D7` a home some depois do 1º uso | **PASS** |
+| home | `A08` | `D8` maquete com dados inventados | **PASS** |
+| versão | `A09` | `D9` versão mente | **PASS** |
+| Sobre | `A10` | `D10` Sobre escondido | **PASS** |
+| ícone de janela/taskbar | `A11` + `M-D11` | `D11` ícone do QGIS na taskbar | **PASS (parcial) + N/E — BLOQUEADO EM A1** |
+| tema de ícones | `A12` | `D12` ícones do QGIS na UI | **PASS** |
 
-**Cobertura: 10 dos 12 defeitos têm asserção que reprova.** As duas exceções — `D7` e `D11` — estão
-declaradas como buraco em `docs/verify/017-aceite-marca/BASELINE-VERMELHA.md` §5, com o que foi
-medido em cada uma e o que falta.
+**Estado em 2026-09-07 (`#018`): 12 asserções PASS, 0 FAIL, 1 N/E.** Onze dos doze defeitos
+consertados; o `D11` está **bloqueado na via A1** — não existe conserto honesto enquanto o `.exe`
+não for nosso. Ver `docs/verify/018-conserto/BASELINE-VERDE.md`.
+
+**O verde é auditado.** `tools/Assert-AdulteracaoInversa.ps1` reverte cada conserto, um a um, e
+exige que a asserção correspondente volte a vermelho — e só ela. Asserção que não acende quando o
+defeito volta é asserção morta, e reprova a fatia mesmo com tudo verde. Última execução:
+**12 de 12**.
 
 ---
 

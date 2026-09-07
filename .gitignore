@@ -57,3 +57,6 @@ spike/**/dist/
 # e os manifestos completos de footprint (~6 MB cada). A evidencia CURADA e
 # versionada vive em docs/verify/016-spike-qgis-relocado/evidencia/.
 tools/spike016/evidencia/
+
+# Gate #018 - saida das rodadas de adulteracao inversa (regeravel)
+tools/adulteracao/
