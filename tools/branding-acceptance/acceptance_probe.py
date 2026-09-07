@@ -883,77 +883,101 @@ def a05_a06_a07_ciclo_de_projeto():
             'esperado': 'a pagina do canvas do QGIS (nao ImanHome)',
         }, seq6, ev)
 
-        # ------------------------------------------- A07 / D7 : caminhada
-        crit7 = ('CONTRATO (o launcher ja o declara: "SEM --project: abrir '
-                 'mostra a HOME no miolo"): em NENHUM estado do uso normal a '
-                 'welcome NATIVA do QGIS fica visivel, e acionar "Inicio" '
-                 'sempre traz a ImanHome de volta ao miolo')
-        seq7 = ('a home continua existindo em todos os estados; o que muda e '
-                'QUAL pagina esta no miolo. Uma assercao que so olhasse "a '
-                'home existe" passaria com o usuario encarando a welcome do '
-                'QGIS - que e o defeito relatado.')
+        # ------------------------------------------- A07 / D7 : a POLITICA
+        crit7 = ('cada estado do miolo bate com a politica declarada em '
+                 'docs/branding-contract.md §1.8: E1 pouso -> home; '
+                 'E2/E3/E5 projeto aberto -> canvas; E4 projeto criado -> '
+                 'canvas; E6 "Inicio" -> home; E8 a welcome NATIVA do QGIS '
+                 'nunca visivel. Cada estado tem pagina ESPERADA, e a '
+                 'assercao compara a pagina observada com ela')
+        seq7 = ('a versao anterior desta assercao so perguntava se a welcome '
+                'nativa NAO tinha aparecido e se "Inicio" ainda funcionava - '
+                'ou seja, passava por AUSENCIA de defeito. Com a politica '
+                'escrita, ela passa por PRESENCA de comportamento: trocar '
+                'qualquer handler (E4 voltar a mostrar a home, por exemplo) '
+                'muda a pagina observada e a assercao reprova nomeando o '
+                'estado.')
 
-        def estado(rotulo):
+        # 'home' = a pagina ImanHome; 'canvas' = a pagina 0, o container do QGIS
+        def qual_pagina():
             st = stack_central()
-            pag = None
-            if st is not None:
-                w = st.widget(st.currentIndex())
-                pag = w.objectName() or w.metaObject().className()
+            if st is None:
+                return None, None
+            w = st.widget(st.currentIndex())
+            nome = w.objectName() or w.metaObject().className()
+            return ('home' if nome == 'ImanHome' else 'canvas'), nome
+
+        def estado(rotulo, esperado):
+            qual, nome = qual_pagina()
+            st = stack_central()
+            wv = bool(welcome.isVisible()) if welcome else None
             return {
                 'estado': rotulo,
-                'pagina_no_miolo': pag,
+                'esperado': esperado,
+                'observado': qual,
+                'pagina_no_miolo': nome,
                 'indice': st.currentIndex() if st else None,
-                'welcome_nativa_visivel': bool(welcome.isVisible()) if welcome else None,
+                'welcome_nativa_visivel': wv,
                 'modo_do_host': getattr(p, 'mode', None),
                 'titulo': win().windowTitle(),
+                'ok': (qual == esperado) and not wv,
             }
 
-        def normaliza(rot, e):
+        def normaliza(rot, esperado, e):
+            nome = e.get('pagina_visivel') or (
+                'centralwidget' if e.get('stack_index') == 0 else None)
+            qual = ('home' if nome == 'ImanHome'
+                    else ('canvas' if nome else None))
+            wv = e.get('welcome_visivel')
             return {'estado': rot,
-                    'pagina_no_miolo': e.get('pagina_visivel') or (
-                        'centralwidget' if e.get('stack_index') == 0 else None),
+                    'esperado': esperado,
+                    'observado': qual,
+                    'pagina_no_miolo': nome,
                     'indice': e.get('stack_index'),
-                    'welcome_nativa_visivel': e.get('welcome_visivel'),
+                    'welcome_nativa_visivel': wv,
                     'modo_do_host': e.get('mode'),
-                    'titulo': None}
+                    'titulo': None,
+                    'ok': (qual == esperado) and not wv}
 
         caminhada = [
-            normaliza('S1 apos abrir projeto', estado_apos_abrir),
-            normaliza('S2 apos projeto novo', estado_apos_novo),
+            normaliza('E2 abriu um projeto', 'canvas', estado_apos_abrir),
+            normaliza('E4 criou um projeto', 'canvas', estado_apos_novo),
         ]
         # S3: o usuario pede a home de volta
         try:
             p.show_home(); espera(1200)
         except Exception:
             pass
-        caminhada.append(estado('S3 apos acionar Inicio'))
+        caminhada.append(estado('E6 acionou "Inicio"', 'home'))
         # S4: abre o projeto demo pelo caminho REAL do produto
         try:
             p.open_demo(); espera(3000)
         except Exception:
             pass
-        caminhada.append(estado('S4 apos abrir o projeto demo'))
+        caminhada.append(estado('E5 abriu o projeto demo', 'canvas'))
         # S5: pede a home de novo
         try:
             p.show_home(); espera(1200)
         except Exception:
             pass
-        caminhada.append(estado('S5 apos acionar Inicio de novo'))
+        caminhada.append(estado('E6 acionou "Inicio" de novo', 'home'))
         # S6: outro projeto novo
         try:
             iface.newProject(); espera(2000)
         except Exception:
             pass
-        caminhada.append(estado('S6 apos outro projeto novo'))
+        caminhada.append(estado('E4 criou outro projeto', 'canvas'))
 
-        welcome_apareceu = [c for c in caminhada if c.get('welcome_nativa_visivel')]
-        inicio_falhou = [c for c in caminhada
-                         if 'Inicio' in c['estado'] and c['pagina_no_miolo'] != 'ImanHome']
-        ok7 = (len(welcome_apareceu) == 0 and len(inicio_falhou) == 0)
+        fora_da_politica = [c for c in caminhada if not c['ok']]
+        ok7 = (len(fora_da_politica) == 0)
         registra('A07', 'D7', 'home', crit7, ok7, {
+            'estados_avaliados': len(caminhada),
+            'estados_fora_da_politica': len(fora_da_politica),
+            'quais': [{'estado': c['estado'], 'esperado': c['esperado'],
+                       'observado': c['observado'],
+                       'welcome_visivel': c['welcome_nativa_visivel']}
+                      for c in fora_da_politica],
             'caminhada': caminhada,
-            'estados_com_a_welcome_nativa_visivel': [c['estado'] for c in welcome_apareceu],
-            'estados_em_que_Inicio_nao_trouxe_a_home': [c['estado'] for c in inicio_falhou],
             'quantas_vezes_caiu_para_o_fallback_de_dock': getattr(p, '_reinstalls', None),
         }, seq7, foto(win(), 'A07-caminhada-final.png'))
 
