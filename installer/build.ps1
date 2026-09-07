@@ -518,7 +518,7 @@ $QgisTreeFiles = @(Get-ChildItem -LiteralPath $QgisTreeRoot -Recurse -File -Forc
 $QgisTreeBytes = 0
 Get-ChildItem -LiteralPath $QgisTreeRoot -Recurse -File -Force |
     ForEach-Object { $QgisTreeBytes += $_.Length }
-$manTotal = [regex]::Match((Get-Content -LiteralPath $QgisManifestPath -Raw), '(?m)^TOTAL\|(\d+)\|(\d+)$')
+$manTotal = [regex]::Match((Get-Content -LiteralPath $QgisManifestPath -Raw), '(?m)^TOTAL\|(\d+)\|(\d+)\s*$')
 if (-not $manTotal.Success) {
     Fail 5 "manifesto sem a linha TOTAL" @("Arquivo: $QgisManifestPath")
 }
