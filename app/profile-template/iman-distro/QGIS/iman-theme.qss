@@ -50,8 +50,15 @@ QStatusBar::item { border: none; }
 QStatusBar QLabel { color: #5E6A61; }
 QStatusBar QToolButton { color: #1A231D; }
 QStatusBar QToolButton:hover { background-color: rgba(16,40,30,0.06); }
+/* D2 (#017/A02): NAO reintroduzir `padding` aqui. O QGIS dimensiona o campo
+   de coordenadas pela metrica da fonte e FIXA a largura (min == max). Num
+   widget de largura fixa, padding do QSS e subtracao: os 2px 8px mais a borda
+   comiam 18 dos 24 px, deixando 6 px uteis para uma coordenada que precisa de
+   104 - cabia 1 caractere de 19. So a borda (2 px) fica; o resto e recuo que
+   o campo nao tem para dar. Quem reserva a largura do texto e o plugin de
+   marca (_ajusta_campo_de_coordenadas), nao o tema. */
 QStatusBar QLineEdit, QStatusBar QComboBox {
-    background-color: #FFFFFF; color: #1A231D; border: 1px solid #D0D5C9; border-radius: 7px; padding: 2px 8px;
+    background-color: #FFFFFF; color: #1A231D; border: 1px solid #D0D5C9; border-radius: 7px;
 }
 
 /* ---- Docks / paineis: header CLARO, texto verde de marca, cantos suaves ----

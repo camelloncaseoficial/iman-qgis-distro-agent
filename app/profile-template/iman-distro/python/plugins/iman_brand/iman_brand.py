@@ -16,11 +16,11 @@ se apresenta como QGIS oficial (BL-1/BL-2).
 import os
 import webbrowser
 
-from qgis.PyQt.QtCore import Qt, QUrl, QTimer, QSize
+from qgis.PyQt.QtCore import Qt, QUrl, QTimer, QSize, QObject, QEvent
 from qgis.PyQt.QtGui import QIcon, QPixmap, QDesktopServices
 from qgis.PyQt.QtWidgets import (
     QAction, QDockWidget, QWidget, QVBoxLayout, QStackedWidget, QMessageBox,
-    QToolButton, QMenu, QToolBar,
+    QToolButton, QMenu, QToolBar, QLabel, QLineEdit, QStyle, QStyleOptionFrame,
 )
 
 from . import brand
@@ -28,6 +28,39 @@ from . import dashboard
 
 _DIR = os.path.dirname(__file__)
 _RES = os.path.join(_DIR, "resources")
+
+# --- Status bar: o campo de coordenadas (D2/D3) -------------------------------
+# O QGIS dimensiona esse campo pela metrica do texto que ele mesmo escreve e
+# nao tem PISO: vazio, ele encolhe para 24 px e nao cabe uma coordenada. A
+# camada de marca, que estilizou o campo, reserva o espaco do texto.
+COORD_REFERENCIA = "555519,9  9585490,5"                             # D2 - piso
+
+
+class _ContemLargura(QObject):
+    """Mantem o piso de largura do campo de coordenadas (D2).
+
+    Chamar setMinimumWidth uma vez nao basta: o QGIS redimensiona o campo a
+    cada troca de texto e a cada troca de projeto, e desfaz o limite. Medido em
+    2026-09-07: depois de um ciclo abrir projeto -> projeto novo, o campo
+    voltava de 122 px para 24 px. Este filtro reimpoe o piso no proximo evento
+    de geometria.
+    """
+
+    def __init__(self, alvo, piso, parent=None):
+        super().__init__(parent)
+        self._alvo = alvo
+        self._piso = int(piso)
+
+    def eventFilter(self, obj, ev):
+        if obj is self._alvo and ev.type() in (
+                QEvent.Resize, QEvent.LayoutRequest, QEvent.Show,
+                QEvent.PolishRequest):
+            try:
+                if self._alvo.minimumWidth() < self._piso:
+                    self._alvo.setMinimumWidth(self._piso)
+            except Exception:
+                pass
+        return False
 
 
 def _res(name):
@@ -49,6 +82,8 @@ class ImanBrandPlugin:
         self._guard = None
         self._reinstalls = 0
         self._hidden_toolbars = []
+        self._contem_coords = None
+        self._campo_coords = None
 
     # ------------------------------------------------------------------ setup
     def initGui(self):
@@ -85,6 +120,7 @@ class ImanBrandPlugin:
         # das toolbars nativas ruidosas + banner de versão (Fase 3).
         QTimer.singleShot(900, self._install_center)
         QTimer.singleShot(1600, self._declutter_toolbars)
+        QTimer.singleShot(1800, self._ajusta_campo_de_coordenadas)
         QTimer.singleShot(2200, self._version_banner)
 
     def _build_menu_button(self, icon):
@@ -125,6 +161,45 @@ class ImanBrandPlugin:
                 if name and name not in keep and tb.isVisible():
                     tb.hide()
                     self._hidden_toolbars.append(tb)
+        except Exception:
+            pass
+
+    # ------------------------------------------------- status bar (D2 / D3)
+    def _campo_de_coordenadas(self):
+        """O QLineEdit do QgsStatusBarCoordinatesWidget: irmao de 'mCoordsLabel'."""
+        try:
+            lbl = self.iface.mainWindow().statusBar().findChild(QLabel, "mCoordsLabel")
+            if lbl is None:
+                return None
+            return lbl.parentWidget().findChild(QLineEdit)
+        except Exception:
+            return None
+
+    def _ajusta_campo_de_coordenadas(self):
+        """Reserva o piso de largura do campo de coordenadas (D2).
+
+        D2 - vazio, o campo encolhe para 24 px e nao cabe uma coordenada. Quem
+        estilizou o campo assume reservar espaco para o texto que o produto
+        exibe: a coordenada em EPSG:31984, a projecao padrao da distro.
+        """
+        le = self._campo_de_coordenadas()
+        if le is None:
+            return
+        try:
+            fm = le.fontMetrics()
+            # cromo = o que a borda/o tema consomem, medido no proprio widget
+            opt = QStyleOptionFrame()
+            le.initStyleOption(opt)
+            interno = le.style().subElementRect(
+                QStyle.SE_LineEditContents, opt, le).width()
+            cromo = max(0, le.width() - interno)
+
+            piso = fm.horizontalAdvance(COORD_REFERENCIA) + cromo + 2
+
+            le.setMinimumWidth(piso)
+            self._contem_coords = _ContemLargura(le, piso, self.iface.mainWindow())
+            le.installEventFilter(self._contem_coords)
+            self._campo_coords = le
         except Exception:
             pass
 
@@ -363,6 +438,16 @@ class ImanBrandPlugin:
             except Exception:
                 pass
             self.dock = None
+        # solta o campo de coordenadas (D2/D3)
+        if self._campo_coords is not None:
+            try:
+                if self._contem_coords is not None:
+                    self._campo_coords.removeEventFilter(self._contem_coords)
+                self._campo_coords.setMinimumWidth(0)
+            except Exception:
+                pass
+            self._campo_coords = None
+            self._contem_coords = None
         # restaura as toolbars nativas que o declutter ocultou
         for tb in self._hidden_toolbars:
             try:
