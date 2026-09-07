@@ -315,8 +315,8 @@ $MetaVersion = $mm.Groups[1].Value.Trim()
 if (($BrandVersion -ne $ProductVersion) -or ($MetaVersion -ne $ProductVersion)) {
     Fail 3 "versao do produto divergente entre as tres fontes" @(
         "installer\iman-terra.iss   #define ProductVersion : $ProductVersion   (FONTE UNICA)",
-        "…\iman_brand\brand.py      VERSION                : $BrandVersion",
-        "…\iman_brand\metadata.txt  version                : $MetaVersion",
+        "...\iman_brand\brand.py      VERSION                : $BrandVersion",
+        "...\iman_brand\metadata.txt  version                : $MetaVersion",
         "",
         "O instalador entregaria uma versao e o produto exibiria outra - na",
         "home, no Sobre e no banner. Foi o defeito D9 do 0.3.0: instalado",
