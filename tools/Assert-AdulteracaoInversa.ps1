@@ -133,8 +133,21 @@ function Get-Placar {
     $arq = Join-Path $saida $(if ($Fase -eq 'segunda') { 'aceite-segunda.json' } else { 'aceite.json' })
     if (Test-Path -LiteralPath $arq) { Remove-Item -LiteralPath $arq -Force }
 
-    $argv = @('-NoProfile', '-ExecutionPolicy', 'Bypass', '-File',
-              (Join-Path $raizScript 'branding-acceptance\Invoke-Aceite.ps1'),
+    $aceite = Join-Path $raizScript 'branding-acceptance\Invoke-Aceite.ps1'
+
+    # A 2a execucao roda com -ReusarPerfil, que NAO reconstroi o perfil. Sem uma
+    # 1a execucao antes, o codigo adulterado no repo nunca chegaria ao perfil e
+    # a rodada mediria a versao anterior - foi o que aconteceu em 2026-09-07 e
+    # fez o gate acusar o A07b de morto sem ele nunca ter visto a adulteracao.
+    if ($Fase -eq 'segunda') {
+        & powershell.exe -NoProfile -ExecutionPolicy Bypass -File $aceite `
+            -Espera $Espera | Out-Null
+        Get-Process -Name 'qgis-ltr-bin' -ErrorAction SilentlyContinue |
+            Stop-Process -Force -ErrorAction SilentlyContinue
+        Start-Sleep -Seconds 1
+    }
+
+    $argv = @('-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', $aceite,
               '-Espera', "$Espera")
     if ($Fase -eq 'segunda') { $argv += @('-ReusarPerfil', '-Fase', 'segunda') }
     & powershell.exe @argv | Out-Null
