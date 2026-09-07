@@ -61,6 +61,11 @@ $Reversoes = @(
        De='teto = fm.horizontalAdvance(EXTENSAO_REFERENCIA) + cromo + 2';
        Para='teto = 16777215  # REVERTIDO' },
 
+    # ACOPLAMENTO MEDIDO E DECLARADO: reverter o D2 tambem acende o A03,
+    # porque o criterio do A03 e RELATIVO ("o campo nao passa de 3x a largura
+    # de antes") e quem define essa largura de partida e o piso do D2. Nao e
+    # assercao morta nem acoplamento escondido - esta na tabela do laudo.
+
     @{ Id='D4';  Assercao='A04'; Arquivo=$QSS;
        De='padding-left: 10px; padding-right: 10px;';
        Para='padding: 6px 10px;' },
@@ -156,7 +161,9 @@ foreach ($rev in $Reversoes) {
     $fase = if ($rev.Fase) { $rev.Fase } else { 'primeira' }
     Escreve ("  {0} -> reverte o conserto e espera {1} vermelho" -f $rev.Id, $rev.Assercao) 'Yellow'
 
-    $orig = [IO.File]::ReadAllText($rev.Arquivo)
+    # Normaliza para LF antes de casar: o git devolve os arquivos com CRLF no
+    # checkout, e um anchor de varias linhas escrito com LF nunca casaria.
+    $orig = [IO.File]::ReadAllText($rev.Arquivo).Replace("`r`n", "`n")
     if ($orig.IndexOf($rev.De) -lt 0) {
         Escreve ("     ABORTADO: o trecho a reverter nao existe em {0}" -f (Split-Path -Leaf $rev.Arquivo)) 'Red'
         Escreve  '     Uma reversao que nao reverte nada tornaria este gate teatro.' 'Red'
