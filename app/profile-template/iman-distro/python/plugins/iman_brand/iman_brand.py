@@ -28,6 +28,7 @@ from qgis.core import QgsProject
 
 from . import brand
 from . import dashboard
+from . import sobre
 
 _DIR = os.path.dirname(__file__)
 _RES = os.path.join(_DIR, "resources")
@@ -96,6 +97,7 @@ class ImanBrandPlugin:
         self._campo_coords = None
         self._retitulando = False
         self._pousou = False
+        self._acao_sobre_ajuda = None
 
     # ------------------------------------------------------------------ setup
     def initGui(self):
@@ -120,6 +122,7 @@ class ImanBrandPlugin:
         # IMAN"), no lugar de 5 ícones repetidos.
         self._build_menu_button(icon)
 
+        self._instala_sobre_no_ajuda()
         self._instala_titulo()
         for sig, slot in (("projectRead", self._on_project_read),
                           ("newProjectCreated", self._on_new_project)):
@@ -232,6 +235,28 @@ class ImanBrandPlugin:
                 level=0, duration=9)
         except Exception:
             pass
+
+    def _instala_sobre_no_ajuda(self):
+        """Poe "Sobre o <produto>" no menu Ajuda (D10).
+
+        O Sobre existia so no dropdown da toolbar, tres niveis abaixo em
+        `Complementos > IMAN Terra >`. Existia e funcionava - so nao estava
+        onde se procura. Medido no #017: zero ocorrencias no menu Ajuda.
+
+        O Sobre NATIVO do QGIS continua no mesmo menu, ao lado. BL-1.
+        """
+        try:
+            menu = self.iface.helpMenu()
+            if menu is None:
+                return
+            self._acao_sobre_ajuda = QAction(
+                QIcon(_res("icon.png")),
+                "Sobre o %s" % brand.PRODUCT_NAME,
+                self.iface.mainWindow())
+            self._acao_sobre_ajuda.triggered.connect(self.show_about)
+            menu.addAction(self._acao_sobre_ajuda)
+        except Exception:
+            self._acao_sobre_ajuda = None
 
     # --------------------------------------------- titulo da janela (D5)
     #
@@ -482,29 +507,9 @@ class ImanBrandPlugin:
             webbrowser.open(url)
 
     def show_about(self):
-        box = QMessageBox(self.iface.mainWindow())
-        box.setWindowTitle("Sobre — %s" % brand.PRODUCT_NAME)
-        box.setIconPixmap(QPixmap(_res("icon.png")).scaledToWidth(72, Qt.SmoothTransformation))
-        box.setTextFormat(Qt.RichText)
-        box.setText(
-            "<h3 style='color:%s'>%s</h3>"
-            "<p>%s</p>"
-            "<p><b>%s</b><br>%s</p>"
-            "<hr>"
-            "<p style='color:%s'>%s</p>"
-            "<p style='font-size:10px;color:%s'>Versão %s · sem fork do QGIS "
-            "(Opção 1). Splash de marca, tema, ícone da janela, a home de boas-vindas "
-            "e este \"Sobre\" são entregues <b>sem recompilar</b> o QGIS. Limites "
-            "remanescentes (baixo valor, documentados) — ícone do arquivo executável "
-            "e nome interno do processo — só numa distribuição bundlada/Opção 2.</p>" % (
-                brand.COLOR_PRIMARY_DEEP, brand.PRODUCT_NAME, brand.PRODUCT_SUBTITLE,
-                brand.PUBLISHER, brand.ORG_FULL,
-                brand.COLOR_SECONDARY, brand.CREDITS_QGIS.replace("\n", "<br>"),
-                brand.COLOR_SECONDARY, brand.VERSION,
-            )
-        )
-        box.setStandardButtons(QMessageBox.Ok)
-        box.exec_()
+        """Janela propria, nao mais um QMessageBox (D10)."""
+        dlg = sobre.SobreDialog(self.iface.mainWindow())
+        dlg.exec_()
 
     # ---------------------------------------------------------------- unload
     def unload(self):
@@ -542,6 +547,13 @@ class ImanBrandPlugin:
             except Exception:
                 pass
             self.dock = None
+        # tira a acao do menu Ajuda (D10)
+        if self._acao_sobre_ajuda is not None:
+            try:
+                self.iface.helpMenu().removeAction(self._acao_sobre_ajuda)
+            except Exception:
+                pass
+            self._acao_sobre_ajuda = None
         # solta o campo de coordenadas (D2/D3)
         if self._campo_coords is not None:
             try:
