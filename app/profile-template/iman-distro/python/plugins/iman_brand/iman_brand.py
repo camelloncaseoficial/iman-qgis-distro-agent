@@ -30,26 +30,29 @@ _DIR = os.path.dirname(__file__)
 _RES = os.path.join(_DIR, "resources")
 
 # --- Status bar: o campo de coordenadas (D2/D3) -------------------------------
-# O QGIS dimensiona esse campo pela metrica do texto que ele mesmo escreve e
-# nao tem PISO: vazio, ele encolhe para 24 px e nao cabe uma coordenada. A
-# camada de marca, que estilizou o campo, reserva o espaco do texto.
+# O QGIS dimensiona esse campo pela metrica do texto que ele mesmo escreve, e
+# nao tem piso nem teto: vazio, encolhe para 24 px; exibindo a EXTENSAO de um
+# projeto sem camadas, o texto vem em DBL_MAX e o campo vai a milhares de px.
+# A camada de marca, que estilizou o campo, assume as duas pontas.
 COORD_REFERENCIA = "555519,9  9585490,5"                             # D2 - piso
+EXTENSAO_REFERENCIA = "555519,9  9585490,5 : 557706,8  9587051,2"    # D3 - teto
 
 
 class _ContemLargura(QObject):
-    """Mantem o piso de largura do campo de coordenadas (D2).
+    """Mantem o campo de coordenadas entre um piso e um teto (D2 e D3).
 
-    Chamar setMinimumWidth uma vez nao basta: o QGIS redimensiona o campo a
-    cada troca de texto e a cada troca de projeto, e desfaz o limite. Medido em
-    2026-09-07: depois de um ciclo abrir projeto -> projeto novo, o campo
-    voltava de 122 px para 24 px. Este filtro reimpoe o piso no proximo evento
-    de geometria.
+    Chamar setMinimumWidth/setMaximumWidth uma vez nao basta: o QGIS
+    redimensiona o campo a cada troca de texto e a cada troca de projeto, e
+    desfaz os dois limites. Medido em 2026-09-07: depois de um ciclo abrir
+    projeto -> projeto novo, o campo voltava de 122 px para 24 px. Este filtro
+    reimpoe os limites no proximo evento de geometria.
     """
 
-    def __init__(self, alvo, piso, parent=None):
+    def __init__(self, alvo, piso, teto, parent=None):
         super().__init__(parent)
         self._alvo = alvo
         self._piso = int(piso)
+        self._teto = int(teto)
 
     def eventFilter(self, obj, ev):
         if obj is self._alvo and ev.type() in (
@@ -58,6 +61,10 @@ class _ContemLargura(QObject):
             try:
                 if self._alvo.minimumWidth() < self._piso:
                     self._alvo.setMinimumWidth(self._piso)
+                if self._alvo.minimumWidth() > self._teto:
+                    self._alvo.setMinimumWidth(self._teto)
+                if self._alvo.maximumWidth() > self._teto:
+                    self._alvo.setMaximumWidth(self._teto)
             except Exception:
                 pass
         return False
@@ -176,11 +183,15 @@ class ImanBrandPlugin:
             return None
 
     def _ajusta_campo_de_coordenadas(self):
-        """Reserva o piso de largura do campo de coordenadas (D2).
+        """Reserva o piso (D2) e impoe o teto (D3) do campo de coordenadas.
 
         D2 - vazio, o campo encolhe para 24 px e nao cabe uma coordenada. Quem
         estilizou o campo assume reservar espaco para o texto que o produto
         exibe: a coordenada em EPSG:31984, a projecao padrao da distro.
+        D3 - exibindo a extensao de um projeto sem camadas, o QGIS escreve
+        DBL_MAX e o campo cresce sem teto, arrastando a janela principal para
+        fora da tela. O teto e a extensao plausivel; o excedente e cortado no
+        campo em vez de deformar a janela.
         """
         le = self._campo_de_coordenadas()
         if le is None:
@@ -195,9 +206,11 @@ class ImanBrandPlugin:
             cromo = max(0, le.width() - interno)
 
             piso = fm.horizontalAdvance(COORD_REFERENCIA) + cromo + 2
+            teto = fm.horizontalAdvance(EXTENSAO_REFERENCIA) + cromo + 2
 
             le.setMinimumWidth(piso)
-            self._contem_coords = _ContemLargura(le, piso, self.iface.mainWindow())
+            le.setMaximumWidth(teto)
+            self._contem_coords = _ContemLargura(le, piso, teto, self.iface.mainWindow())
             le.installEventFilter(self._contem_coords)
             self._campo_coords = le
         except Exception:
@@ -444,6 +457,7 @@ class ImanBrandPlugin:
                 if self._contem_coords is not None:
                     self._campo_coords.removeEventFilter(self._contem_coords)
                 self._campo_coords.setMinimumWidth(0)
+                self._campo_coords.setMaximumWidth(16777215)
             except Exception:
                 pass
             self._campo_coords = None
