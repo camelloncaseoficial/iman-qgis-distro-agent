@@ -33,6 +33,32 @@ Este projeto não é um produto oficial do QGIS e não é endossado pela QGIS.OR
 - [ ] Perfil isolado; instalador não confunde sobre a origem do QGIS; não mexe na instalação do usuário.
 - [ ] Plugins/scripts bundled compatíveis com GPL; sem vendorizar código de terceiros sem checar licença.
 
+## Conduta de REDISTRIBUIDOR (desde 30/07/2026 — via A1, `D-IMAN-028`/`DB-6`)
+
+O produto deixou de **usar** o QGIS e passou a **distribuí-lo**: o instalador embarca 159
+componentes de terceiros. Obrigação de distribuidor é de outra natureza, e estes itens entram no
+`/license-check`:
+
+- [ ] Os três documentos descrevem o produto que existe — **bundlado, redistribuidor**. Nenhum deles
+      afirma "não redistribui o QGIS".
+- [ ] `LICENSE` (tela de aceite do wizard) é **curto e verdadeiro**, e aponta para o
+      `THIRD_PARTY_NOTICES.md` instalado junto. **Não** vira paredão de 159 licenças.
+- [ ] `THIRD_PARTY_NOTICES.md`, `SOURCE_CODE.md` e `BUILD_INFO.txt` **viajam no pacote instalado**.
+- [ ] Inventário (`docs/licencas/inventario.csv`) corresponde à versão do QGIS embarcada — conferir
+      contra o `Payload SHA-256` do `BUILD_INFO.txt`. **Trocar a baseline do QGIS invalida o
+      inventário.**
+- [ ] Toda licença no inventário tem **origem consultada e citada**. `DESCONHECIDA` é resultado
+      válido; **licença deduzida por nome não é**.
+- [ ] Oferta de código-fonte correspondente **do Instituto IMAN** viva para os componentes copyleft
+      (apontar para `qgis.org` é cortesia, não cumprimento).
+- [ ] Componentes LGPL entregues como **DLLs substituíveis** (vínculo dinâmico) + instrução de
+      substituição — Qt inclusive.
+- [ ] Componentes proprietários embarcados: revisados a cada mudança de escopo do pacote
+      (`docs/licencas/EXCLUSAO_PROPOSTA.md`).
+
+> Referências: `docs/licencas/INVENTARIO.md` (método e inventário) ·
+> `docs/licencas/EXCLUSAO_PROPOSTA.md` (escopo do pacote) · `app/notices/` (os três documentos).
+
 ## Nomenclatura
 
 - Nome próprio + "powered by QGIS".
