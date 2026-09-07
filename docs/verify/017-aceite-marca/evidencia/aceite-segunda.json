@@ -1,0 +1,51 @@
+{
+  "quando": "2026-09-07T04:52:56.473264",
+  "qgis": "3.44.13-Solothurn",
+  "startup_real": "ok",
+  "baseline": {
+    "perfil": "C:\\Users\\Francisco\\AppData\\Local\\InstitutoIMAN\\_aceite017\\perfil\\profiles\\iman-distro/",
+    "perfil_e_iman_distro": true,
+    "plugin_carregado": true,
+    "plugin_classe": "ImanBrandPlugin",
+    "plugin_mode": "central",
+    "qss_tamanho": 8171,
+    "qss_marcado": true,
+    "home_instalada": true,
+    "docks_visiveis": 2,
+    "qgis": "3.44.13-Solothurn",
+    "startup_real": "D:\\_projetos\\iman-webgeo\\iman-qgis-distro-agent\\app\\startup\\iman_startup.py",
+    "falhas": [],
+    "valido": true
+  },
+  "abortado": false,
+  "fase": "segunda",
+  "notas": [],
+  "resultados": [
+    {
+      "id": "A07b",
+      "defeito": "D7",
+      "regiao": "home",
+      "criterio": "CONTRATO: a home do IMAN Terra e a tela de pouso SEMPRE - 1a execucao ou centesima, com ou sem projeto recente. Ao abrir, o miolo mostra a ImanHome e a welcome NATIVA do QGIS nunca fica visivel",
+      "status": "PASS",
+      "medido": {
+        "execucao": "SEGUNDA (perfil reaproveitado)",
+        "pagina_no_miolo_ao_abrir": "ImanHome",
+        "indice_no_stack": 1,
+        "home_existe": true,
+        "home_visivel": true,
+        "welcome_nativa_do_qgis_visivel": false,
+        "modo_do_host_da_home": "central",
+        "projeto_carregado": "",
+        "titulo_da_janela": "IMAN Terra — powered by QGIS"
+      },
+      "se_quebrado": "na 1a execucao a home aparece normalmente e nada falha; o defeito so existe a partir da 2a. Uma assercao que rodasse so uma vez passaria com o defeito intacto.",
+      "evidencia": "A07-segunda-execucao.png"
+    }
+  ],
+  "placar": {
+    "total": 1,
+    "PASS": 1,
+    "FAIL": 0,
+    "N/E": 0
+  }
+}
