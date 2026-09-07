@@ -120,18 +120,30 @@ manuais com critério explícito.
 | A página `ImanHome` no `QStackedWidget` central | **A página 0 do stack**, que é o container central do QGIS (canvas + welcome nativa). A marca a *empilha*, não a substitui | `A06`, `A07` |
 | O conteúdo da home | — | `A08` |
 
-> **CONTRATO EXPLÍCITO — três regras, e elas se contradizem hoje:**
+> **CONTRATO EXPLÍCITO — a política do miolo, estado a estado.**
 >
-> 1. **A home é a tela de pouso.** Abrir o IMAN Terra sem projeto mostra a home. (O launcher já o
->    declara: *"SEM `--project`: abrir mostra a HOME de boas-vindas no miolo"*.)
-> 2. **Criar um projeto novo leva ao canvas.** O usuário acabou de pedir um projeto; repor a home
->    por cima faz o comando parecer inerte. (É o `D6`.)
-> 3. **A welcome nativa do QGIS nunca fica visível.** A home a substitui; ver as duas é ver dois
->    produtos.
+> Uma regra, em uma frase: **a home é o pouso; qualquer ação de projeto leva ao canvas; "Início"
+> traz a home de volta.** Fora isso, nenhuma outra coisa move o miolo.
 >
-> 4. **Zero dado inventado alcança a tela.** Nenhuma string de `RECENTS`/`TEMPLATES` hardcoded, e
->    todo cartão que parece clicável **tem receptor conectado**. Uma maquete que finge ser produto é
->    pior que uma tela vazia — o sponsor abriu quatro projetos que não existem.
+> | # | estado | o que o miolo mostra | por quê |
+> |---|---|---|---|
+> | E1 | o produto abre, sem projeto | **home** | é o pouso. O launcher já declara: *"SEM `--project`: abrir mostra a HOME no miolo"* |
+> | E2 | um projeto **com conteúdo** é aberto | **canvas** | o usuário quer o mapa, não a recepção |
+> | E3 | um projeto **vazio** é aberto | **canvas** | idem — quem abre um projeto pediu para trabalhar |
+> | E4 | um projeto é **criado** (`Projeto ▸ Novo`) | **canvas** | o usuário acabou de pedir um projeto; repor a home faz o comando parecer inerte — é o `D6` |
+> | E5 | o **projeto demo** é aberto pela home | **canvas** | é E2 |
+> | E6 | **"Início"** é acionado | **home** | é a única ação que traz a home de volta, e ela sempre traz |
+> | E7 | **2ª execução**, perfil já usado | **E1 ou E2**, pela mesma regra: se o QGIS restaurar um projeto, canvas; se abrir vazio, home | não existe regra especial de "segunda vez" — é isso que o `D7` alega, e o contrato nega |
+> | E8 | qualquer estado | a **welcome nativa do QGIS nunca fica visível** | ver as duas recepções é ver dois produtos |
+>
+> **Determinismo do pouso.** No arranque o QGIS emite eventos de projeto antes de a home existir. A
+> política só vale depois que o miolo está montado: os handlers ignoram eventos até o pouso
+> acontecer. Sem isso, E1 depende de quem chega primeiro — e "depende" é como o `D7` nasce.
+>
+> **Zero dado inventado alcança a tela.** Nenhuma string de `RECENTS`/`TEMPLATES`/`CHIPS`
+> hardcoded, e nada que se pinte como clicável sem ser. Uma maquete que finge ser produto é pior
+> que uma tela vazia — o sponsor abriu quatro projetos que não existem. Lista vazia se mostra
+> **vazia, com estado próprio**; nunca preenchida com exemplo.
 
 ### 1.9 Sobre
 

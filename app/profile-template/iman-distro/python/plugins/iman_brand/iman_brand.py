@@ -24,6 +24,8 @@ from qgis.PyQt.QtWidgets import (
     QToolButton, QMenu, QToolBar, QLabel, QLineEdit, QStyle, QStyleOptionFrame,
 )
 
+from qgis.core import QgsProject
+
 from . import brand
 from . import dashboard
 
@@ -93,6 +95,7 @@ class ImanBrandPlugin:
         self._contem_coords = None
         self._campo_coords = None
         self._retitulando = False
+        self._pousou = False
 
     # ------------------------------------------------------------------ setup
     def initGui(self):
@@ -302,7 +305,10 @@ class ImanBrandPlugin:
             win.setCentralWidget(stack)
             self.stack, self.canvas_page, self.home_page = stack, central, home
             self.mode = "central"
-            self._show_home()                              # sem projeto -> home
+            self._show_home()                              # provisorio
+            # O POUSO e decidido por ESTADO, depois que o arranque assenta -
+            # nunca por evento. Ver _decide_pouso.
+            QTimer.singleShot(2500, self._decide_pouso)
             # Guardrail: reasserção defensiva do contrato de central widget.
             self._guard = QTimer(win)
             self._guard.timeout.connect(self._reassert)
@@ -350,13 +356,53 @@ class ImanBrandPlugin:
             except Exception:
                 pass
 
+    # ------------------------------------------- politica do miolo (D6/D7)
+    #
+    # Regra unica, escrita em docs/branding-contract.md §1.8: a home e o
+    # POUSO; qualquer acao de projeto leva ao CANVAS; "Inicio" traz a home de
+    # volta. Nada mais move o miolo.
+    #
+    # `_pousou` existe porque no arranque o QGIS emite eventos de projeto
+    # ANTES de a home existir. Sem essa guarda, o estado E1 (o produto abre
+    # sem projeto -> home) dependeria de quem chega primeiro, o evento ou o
+    # QTimer de 900 ms - e "depende" e exatamente como o D7 nasce.
+    def _decide_pouso(self):
+        """Decide E1/E7 pelo ESTADO, uma vez, quando o arranque assenta.
+
+        D7, reproduzido em 2026-09-07 na SEGUNDA execucao com o perfil ja
+        usado: o QGIS emite `newProjectCreated` para o projeto vazio inicial
+        DEPOIS que a home foi instalada. Reagindo a esse evento como se fosse
+        acao do usuario (E4 -> canvas), a home saia do miolo e o que aparecia
+        era a welcome NATIVA do QGIS na pagina 0. Medido: pagina
+        'centralwidget', welcome nativa visivel, home escondida.
+
+        Reagir a evento e frageil por construcao - o resultado depende de quem
+        chega primeiro. Aqui o pouso olha o ESTADO: se ha projeto carregado,
+        canvas (E7); se nao ha, home (E1). Depois disso os eventos passam a
+        valer, porque a partir dai eles sao mesmo do usuario.
+        """
+        try:
+            tem_projeto = bool(QgsProject.instance().fileName())
+        except Exception:
+            tem_projeto = False
+        if tem_projeto:
+            self._show_canvas()      # E7 - o QGIS restaurou um projeto
+        else:
+            self._show_home()        # E1 - o pouso
+        self._pousou = True
+
     def _on_project_read(self):
-        # projeto aberto -> o canvas assume o miolo
+        # E2/E3/E5 - abriu um projeto -> canvas
+        if not self._pousou:
+            return
         self._show_canvas()
 
     def _on_new_project(self):
-        # File ▸ Novo (projeto vazio) -> a home volta ao miolo
-        self._show_home()
+        # E4 - criou um projeto -> canvas. Antes desta fatia era _show_home(),
+        # e o comando "Novo projeto" parecia inerte (D6).
+        if not self._pousou:
+            return
+        self._show_canvas()
 
     # ------------------------------------------- fallback: dock (Sonda C)
     def _install_dock_fallback(self, reason):
