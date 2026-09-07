@@ -1,0 +1,160 @@
+pacote;versao;licenca;categoria;origem_da_informacao;url_da_fonte;embarca_binario;arquivos_no_pacote;bytes_no_pacote
+arrow-cpp;25.0.0-1;Apache-2.0;permissiva;repo-oficial (GitHub License API, apache/arrow);https://github.com/apache/arrow;SIM;6;26760192
+avce00;2.0.0-5;MIT;permissiva;arquivo de fonte upstream (cabecalho de avce00-2.0.0/avc_e00read.c, tarball que o recipe OSGeo4W baixa);http://avce00.maptools.org/dl/avce00-2.0.0.tar.gz;SIM;3;2780160
+base;1.0.0-23;DESCONHECIDA;DESCONHECIDA;NAO ENCONTRADO - sem arquivo de licenca na arvore e sem fonte consultada;;SIM;15;1003603
+brotli;1.2.0-1;MIT;permissiva;repo-oficial (GitHub License API, google/brotli);https://github.com/google/brotli;SIM;5;899584
+c-blosc;1.21.6-4;BSD License (texto proprio do Blosc);permissiva;repo-oficial (arquivo LICENSE de Blosc/c-blosc);https://github.com/Blosc/c-blosc/blob/main/LICENSE.txt;SIM;1;68608
+cairo;1.18.4-1;Dupla: LGPL-2.1 OU MPL-1.1 (a escolha do destinatario);copyleft-fraco;site-oficial;https://www.cairographics.org/;SIM;4;2536448
+curl;8.21.0-1;curl License (tipo MIT/X);permissiva;repo-oficial (arquivo COPYING de curl/curl);https://github.com/curl/curl/blob/master/COPYING;SIM;2;1011712
+curl-ca-bundle;8.21.0-1;MPL-2.0 (conjunto de CAs da Mozilla, extraido pelo curl);copyleft-fraco;repo-oficial do curl - o conteudo e o CA bundle da Mozilla;https://curl.se/docs/caextract.html;NAO;2;189520
+exiv2;0.28.8-1;GPL-2.0-or-later (texto proprio no arquivo COPYING);copyleft-forte;repo-oficial (arquivo COPYING de exiv2/exiv2);https://github.com/exiv2/exiv2/blob/main/COPYING;SIM;2;2569728
+expat;2.8.2-1;MIT;permissiva;repo-oficial (GitHub License API, libexpat/libexpat);https://github.com/libexpat/libexpat;SIM;1;166912
+freetype;2.13.3-4;MULTIPLA: FreeType License (BSD-style com credito) OU GPL-2.0;permissiva;repo-oficial (arquivo LICENSE.TXT de freetype/freetype);https://gitlab.freedesktop.org/freetype/freetype/-/blob/master/LICENSE.TXT;SIM;1;755200
+freexl;2.0.0-4;Tri-licenca MPL-1.1 OU GPL-2.0-or-later OU LGPL-2.1-or-later (a escolha do destinatario);copyleft-fraco;site-oficial do projeto (gaia-gis);https://www.gaia-gis.it/fossil/freexl/index;SIM;1;307200
+gdal;3.13.2-1;MIT (nucleo) + BSD-2/BSD-3 e outras em partes;permissiva;site-oficial + arquivo na arvore (apps/gdal/share/gdal/LICENSE.TXT, agregado);https://gdal.org/en/stable/license.html;SIM;404;30263371
+gdal-ecw;3.13.2-1;PROPRIETARIA - ERDAS ECW/JP2 SDK (Hexagon). Plugin GDAL sob MIT liga em NCSEcw.dll proprietaria;proprietaria-redistribuicao-condicionada;recipe OSGeo4W confirma SDK de terceiro - EULA do redistribuidor NAO foi obtido nesta fatia;https://gdal.org/en/stable/drivers/raster/ecw.html;SIM;2;7919904
+gdal-hdf5;3.13.2-1;MIT (plugin GDAL) - liga em HDF5 (BSD-3 com termos proprios);permissiva;site-oficial (plugin do fonte GDAL);https://gdal.org/en/stable/license.html;SIM;1;1653248
+gdal-mrsid;3.13.2-1;PROPRIETARIA - MrSID DSDK (Extensis/LizardTech). Plugin GDAL sob MIT liga em lti_dsdk proprietaria;proprietaria-redistribuicao-condicionada;recipe OSGeo4W baixa de bin.extensis.com - EULA do redistribuidor NAO foi obtido nesta fatia;https://gdal.org/en/stable/drivers/raster/mrsid.html;SIM;5;29061632
+gdal-mss;3.13.2-1;MIT (plugin GDAL) - INUTIL sem o msodbcsql proprietario;permissiva;site-oficial (plugin do fonte GDAL) - dependencia medida na tabela de importacao;https://gdal.org/en/stable/drivers/vector/mssqlspatial.html;SIM;1;507904
+gdal-oracle;3.13.2-1;PROPRIETARIA na dependencia - plugins GDAL sob MIT ligam em OCI.dll (Oracle Instant Client);proprietaria-redistribuicao-condicionada;recipe OSGeo4W baixa o Instant Client de download.oracle.com - OTN License NAO foi obtida nesta fatia;https://www.oracle.com/database/technologies/instant-client.html;SIM;2;1335296
+gdal-sosi;3.13.2-1;MIT (plugin GDAL);permissiva;site-oficial (plugin do fonte GDAL);https://gdal.org/en/stable/license.html;SIM;1;1106944
+gdal313-runtime;3.13.2-1;MIT (nucleo) + BSD-2/BSD-3 e outras em partes;permissiva;site-oficial (mesmo fonte do pacote gdal);https://gdal.org/en/stable/license.html;SIM;1;46068224
+geos;3.14.1-1;LGPL-2.1;copyleft-fraco;repo-oficial (GitHub License API, libgeos/geos);https://github.com/libgeos/geos/blob/main/COPYING;SIM;4;3559424
+gpsbabel;1.9.0-4;GPL-2.0;copyleft-forte;repo-oficial (GitHub License API, gpsbabel/gpsbabel);https://github.com/gpsbabel/gpsbabel;SIM;1;1567232
+grass;8.5.0-1;GPL-2.0-or-later;copyleft-forte;site-oficial + arquivo na arvore (apps/grass/grass85/COPYING);https://grass.osgeo.org/about/license/;SIM;6511;362705292
+grass8;99-1;GPL-2.0-or-later;copyleft-forte;site-oficial - metapacote VAZIO na arvore;https://grass.osgeo.org/about/license/;NAO;1;0
+gs;10.07.1-1;AGPL (GPL Ghostscript - fontes/CMap sob AGPL com excecao);copyleft-forte;repo-oficial (arquivo LICENSE de ArtifexSoftware/ghostpdl);https://github.com/ArtifexSoftware/ghostpdl/blob/master/LICENSE;SIM;532;42387720
+gsl;2.7.101-1;GPL-3.0;copyleft-forte;repo-oficial (GitHub License API, BrianGladman/gsl - port do GNU GSL);https://www.gnu.org/software/gsl/;SIM;3;4964864
+hdf4;4.3.1-1;Termos proprios do HDF Group (BSD-style);permissiva;repo-oficial (arquivo COPYING de HDFGroup/hdf4);https://github.com/HDFGroup/hdf4/blob/master/COPYING;SIM;2;585216
+hdf5;1.14.6-1;BSD-3-Clause com termos proprios do HDF Group;permissiva;repo-oficial (arquivo COPYING de HDFGroup/hdf5);https://github.com/HDFGroup/hdf5/blob/develop/COPYING;SIM;5;4055040
+icu;67.1-6;Unicode License v3;permissiva;repo-oficial (arquivo LICENSE de unicode-org/icu);https://github.com/unicode-org/icu/blob/main/LICENSE;SIM;7;33900032
+laszip;3.4.3-4;Apache-2.0;permissiva;repo-oficial (GitHub License API, LASzip/LASzip);https://github.com/LASzip/LASzip;SIM;3;278528
+lerc;4.0.0-1;Apache-2.0;permissiva;repo-oficial (GitHub License API, Esri/lerc);https://github.com/Esri/lerc;SIM;2;524800
+libaec;1.1.6-1;BSD-2-Clause;permissiva;repo-oficial (GitHub License API);https://github.com/MathisRosenhauer/libaec;SIM;2;66048
+libarchive;3.8.7-2;BSD-2-Clause (a distribuicao como um todo - arquivos com notas proprias);permissiva;repo-oficial (arquivo COPYING de libarchive/libarchive);https://github.com/libarchive/libarchive/blob/master/COPYING;SIM;1;843776
+libgeotiff;1.7.4-1;MIT/X-style (texto proprio, Niles Ritter / SoftwareBistro);permissiva;projeto oficial OSGeo - recipe OSGeo4W baixa de download.osgeo.org/geotiff;https://github.com/OSGeo/libgeotiff/blob/master/libgeotiff/LICENSE;SIM;6;236544
+libharu;2.4.4-1;Zlib License;permissiva;repo-oficial (GitHub License API, libharu/libharu);https://github.com/libharu/libharu;SIM;1;738816
+libiconv;1.17-1;LGPL (biblioteca) / GPL (utilitarios) - projeto GNU;copyleft-fraco;projeto GNU oficial - recipe OSGeo4W baixa de ftp.gnu.org/pub/gnu/libiconv;https://www.gnu.org/software/libiconv/;SIM;16;1115252
+libjpeg-turbo;3.0.4-1;MULTIPLA: IJG License + BSD-3-Clause (zlib para partes);permissiva;repo-oficial (arquivo LICENSE.md de libjpeg-turbo);https://github.com/libjpeg-turbo/libjpeg-turbo/blob/main/LICENSE.md;SIM;3;1674752
+libjxl;0.11.2-1;BSD-3-Clause;permissiva;repo-oficial (GitHub License API, libjxl/libjxl);https://github.com/libjxl/libjxl;SIM;4;2926080
+liblas;1.8.1-24;BSD-3-Clause;permissiva;repo-oficial (arquivo LICENSE.txt de libLAS/libLAS) + arquivo na arvore (doc/COPYING);https://github.com/libLAS/libLAS/blob/master/LICENSE.txt;SIM;15;2937519
+libmysql;8.2.0-2;GPL-2.0 com FOSS License Exception, OU licenca comercial (Oracle/MySQL);copyleft-forte;recipe OSGeo4W baixa de downloads.mysql.com - termos exatos NAO confirmados nesta fatia;https://dev.mysql.com/doc/refman/8.0/en/license-info.html;SIM;1;7334400
+libpng;1.6.57-2;PNG Reference Library License (libpng license);permissiva;projeto oficial no SourceForge, recipe OSGeo4W aponta o tarball libpng-1.6.x;http://www.libpng.org/pub/png/src/libpng-LICENSE.txt;SIM;1;198656
+libpq;18.4-1;PostgreSQL License (tipo BSD/MIT);permissiva;site-oficial;https://www.postgresql.org/about/licence/;SIM;5;2164224
+librttopo;1.1.0-18;GPL-2.0;copyleft-forte;repo-oficial (arquivo COPYING no gitea da OSGeo);https://git.osgeo.org/gitea/rttopo/librttopo;SIM;2;658944
+libspatialindex;1.9.3-3;MIT (desde a 1.8.0 - era LGPL antes);permissiva;repo-oficial (arquivo LICENSE.txt de libspatialindex);https://github.com/libspatialindex/libspatialindex/blob/master/LICENSE.txt;SIM;3;1503232
+libspatialite;5.1.0-9;Tri-licenca MPL-1.1 OU GPL-2.0-or-later OU LGPL-2.1-or-later (a escolha do destinatario);copyleft-fraco;site-oficial do projeto (gaia-gis);https://www.gaia-gis.it/fossil/libspatialite/index;SIM;3;27369984
+libtiff;4.7.2rc4-1;libtiff License (tipo MIT/BSD, Sam Leffler / SGI);permissiva;repo-oficial (arquivo LICENSE.md do espelho libtiff);https://gitlab.com/libtiff/libtiff/-/blob/master/LICENSE.md;SIM;1;510464
+libwebp;1.6.0-1;BSD-3-Clause;permissiva;repo-oficial (GitHub License API, webmproject/libwebp);https://github.com/webmproject/libwebp;SIM;6;622080
+libxml2;2.12.10-1;MIT;permissiva;repo-oficial (arquivo Copyright de GNOME/libxml2);https://gitlab.gnome.org/GNOME/libxml2/-/blob/master/Copyright;SIM;3;1444352
+libxslt;1.1.39-1;MIT (libxslt) - libexslt com nota propria;permissiva;repo-oficial (arquivo Copyright de GNOME/libxslt);https://gitlab.gnome.org/GNOME/libxslt/-/blob/master/Copyright;SIM;3;333824
+libzip;1.10.2really1.7.3-1;BSD-3-Clause;permissiva;repo-oficial (arquivo LICENSE de nih-at/libzip);https://github.com/nih-at/libzip/blob/main/LICENSE;SIM;2;168448
+lz4;1.10.0-1;BSD-2-Clause (lib/) + GPL-2.0-or-later (demais arquivos);copyleft-forte;repo-oficial (arquivo LICENSE de lz4/lz4) - MULTIPLA, ver arquivo;https://github.com/lz4/lz4/blob/dev/LICENSE;SIM;2;126976
+msodbcsql;18.0-2;PROPRIETARIA - Microsoft ODBC Driver 18 for SQL Server (EULA Microsoft);proprietaria-redistribuicao-condicionada;recipe OSGeo4W baixa de go.microsoft.com/fwlink - EULA NAO obtido nesta fatia;https://learn.microsoft.com/sql/connect/odbc/download-odbc-driver-for-sql-server;SIM;6;4058304
+msvcrt2019;14.2-2;PROPRIETARIA - Microsoft Visual C++ Redistributable (termos de redistribuicao da Microsoft);proprietaria-redistribuicao-condicionada;recipe OSGeo4W nao traz URL - componente Microsoft identificado pelos nomes de arquivo;https://learn.microsoft.com/cpp/windows/redistributing-visual-cpp-files;SIM;12;2447984
+netcdf;4.10.1-1;BSD-3-Clause;permissiva;repo-oficial (GitHub License API, Unidata/netcdf-c);https://github.com/Unidata/netcdf-c;SIM;2;1300661
+oci;21.13-1;PROPRIETARIA - Oracle Instant Client (Oracle Free Use Terms / OTN);proprietaria-redistribuicao-condicionada;recipe OSGeo4W baixa de download.oracle.com/otn_software - termos NAO obtidos nesta fatia;https://www.oracle.com/database/technologies/instant-client.html;SIM;2;77734912
+ogdi;4.1.1-2;MULTIPLA (duas licencas tipo MIT/BSD conforme o arquivo LICENSE);permissiva;repo-oficial (arquivo LICENSE de libogdi/ogdi);https://github.com/libogdi/ogdi/blob/master/LICENSE;SIM;6;510464
+opencl;2023.12.14-1;Apache-2.0;permissiva;repo-oficial (GitHub License API, KhronosGroup/OpenCL-SDK);https://github.com/KhronosGroup/OpenCL-SDK;SIM;6;55998
+openjpeg;2.5.4-4;BSD-2-Clause;permissiva;repo-oficial (arquivo LICENSE de uclouvain/openjpeg);https://github.com/uclouvain/openjpeg/blob/master/LICENSE;SIM;2;427008
+openssl;3.0.21-1;Apache-2.0;permissiva;repo-oficial (GitHub License API, openssl/openssl);https://github.com/openssl/openssl;SIM;9;6413623
+pdal;2.10.0-4;BSD-3-Clause (texto proprio, Hobu Inc.);permissiva;repo-oficial (arquivo LICENSE.txt de PDAL/PDAL);https://github.com/PDAL/PDAL/blob/master/LICENSE.txt;SIM;2;406016
+pdal-libs;2.10.0-4;BSD-3-Clause (texto proprio, Hobu Inc.);permissiva;repo-oficial (arquivo LICENSE.txt de PDAL/PDAL);https://github.com/PDAL/PDAL/blob/master/LICENSE.txt;SIM;11;9227319
+poppler;26.06.0-1;GPL-2.0;copyleft-forte;repo-oficial (arquivo COPYING de poppler no gitlab.freedesktop.org);https://gitlab.freedesktop.org/poppler/poppler/-/blob/master/COPYING;SIM;2;3421696
+proj;9.8.1-1;MIT;permissiva;site-oficial;https://proj.org/en/stable/about.html;SIM;19;514781
+proj-runtime-data;9.8.1-1;MIT (codigo) - grades de datum tem termos PROPRIOS por grade;DESCONHECIDA;site-oficial cobre o codigo - a licenca de CADA grade de datum nao foi verificada nesta fatia;https://proj.org/en/stable/about.html;NAO;19;10420242
+proj9-runtime;9.8.1-1;MIT;permissiva;site-oficial (mesmo fonte do pacote proj);https://proj.org/en/stable/about.html;SIM;2;3622912
+python3-annotated-types;0.7.0-1;OSI Approved :: MIT License;permissiva;arquivo na arvore - dist-info METADATA (Classifier) - apps/Python312/Lib/site-packages/annotated_types-0.7.0.dist-info/METADATA;https://github.com/annotated-types/annotated-types;NAO;10;37436
+python3-certifi;2026.6.17-1;MPL-2.0;permissiva;arquivo na arvore - dist-info METADATA (campo License:) - apps/Python312/Lib/site-packages/certifi-2026.6.17.dist-info/METADATA;https://github.com/certifi/python-certifi;NAO;13;242836
+python3-charset-normalizer;3.4.9-1;MIT;permissiva;arquivo na arvore - dist-info METADATA (campo License:) - apps/Python312/Lib/site-packages/charset_normalizer-3.4.9.dist-info/METADATA;;SIM;27;588557
+python3-contourpy;1.3.3-1;BSD 3-Clause License;permissiva;arquivo na arvore - dist-info METADATA (campo License:) - apps/Python312/Lib/site-packages/contourpy-1.3.3.dist-info/METADATA;https://github.com/contourpy/contourpy;SIM;28;602022
+python3-core;3.12.13-5;PSF License;permissiva;arquivo na arvore (apps/Python312/LICENSE.txt);https://docs.python.org/3/license.html;SIM;787;63216420
+python3-cycler;0.12.1-1;Copyright (c) 2015, matplotlib project;permissiva;arquivo na arvore - dist-info METADATA (campo License:) - apps/Python312/Lib/site-packages/cycler-0.12.1.dist-info/METADATA;https://matplotlib.org/cycler/;NAO;10;22995
+python3-duckdb;1.5.4-1;OSI Approved :: MIT License;permissiva;arquivo na arvore - dist-info METADATA (Classifier) - apps/Python312/Lib/site-packages/duckdb-1.5.4.dist-info/METADATA;https://github.com/duckdb/duckdb-python;SIM;57;37889307
+python3-et-xmlfile;2.0.0-1;MIT;permissiva;arquivo na arvore - dist-info METADATA (campo License:) - apps/Python312/Lib/site-packages/et_xmlfile-2.0.0.dist-info/METADATA;https://foss.heptapod.net/openpyxl/et_xmlfile;NAO;13;59632
+python3-exifread;3.5.1-1;BSD-3-Clause;permissiva;arquivo na arvore - texto de apps/Python312/Lib/site-packages/exifread-3.5.1.dist-info/licenses/LICENSE;https://github.com/ianare/exif-py;NAO;41;302419
+python3-fonttools;4.63.0-1;MIT;permissiva;arquivo na arvore - dist-info METADATA (campo License:) - apps/Python312/Lib/site-packages/fonttools-4.63.0.dist-info/METADATA;http://github.com/fonttools/fonttools;SIM;367;11485882
+python3-future;1.0.0-1;MIT;permissiva;arquivo na arvore - dist-info METADATA (campo License:) - apps/Python312/Lib/site-packages/future-1.0.0.dist-info/METADATA;https://github.com/PythonCharmers/python-future;NAO;223;1777699
+python3-gdal;3.13.2-1;MIT (nucleo) + BSD-2/BSD-3 e outras em partes;permissiva;site-oficial (bindings Python do mesmo fonte GDAL);https://gdal.org/en/stable/license.html;SIM;212;5256389
+python3-geographiclib;2.1-1;MIT;permissiva;arquivo na arvore - dist-info METADATA (campo License:) - apps/Python312/Lib/site-packages/geographiclib-2.1.dist-info/METADATA;https://github.com/geographiclib/geographiclib-python;NAO;19;152000
+python3-geopandas;1.1.4-1;BSD-3-Clause;permissiva;arquivo na arvore - texto de apps/Python312/Lib/site-packages/geopandas-1.1.4.dist-info/licenses/LICENSE.txt;https://github.com/geopandas/geopandas;NAO;82;1588140
+python3-httplib2;0.32.0-1;MIT;permissiva;arquivo na arvore - dist-info METADATA (campo License:) - apps/Python312/Lib/site-packages/httplib2-0.32.0.dist-info/METADATA;https://github.com/httplib2/httplib2;NAO;15;226975
+python3-idna;3.18-1;BSD-3-Clause;permissiva;arquivo na arvore - texto de apps/Python312/Lib/site-packages/idna-3.18.dist-info/licenses/LICENSE.md;https://github.com/kjd/idna;NAO;21;435361
+python3-jinja2;3.1.6-1;OSI Approved :: BSD License;permissiva;arquivo na arvore - dist-info METADATA (Classifier) - apps/Python312/Lib/site-packages/jinja2-3.1.6.dist-info/METADATA;https://github.com/pallets/jinja/;NAO;34;498331
+python3-kiwisolver;1.5.0-1;=========================;permissiva;arquivo na arvore - dist-info METADATA (campo License:) - apps/Python312/Lib/site-packages/kiwisolver-1.5.0.dist-info/METADATA;https://github.com/nucleic/kiwi;SIM;13;181348
+python3-lxml;6.1.1-1;BSD-3-Clause;permissiva;arquivo na arvore - dist-info METADATA (campo License:) - apps/Python312/Lib/site-packages/lxml-6.1.1.dist-info/METADATA;https://github.com/lxml/lxml;SIM;181;8933576
+python3-markupsafe;3.0.3-1;BSD-3-Clause;permissiva;arquivo na arvore - texto de apps/Python312/Lib/site-packages/markupsafe-3.0.3.dist-info/licenses/LICENSE.txt;https://github.com/pallets/markupsafe/;SIM;14;37394
+python3-matplotlib;3.11.0-1;License agreement for matplotlib versions 1.3.0 and later;permissiva;arquivo na arvore - dist-info METADATA (campo License:) - apps/Python312/Lib/site-packages/matplotlib-3.11.0.dist-info/METADATA;https://matplotlib.org;SIM;604;23257157
+python3-mock;5.2.0-1;OSI Approved :: BSD License;permissiva;arquivo na arvore - dist-info METADATA (Classifier) - apps/Python312/Lib/site-packages/mock-5.2.0.dist-info/METADATA;https://github.com/testing-cabal/mock;NAO;11;121890
+python3-narwhals;2.23.0-1;MIT;permissiva;arquivo na arvore - texto de apps/Python312/Lib/site-packages/narwhals-2.23.0.dist-info/licenses/LICENSE.md;https://github.com/narwhals-dev/narwhals;NAO;170;1973490
+python3-networkx;3.6.1-1;BSD-3-Clause;permissiva;arquivo na arvore - texto de apps/Python312/Lib/site-packages/networkx-3.6.1.dist-info/licenses/LICENSE.txt;https://networkx.org/;NAO;604;7081106
+python3-nose2;0.16.0-1;BSD-2-Clause;permissiva;arquivo na arvore - dist-info METADATA (campo License:) - apps/Python312/Lib/site-packages/nose2-0.16.0.dist-info/METADATA;https://github.com/nose-devs/nose2;NAO;278;719894
+python3-numpy;2.4.6-1;BSD-3-Clause;permissiva;arquivo na arvore - texto de apps/Python312/Lib/site-packages/numpy-2.4.6.dist-info/licenses/LICENSE.txt;https://numpy.org;SIM;936;21454232
+python3-openpyxl;3.1.5-1;MIT;permissiva;arquivo na arvore - dist-info METADATA (campo License:) - apps/Python312/Lib/site-packages/openpyxl-3.1.5.dist-info/METADATA;https://foss.heptapod.net/openpyxl/openpyxl;NAO;198;875136
+python3-owslib;0.36.0-1;BSD-3-Clause;permissiva;arquivo na arvore - dist-info METADATA (campo License:) - apps/Python312/Lib/site-packages/owslib-0.36.0.dist-info/METADATA;https://geopython.github.io/OWSLib;NAO;83;1113886
+python3-packaging;26.2-1;Apache-2.0;permissiva;arquivo na arvore - texto de apps/Python312/Lib/site-packages/packaging-26.2.dist-info/licenses/LICENSE.APACHE;https://github.com/pypa/packaging;NAO;30;383282
+python3-pandas;3.0.3-1;BSD 3-Clause License;permissiva;arquivo na arvore - dist-info METADATA (campo License:) - apps/Python312/Lib/site-packages/pandas-3.0.3.dist-info/METADATA;https://pandas.pydata.org;SIM;1571;35507497
+python3-pillow;12.3.0-1;MIT-CMU (licenca historica da PIL, texto proprio);permissiva;repo-oficial (arquivo LICENSE de python-pillow/Pillow);https://github.com/python-pillow/Pillow/blob/main/LICENSE;SIM;120;1689839
+python3-pip;26.1.2-1;MIT;permissiva;arquivo na arvore - texto de apps/Python312/Lib/site-packages/pip-26.1.2.dist-info/licenses/LICENSE.txt;https://pip.pypa.io/;SIM;473;5960077
+python3-plotly;6.9.0-1;OSI Approved :: MIT License;permissiva;arquivo na arvore - dist-info METADATA (Classifier) - apps/Python312/Lib/site-packages/plotly-6.9.0.dist-info/METADATA;https://plotly.com/python/;NAO;1666;43421600
+python3-ply;3.11-2;BSD;permissiva;arquivo na arvore - dist-info METADATA (campo License:) - apps/Python312/Lib/site-packages/ply-3.11.dist-info/METADATA;http://www.dabeaz.com/ply/;NAO;13;221955
+python3-psycopg;3.3.4-1;LGPL;copyleft-fraco;arquivo na arvore - texto de apps/Python312/Lib/site-packages/psycopg-3.3.4.dist-info/licenses/LICENSE.txt;https://psycopg.org/;NAO;93;736676
+python3-psycopg2;2.9.12-1;LGPL with exceptions;copyleft-fraco;arquivo na arvore - dist-info METADATA (campo License:) - apps/Python312/Lib/site-packages/psycopg2-2.9.12.dist-info/METADATA;https://psycopg.org/;SIM;20;370794
+python3-pyarrow;25.0.0-1;Apache-2.0;permissiva;repo-oficial (GitHub License API, apache/arrow);https://github.com/apache/arrow;SIM;637;18242612
+python3-pydantic;2.13.4-1;MIT;permissiva;arquivo na arvore - texto de apps/Python312/Lib/site-packages/pydantic-2.13.4.dist-info/licenses/LICENSE;https://github.com/pydantic/pydantic;NAO;114;1898973
+python3-pydantic-core;2.46.4-1;MIT;permissiva;arquivo na arvore - texto de apps/Python312/Lib/site-packages/pydantic_core-2.46.4.dist-info/licenses/LICENSE;https://github.com/pydantic;SIM;13;5599965
+python3-pygments;2.20.0-1;BSD-2-Clause;permissiva;arquivo na arvore - texto de apps/Python312/Lib/site-packages/pygments-2.20.0.dist-info/licenses/LICENSE;https://pygments.org;NAO;350;4647109
+python3-pyodbc;5.3.0-1;MIT;permissiva;arquivo na arvore - dist-info METADATA (campo License:) - apps/Python312/Lib/site-packages/pyodbc-5.3.0.dist-info/METADATA;https://github.com/mkleehammer/pyodbc;SIM;9;173361
+python3-pyogrio;0.13.0-1;MIT License;permissiva;arquivo na arvore - dist-info METADATA (campo License:) - apps/Python312/Lib/site-packages/pyogrio-0.13.0.dist-info/METADATA;https://github.com/geopandas/pyogrio;SIM;49;7162685
+python3-pyopengl;3.1.10-1;OSI Approved :: BSD License;permissiva;arquivo na arvore - dist-info METADATA (Classifier) - apps/Python312/Lib/site-packages/pyopengl-3.1.10.dist-info/METADATA;https://mcfletch.github.io/pyopengl/;SIM;2902;8026039
+python3-pyparsing;3.3.2-1;MIT;permissiva;arquivo na arvore - texto de apps/Python312/Lib/site-packages/pyparsing-3.3.2.dist-info/licenses/LICENSE;https://github.com/pyparsing/pyparsing/;NAO;26;465208
+python3-pypdf;6.14.2-1;BSD-2-Clause;permissiva;arquivo na arvore - texto de apps/Python312/Lib/site-packages/pypdf-6.14.2.dist-info/licenses/LICENSE;https://github.com/py-pdf/pypdf;NAO;63;1503507
+python3-pyproj;3.7.2-1;MIT;permissiva;arquivo na arvore - texto de apps/Python312/Lib/site-packages/pyproj-3.7.2.dist-info/licenses/LICENSE;https://pyproj4.github.io/pyproj/;SIM;80;8838360
+python3-pyqt5;5.15.11-3;GPL v3;copyleft-forte;arquivo na arvore - dist-info METADATA (campo License:) - apps/Python312/Lib/site-packages/pyqt5-5.15.11.dist-info/METADATA;https://www.riverbankcomputing.com/software/pyqt/;SIM;922;22338274
+python3-pyqt5-sip;12.18.0-1;BSD-2-Clause;permissiva;arquivo na arvore - dist-info METADATA (campo License:) - apps/Python312/Lib/site-packages/pyqt5_sip-12.18.0.dist-info/METADATA;https://github.com/Python-SIP/sip;SIM;8;122943
+python3-pyserial;3.5-2;BSD;permissiva;arquivo na arvore - dist-info METADATA (campo License:) - apps/Python312/Lib/site-packages/pyserial-3.5.dist-info/METADATA;https://github.com/pyserial/pyserial;NAO;40;540238
+python3-python-dateutil;2.9.0.post0-1;Dual License;permissiva;arquivo na arvore - dist-info METADATA (campo License:) - apps/Python312/Lib/site-packages/python_dateutil-2.9.0.post0.dist-info/METADATA;https://github.com/dateutil/dateutil;NAO;28;443016
+python3-pytz;2026.2-1;MIT;permissiva;arquivo na arvore - dist-info METADATA (campo License:) - apps/Python312/Lib/site-packages/pytz-2026.2.dist-info/METADATA;http://pythonhosted.org/pytz;NAO;619;1012894
+python3-pywin32;311-1;PSF;permissiva;arquivo na arvore - dist-info METADATA (campo License:) - apps/Python312/Lib/site-packages/pywin32-311.dist-info/METADATA;https://github.com/mhammond/pywin32;SIM;604;20659568
+python3-pyyaml;6.0.3-1;MIT;permissiva;arquivo na arvore - dist-info METADATA (campo License:) - apps/Python312/Lib/site-packages/pyyaml-6.0.3.dist-info/METADATA;https://github.com/yaml/pyyaml;SIM;27;479336
+python3-qscintilla;2.14.1-2;GPL-3.0 OU licenca comercial (Riverbank);copyleft-forte;site-oficial do detentor (Riverbank Computing);https://www.riverbankcomputing.com/software/qscintilla/;SIM;63;1399572
+python3-remotior-sensus;0.7.5-1;OSI Approved :: GNU General Public License v3 or later (GPLv3+);copyleft-forte;arquivo na arvore - dist-info METADATA (Classifier) - apps/Python312/Lib/site-packages/remotior_sensus-0.7.5.dist-info/METADATA;https://github.com/semiautomaticgit/remotior_sensus;NAO;66;2025827
+python3-reportlab;5.0.0-1;OSI Approved :: BSD License;permissiva;arquivo na arvore - dist-info METADATA (Classifier) - apps/Python312/Lib/site-packages/reportlab-5.0.0.dist-info/METADATA;https://www.reportlab.com/;NAO;199;4677294
+python3-requests;2.34.2-1;Apache-2.0;permissiva;arquivo na arvore - dist-info METADATA (campo License:) - apps/Python312/Lib/site-packages/requests-2.34.2.dist-info/METADATA;https://github.com/psf/requests;NAO;29;235598
+python3-scipy;1.18.0-1;OSI Approved :: BSD License;permissiva;arquivo na arvore - dist-info METADATA (Classifier) - apps/Python312/Lib/site-packages/scipy-1.18.0.dist-info/METADATA;https://scipy.org/;SIM;1538;107886493
+python3-setuptools;83.0.0-1;MIT;permissiva;arquivo na arvore - texto de apps/Python312/Lib/site-packages/setuptools-83.0.0.dist-info/licenses/LICENSE;https://github.com/pypa/setuptools;SIM;444;3488235
+python3-shapely;2.1.2-2;BSD 3-Clause;permissiva;arquivo na arvore - dist-info METADATA (campo License:) - apps/Python312/Lib/site-packages/shapely-2.1.2.dist-info/METADATA;https://github.com/shapely/shapely;SIM;139;1461169
+python3-simplejson;4.1.1-1;MIT OR AFL-2.1;permissiva;arquivo na arvore - dist-info METADATA (campo License:) - apps/Python312/Lib/site-packages/simplejson-4.1.1.dist-info/METADATA;https://github.com/simplejson/simplejson;SIM;53;279788
+python3-sip;6.15.3-1;BSD-2-Clause;permissiva;arquivo na arvore - texto de apps/Python312/Lib/site-packages/sip-6.15.3.dist-info/licenses/LICENSE;https://github.com/Python-SIP/sip;NAO;539;13118189
+python3-six;1.17.0-1;MIT;permissiva;arquivo na arvore - dist-info METADATA (campo License:) - apps/Python312/Lib/site-packages/six-1.17.0.dist-info/METADATA;https://github.com/benjaminp/six;NAO;9;38256
+python3-typing-extensions;4.16.0-1;PSF License;permissiva;repo-oficial (arquivo LICENSE de python/typing_extensions);https://github.com/python/typing_extensions/blob/main/LICENSE;NAO;8;183103
+python3-typing-inspection;0.4.2-1;MIT;permissiva;arquivo na arvore - texto de apps/Python312/Lib/site-packages/typing_inspection-0.4.2.dist-info/licenses/LICENSE;https://github.com/pydantic/typing-inspection;NAO;12;54088
+python3-tzdata;2026.2-1;Apache-2.0;permissiva;arquivo na arvore - dist-info METADATA (campo License:) - apps/Python312/Lib/site-packages/tzdata-2026.2.dist-info/METADATA;https://github.com/python/tzdata;NAO;636;588433
+python3-urllib3;2.7.0-1;MIT;permissiva;arquivo na arvore - texto de apps/Python312/Lib/site-packages/urllib3-2.7.0.dist-info/licenses/LICENSE.txt;;NAO;45;434623
+python3-wxpython;4.2.5-1;OSI Approved;permissiva;arquivo na arvore - dist-info METADATA (Classifier) - apps/Python312/Lib/site-packages/wxpython-4.2.5.dist-info/METADATA;https://wxPython.org/;SIM;467;37031260
+python3-xlrd;2.0.2-1;BSD;permissiva;arquivo na arvore - dist-info METADATA (campo License:) - apps/Python312/Lib/site-packages/xlrd-2.0.2.dist-info/METADATA;http://www.python-excel.org/;NAO;20;384650
+python3-xlwt;1.3.0-2;BSD;permissiva;arquivo na arvore - dist-info METADATA (campo License:) - apps/Python312/Lib/site-packages/xlwt-1.3.0.dist-info/METADATA;http://www.python-excel.org/;NAO;27;413526
+qca;2.3.8-2;LGPL-2.1;copyleft-fraco;repo-oficial (GitHub License API, KDE/qca);https://github.com/KDE/qca;SIM;10;3176151
+qgis-ltr;3.44.13-1;GPL-2.0-or-later;copyleft-forte;repo-oficial (GitHub License API, qgis/QGIS);https://github.com/qgis/QGIS/blob/master/COPYING;SIM;171;184972950
+qgis-ltr-common;3.44.13-1;GPL-2.0-or-later;copyleft-forte;repo-oficial (GitHub License API, qgis/QGIS);https://github.com/qgis/QGIS/blob/master/COPYING;SIM;6842;154967903
+qgis-ltr-full;3.44.13-1;GPL-2.0-or-later;copyleft-forte;repo-oficial (GitHub License API, qgis/QGIS) - metapacote VAZIO na arvore;https://github.com/qgis/QGIS/blob/master/COPYING;NAO;1;0
+qgis-ltr-full-free;3.44.13-1;GPL-2.0-or-later;copyleft-forte;repo-oficial (GitHub License API, qgis/QGIS) - metapacote VAZIO na arvore;https://github.com/qgis/QGIS/blob/master/COPYING;NAO;1;0
+qgis-ltr-grass-plugin;3.44.13-1;GPL-2.0-or-later;copyleft-forte;repo-oficial (GitHub License API, qgis/QGIS);https://github.com/qgis/QGIS/blob/master/COPYING;SIM;1077;3384693
+qgis-ltr-oracle-provider;3.44.13-1;GPL-2.0-or-later;copyleft-forte;repo-oficial (GitHub License API, qgis/QGIS) - LIGA em OCI.dll proprietaria;https://github.com/qgis/QGIS/blob/master/COPYING;SIM;2;920576
+qscintilla;2.14.1-2;GPL-3.0 OU licenca comercial (Riverbank);copyleft-forte;site-oficial do detentor (Riverbank Computing);https://www.riverbankcomputing.com/software/qscintilla/;SIM;1;2131456
+qt5-libs;5.15.13-2;LGPL-3.0 (edicao open source - partes so sob GPL-3.0);copyleft-fraco;site-oficial do detentor (The Qt Company);https://www.qt.io/licensing/open-source-lgpl-obligations;SIM;466;241809317
+qt5-qml;5.15.13-2;LGPL-3.0 (edicao open source - partes so sob GPL-3.0);copyleft-fraco;site-oficial do detentor (The Qt Company);https://www.qt.io/licensing/open-source-lgpl-obligations;SIM;1371;319415792
+qt5-tools;5.15.13-2;LGPL-3.0 / GPL-3.0 conforme a ferramenta (edicao open source);copyleft-fraco;site-oficial do detentor (The Qt Company);https://www.qt.io/licensing/open-source-lgpl-obligations;SIM;69;7254373
+qtkeychain-libs;0.14.2-1;BSD-2-Clause (texto proprio no COPYING);permissiva;repo-oficial (arquivo COPYING de frankosterfeld/qtkeychain);https://github.com/frankosterfeld/qtkeychain/blob/master/COPYING;SIM;8;58243
+qtwebkit-libs;5.212.0-alpha4-9;DESCONHECIDA;DESCONHECIDA;NAO ENCONTRADO - nao consultada nesta fatia - o recipe OSGeo4W nomeia o fonte upstream;https://github.com/$P/$P/releases/download/$P-$V/$P-$V.tar.xz;SIM;14;49492841
+qwt-libs;6.3.0-2;Qwt License 1.0 (LGPL-2.1 com tres excecoes);copyleft-fraco;site-oficial;https://qwt.sourceforge.io/qwtlicense.html;SIM;1;1214464
+saga;9.12.4-1;DESCONHECIDA;DESCONHECIDA;NAO ENCONTRADO - nao consultada nesta fatia - o recipe OSGeo4W nomeia o fonte upstream;https://sourceforge.net/projects/$p-gis/files/${p^^}%20-%20$M/${p^^}%20-%20$V/$p-${V}_src.zip/download;SIM;399;46837517
+setup;1.1.2-17;DESCONHECIDA;DESCONHECIDA;NAO ENCONTRADO - sem arquivo de licenca na arvore e sem fonte consultada;;SIM;8;1033308
+sqlite3;3.53.4-1;Dominio publico (nao ha licenca - dedicacao ao dominio publico);permissiva;site-oficial;https://www.sqlite.org/copyright.html;SIM;3;2629120
+szip;99-1;BSD-2-Clause (fornecido pelo libaec);permissiva;repo-oficial (GitHub License API do libaec) - metapacote VAZIO na arvore;https://github.com/MathisRosenhauer/libaec;NAO;1;0
+thrift;0.24.0-1;Apache-2.0;permissiva;repo-oficial (GitHub License API, apache/thrift);https://github.com/apache/thrift;SIM;2;1474048
+wxwidgets;3.2.9-1;wxWindows Library Licence 3.1 (LGPL-2 com excecao para binarios);copyleft-fraco;site-oficial;https://www.wxwidgets.org/about/licence/;SIM;16;23379968
+xerces-c;3.2.5-1;Apache-2.0;permissiva;repo-oficial (GitHub License API, apache/xerces-c);https://github.com/apache/xerces-c;SIM;1;2791936
+xz;5.4.7-1;MULTIPLA (0BSD para a liblzma - outras partes com licencas distintas);permissiva;repo-oficial (arquivo COPYING de tukaani-project/xz);https://github.com/tukaani-project/xz/blob/master/COPYING;SIM;2;185344
+zlib;1.3.2-3;Zlib License;permissiva;repo-oficial (arquivo LICENSE de madler/zlib);https://github.com/madler/zlib/blob/develop/LICENSE;SIM;1;90624
+zstd;1.5.7-1;BSD-3-Clause + GPL-2.0 (duplo, ver arquivo);permissiva;repo-oficial (arquivo LICENSE de facebook/zstd);https://github.com/facebook/zstd/blob/dev/LICENSE;SIM;1;659968
