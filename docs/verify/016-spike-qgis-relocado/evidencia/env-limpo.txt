@@ -1,0 +1,22 @@
+
+  ENV do QGIS relocado  (contaminado=False)
+  raiz: C:\Users\Francisco\AppData\Local\InstitutoIMAN\_spike016\IMAN Terra\qgis\QGIS 3.44.13
+
+  OSGEO4W_ROOT       = C:\Users\FRANCI~1\AppData\Local\INSTIT~1\_SPIKE~1\IMANTE~1\qgis\QGIS34~1.13
+  PATH               = C:\Users\FRANCI~1\AppData\Local\INSTIT~1\_SPIKE~1\IMANTE~1\qgis\QGIS34~1.13\apps\qgis-ltr\bin;C:\Users\FRANCI~1\AppData\Local\INSTIT~1\_SPIKE~1\IMANTE~1\qgis\QGIS34~1.13\apps\grass\grass85\lib;C:\Users\FRANCI~1\AppData\Local\INSTIT~1\_SPIKE~1\IMANTE~1\qgis\QGIS34~1.13\apps\grass\grass85\bin;C:\Users\FRANCI~1\AppData\Local\INSTIT~1\_SPIKE~1\IMANTE~1\qgis\QGIS34~1.13\apps\qt5\bin;C:\Users\FRANCI~1\AppData\Local\INSTIT~1\_SPIKE~1\IMANTE~1\qgis\QGIS34~1.13\apps\Python312\Scripts;C:\Users\FRANCI~1\AppData\Local\INSTIT~1\_SPIKE~1\IMANTE~1\qgis\QGIS34~1.13\bin ...
+  PROJ_DATA          = C:\Users\FRANCI~1\AppData\Local\INSTIT~1\_SPIKE~1\IMANTE~1\qgis\QGIS34~1.13\share\proj
+  PROJ_LIB           = <nao definida>
+  GDAL_DATA          = C:\Users\FRANCI~1\AppData\Local\INSTIT~1\_SPIKE~1\IMANTE~1\qgis\QGIS34~1.13\apps\gdal\share\gdal
+  GDAL_DRIVER_PATH   = C:\Users\FRANCI~1\AppData\Local\INSTIT~1\_SPIKE~1\IMANTE~1\qgis\QGIS34~1.13\apps\gdal\lib\gdalplugins
+  PYTHONHOME         = C:\Users\FRANCI~1\AppData\Local\INSTIT~1\_SPIKE~1\IMANTE~1\qgis\QGIS34~1.13\apps\Python312
+  PYTHONPATH         = C:\Users\FRANCI~1\AppData\Local\INSTIT~1\_SPIKE~1\IMANTE~1\qgis\QGIS34~1.13\apps\qgis-ltr\python;C:\Users\FRANCI~1\AppData\Local\INSTIT~1\_SPIKE~1\IMANTE~1\qgis\QGIS34~1.13\apps\grass\grass85\etc\python;
+  PYTHONEXECUTABLE   = C:\Users\FRANCI~1\AppData\Local\INSTIT~1\_SPIKE~1\IMANTE~1\qgis\QGIS34~1.13\bin\python3.exe
+  QT_PLUGIN_PATH     = C:\Users\FRANCI~1\AppData\Local\INSTIT~1\_SPIKE~1\IMANTE~1\qgis\QGIS34~1.13\apps\qgis-ltr\qtplugins;C:\Users\FRANCI~1\AppData\Local\INSTIT~1\_SPIKE~1\IMANTE~1\qgis\QGIS34~1.13\apps\qt5\plugins
+  QGIS_PREFIX_PATH   = C:/Users/FRANCI~1/AppData/Local/INSTIT~1/_SPIKE~1/IMANTE~1/qgis/QGIS34~1.13/apps/qgis-ltr
+  GISBASE            = C:\Users\FRANCI~1\AppData\Local\INSTIT~1\_SPIKE~1\IMANTE~1\qgis\QGIS34~1.13\apps\grass\grass85
+  GRASS_PYTHON       = C:\Users\FRANCI~1\AppData\Local\INSTIT~1\_SPIKE~1\IMANTE~1\qgis\QGIS34~1.13\bin\python3.exe
+  GS_LIB             = C:\Users\FRANCI~1\AppData\Local\INSTIT~1\_SPIKE~1\IMANTE~1\qgis\QGIS34~1.13\apps\gs\lib
+  PDAL_DRIVER_PATH   = C:\Users\FRANCI~1\AppData\Local\INSTIT~1\_SPIKE~1\IMANTE~1\qgis\QGIS34~1.13\apps\pdal\plugins
+  SSL_CERT_FILE      = C:\Users\FRANCI~1\AppData\Local\INSTIT~1\_SPIKE~1\IMANTE~1\qgis\QGIS34~1.13\bin\curl-ca-bundle.crt
+  CURL_CA_BUNDLE     = C:\Users\FRANCI~1\AppData\Local\INSTIT~1\_SPIKE~1\IMANTE~1\qgis\QGIS34~1.13\bin\curl-ca-bundle.crt
+

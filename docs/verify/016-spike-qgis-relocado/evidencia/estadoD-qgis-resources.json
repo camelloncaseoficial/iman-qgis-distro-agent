@@ -1,0 +1,13 @@
+﻿{
+    "Quebrado":  "apps\\qgis-ltr\\resources",
+    "SegundosEsperados":  40,
+    "ProcessoSaiuSozinho":  false,
+    "ExitCode":  null,
+    "TituloJanelaPrincipal":  "IMAN Terra — powered by QGIS",
+    "ChegouNaJanelaPrincipal":  true,
+    "JanelasVisiveis":  [
+                            "Qt51513QWindowIcon | IMAN Terra — powered by QGIS"
+                        ],
+    "Stderr":  "",
+    "Stdout":  ""
+}

@@ -1,0 +1,13 @@
+  > C:\Users\Francisco\AppData\Local\InstitutoIMAN\_spike016\IMAN Terra\qgis\QGIS 3.44.13\bin\qgis-ltr-bin.exe --profiles-path C:\Users\Francisco\AppData\Local\InstitutoIMAN\_spike016\perfil --profile spike016-cru --noversioncheck
+  PID 30864 - aguardando ate 90 s pela janela principal...
+{
+    "Pid":  30864,
+    "JanelaHandle":  7343016,
+    "Titulo":  "QGIS3",
+    "SaiuAntes":  false,
+    "ExitCode":  null,
+    "SegundosAteJan":  4
+}
+
+  A janela continua aberta (PID 30864). Fotografe e encerre com:
+    Stop-Process -Id 30864

@@ -1,0 +1,5 @@
+proj_get_authorities_from_database: Cannot find proj.db
+proj_create_from_database: Cannot find proj.db
+proj_get_authorities_from_database: Cannot find proj.db
+proj_create_from_database: Cannot find proj.db
+proj_crs_get_coordinate_system: Object is not a SingleCRS

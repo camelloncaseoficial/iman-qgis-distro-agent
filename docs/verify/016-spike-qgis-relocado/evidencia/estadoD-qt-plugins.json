@@ -1,0 +1,13 @@
+﻿{
+    "Quebrado":  "apps\\qt5\\plugins",
+    "SegundosEsperados":  40,
+    "ProcessoSaiuSozinho":  false,
+    "ExitCode":  null,
+    "TituloJanelaPrincipal":  "QGIS3",
+    "ChegouNaJanelaPrincipal":  false,
+    "JanelasVisiveis":  [
+                            "#32770 | QGIS3"
+                        ],
+    "Stderr":  "",
+    "Stdout":  ""
+}
