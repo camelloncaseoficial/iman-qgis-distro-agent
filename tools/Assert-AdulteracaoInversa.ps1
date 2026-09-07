@@ -84,13 +84,13 @@ $Reversoes = @(
        De="        # E4 - criou um projeto -> canvas. Antes desta fatia era _show_home(),`n        # e o comando `"Novo projeto`" parecia inerte (D6).`n        if not self._pousou:`n            return`n        self._show_canvas()";
        Para="        if not self._pousou:`n            return`n        self._show_home()  # REVERTIDO" },
 
-    # D7 - LIMITE DECLARADO. Reverter o pouso-por-estado para pouso-por-evento
-    # NAO re-arma o gatilho no codigo de hoje: medido tres vezes seguidas, o
-    # A07b continuou PASS. O gatilho original era uma CORRIDA entre o evento de
-    # arranque e o QTimer de 900 ms, e as mudancas de D8 e D12 deslocaram esse
-    # tempo. Como o gate nao consegue reproduzir a corrida, ele prova o que
-    # consegue: que o A07b ESTA VIVO - forcando um pouso errado, ele acende.
-    # Isso NAO prova que o _decide_pouso e o que mantem o A07b verde.
+    # D7 - o conserto de verdade: pouso por ESTADO em vez de por evento.
+    @{ Id='D7'; Assercao='A07b'; Arquivo=$PLUGIN; Fase='segunda';
+       De='            QTimer.singleShot(2500, self._decide_pouso)';
+       Para='            self._pousou = True  # REVERTIDO (pouso por evento)' },
+
+    # D7 (vivacidade) - prova adicional de que a assercao enxerga um pouso
+    # errado, independente do mecanismo que o produziu.
     @{ Id='D7-vivacidade'; Assercao='A07b'; Arquivo=$PLUGIN; Fase='segunda';
        De='            self._show_home()        # E1 - o pouso';
        Para='            self._show_canvas()  # POUSO ERRADO DE PROPOSITO' },
