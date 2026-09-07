@@ -60,3 +60,7 @@ tools/spike016/evidencia/
 
 # Gate #018 - saida das rodadas de adulteracao inversa (regeravel)
 tools/adulteracao/
+
+# Arvore privada do QGIS montada em tempo de build (fatia #019, via A1).
+# ~2,2 GB extraidos do payload; regeravel com installer\New-ArvoreQgis.ps1.
+installer/stage/
