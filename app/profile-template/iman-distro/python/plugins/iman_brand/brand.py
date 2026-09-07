@@ -19,7 +19,7 @@ WINDOW_TITLE = "IMAN Terra — powered by QGIS"
 PUBLISHER = "Instituto IMAN"
 ORG_FULL = ("Instituto de Monitoramento Ambiental e Desenvolvimento "
             "do Semiárido do Nordeste")
-VERSION = "0.1.0"
+VERSION = "0.3.0"   # DERIVADA do #define ProductVersion do .iss (D9). O build.ps1 recusa compilar se divergir.
 
 # --- Paleta IMAN Terra (redesign D-IMAN-026 · ATIVA · INTERIM) ------------------
 # PROMOVIDA na fatia #005 (feat/003-identidade-nofork): estes COLOR_* espelham,
