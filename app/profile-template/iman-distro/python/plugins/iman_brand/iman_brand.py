@@ -14,6 +14,7 @@ APIs públicas do QGIS/Qt (BL-6). Marca da fonte única `brand.py` (BL-4). Nada 
 se apresenta como QGIS oficial (BL-1/BL-2).
 """
 import os
+import re
 import webbrowser
 
 from qgis.PyQt.QtCore import Qt, QUrl, QTimer, QSize, QObject, QEvent
@@ -91,6 +92,7 @@ class ImanBrandPlugin:
         self._hidden_toolbars = []
         self._contem_coords = None
         self._campo_coords = None
+        self._retitulando = False
 
     # ------------------------------------------------------------------ setup
     def initGui(self):
@@ -115,7 +117,7 @@ class ImanBrandPlugin:
         # IMAN"), no lugar de 5 ícones repetidos.
         self._build_menu_button(icon)
 
-        self._apply_title()
+        self._instala_titulo()
         for sig, slot in (("projectRead", self._on_project_read),
                           ("newProjectCreated", self._on_new_project)):
             try:
@@ -228,11 +230,52 @@ class ImanBrandPlugin:
         except Exception:
             pass
 
-    def _apply_title(self):
+    # --------------------------------------------- titulo da janela (D5)
+    #
+    # O titulo NAO e nosso para escrever - so o sufixo e. Quem sabe qual
+    # projeto esta aberto, se ha alteracao nao salva e como isso se escreve no
+    # idioma do usuario e o QGIS. Antes desta fatia a camada de marca cravava
+    # `WINDOW_TITLE` por cima, de DUAS fontes independentes (aqui e no
+    # iman_startup.py), e o resultado era regressao, nao ausencia: medido em
+    # 2026-09-07, o QGIS tinha escrito "spike017-projeto-alfa - QGIS" e a
+    # marca apagava, deixando "IMAN Terra - powered by QGIS" em todo estado.
+    #
+    # Agora existe UMA fonte: este gancho, que reage ao titulo que o QGIS
+    # acabou de compor e troca apenas o sufixo.
+    def _instala_titulo(self):
         try:
-            self.iface.mainWindow().setWindowTitle(brand.WINDOW_TITLE)
+            win = self.iface.mainWindow()
+            win.windowTitleChanged.connect(self._retitula)
+            self._retitula(win.windowTitle())
         except Exception:
             pass
+
+    @staticmethod
+    def compoe_titulo(titulo):
+        """"<Projeto> - QGIS"  ->  "<Projeto> - IMAN Terra".
+
+        Ancorado no FIM: so o sufixo sai. Se o titulo ja termina com o nome do
+        produto, nada muda - e por isso o gancho nao se realimenta.
+        """
+        if not titulo:
+            return titulo
+        return re.sub(r'QGIS(\s*)$', brand.PRODUCT_NAME + r'\1', titulo)
+
+    def _retitula(self, titulo=None):
+        if self._retitulando:
+            return
+        try:
+            win = self.iface.mainWindow()
+            atual = titulo if titulo is not None else win.windowTitle()
+            novo = self.compoe_titulo(atual)
+            if novo and novo != atual:
+                self._retitulando = True
+                try:
+                    win.setWindowTitle(novo)
+                finally:
+                    self._retitulando = False
+        except Exception:
+            self._retitulando = False
 
     def _add_action(self, icon, text, callback, tip=""):
         action = QAction(icon, text, self.iface.mainWindow())
@@ -308,13 +351,11 @@ class ImanBrandPlugin:
                 pass
 
     def _on_project_read(self):
-        # projeto aberto (com conteúdo) -> o canvas assume o miolo
-        self._apply_title()
+        # projeto aberto -> o canvas assume o miolo
         self._show_canvas()
 
     def _on_new_project(self):
         # File ▸ Novo (projeto vazio) -> a home volta ao miolo
-        self._apply_title()
         self._show_home()
 
     # ------------------------------------------- fallback: dock (Sonda C)
@@ -433,6 +474,10 @@ class ImanBrandPlugin:
                 getattr(self.iface, sig).disconnect(slot)
             except Exception:
                 pass
+        try:
+            self.iface.mainWindow().windowTitleChanged.disconnect(self._retitula)
+        except Exception:
+            pass
         # restaura o central widget nativo do QGIS
         if self.mode == "central" and self.stack is not None and self.canvas_page is not None:
             try:

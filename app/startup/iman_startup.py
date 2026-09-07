@@ -4,10 +4,16 @@
 Executado pelo QGIS via `--code app/startup/iman_startup.py`. Responsabilidades
 LEVES (a experiência maior mora no plugin de marca `iman_brand`):
 
-1. Ajustar o título da janela para `WINDOW_TITLE` (fonte única de marca, BL-4).
-2. Aplicar o tema QSS institucional à janela principal, ANEXANDO ao stylesheet do
+1. Aplicar o tema QSS institucional à janela principal, ANEXANDO ao stylesheet do
    QGIS (não substitui os estilos nativos) e reaplicando após a UI assentar.
-3. Trocar o ícone da janela/taskbar para o emblema IMAN.
+2. Trocar o ícone da janela/taskbar para o emblema IMAN.
+
+O TÍTULO DA JANELA NÃO É ESCRITO AQUI (D5, fatia #018). Ele tinha duas fontes —
+esta e `iman_brand.py::_apply_title` — e as duas cravavam a mesma string
+estática por cima do título que o QGIS acabara de compor, apagando o nome do
+projeto aberto. Agora existe uma fonte só: o gancho `windowTitleChanged` do
+plugin de marca, que troca apenas o SUFIXO. Não reintroduza `setWindowTitle`
+neste arquivo.
 
 Limite honesto (BL-5): o **splash nativo de boot** ("QGIS x.y Bratislava LTR") e os
 **ícones de ação da toolbar** são do core do QGIS e só mudam na Opção 2 (fork) —
@@ -130,14 +136,13 @@ def main():
         return
     win = iface.mainWindow()
     brand = _brand()
-    title = brand.WINDOW_TITLE if brand else "IMAN Terra — powered by QGIS"
 
     _set_app_user_model_id()
 
     def apply_identity():
-        # Titulo + icone da janela/taskbar. O QGIS reescreve titulo/icone TARDE no
-        # boot (achado dos spikes #004/#005), entao reaplicamos algumas vezes.
-        win.setWindowTitle(title)
+        # Só o ícone. O QGIS reescreve o ícone TARDE no boot (achado dos spikes
+        # #004/#005), então reaplicamos algumas vezes. O TÍTULO é do plugin de
+        # marca, fonte única (D5).
         _apply_window_icon(win)
 
     apply_identity()
