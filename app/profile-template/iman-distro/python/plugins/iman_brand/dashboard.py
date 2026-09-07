@@ -6,6 +6,8 @@ fatia #006. Paleta da FONTE ÚNICA de produção (`brand.py`, D-IMAN-026); conte
 REURB / cadastral do CEARÁ; fonte do sistema; CRS SIRGAS 2000 / UTM 24S. Quick-
 actions ligadas a ações REAIS do QGIS. Créditos do QGIS no rodapé (BL-1/BL-2).
 """
+import os
+
 from qgis.PyQt.QtCore import Qt, pyqtSignal
 from qgis.PyQt.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QGridLayout, QLabel, QFrame,
@@ -17,24 +19,22 @@ from . import brand
 SUBTITLE = "Regularização fundiária, cadastro territorial e cartografia — em uma só plataforma geoespacial."
 CRS_LABEL = "EPSG:31984 · SIRGAS 2000 / UTM 24S"
 
-RECENTS = [
-    ("REURB-S — Núcleo Alto da Boa Vista", "~/iman/reurb/sobral_alto_boa_vista.qgz", "Hoje"),
-    ("Cadastro territorial urbano — Juazeiro do Norte", "~/iman/cadastro/juazeiro_urbano.qgz", "Ontem"),
-    ("Parcelamento do solo — Quixadá", "~/iman/projetos/quixada_parcelamento.qgz", "3 dias"),
-    ("Perímetro & confrontações — Crateús", "~/iman/reurb/crateus_perimetro.qgz", "1 sem"),
-]
-TEMPLATES = [
-    ("Projeto cadastral vazio", "EPSG:31984"),
-    ("REURB-S — núcleo informal", "Lotes · Vias"),
-    ("Planta de parcelamento", "NBR 13.133"),
-    ("Memorial descritivo", "Vértices · Azimutes"),
-    ("Base cartográfica municipal", "Ceará"),
-    ("Confrontações & vértices", "Cadastro"),
-]
-CHIPS = [
-    "Camadas vetoriais", "Cadastro territorial", "Processamento",
-    "Complementos IMAN", "Documentação REURB", "GPS/GNSS",
-]
+# D8 (#017/A08) - NAO REINTRODUZIR DADO INVENTADO.
+#
+# Aqui existiam tres listas de exemplo: RECENTS com quatro projetos que nao
+# existem (com caminho de arquivo e data - "Hoje", "Ontem", "3 dias"),
+# TEMPLATES com seis modelos e CHIPS com seis atalhos. Nenhum dos tres
+# clicava. Medido no #017: 20 de 20 dessas strings alcancavam a tela e 10
+# widgets se pintavam como clicaveis sem ser.
+#
+# O sponsor abriu quatro projetos que nao existem. Uma maquete que finge ser
+# produto e pior que uma tela vazia.
+#
+# A lista de recentes agora vem do QGIS, que ja mantem a de verdade. Vazia,
+# ela se mostra VAZIA, com estado proprio. TEMPLATES e CHIPS foram removidos -
+# so voltam quando existirem e clicarem.
+
+MAX_RECENTES = 6
 
 
 def _pal():
@@ -121,6 +121,75 @@ def _card(pal, glyph, accent_key, title, sub, on_click=None):
     return f
 
 
+def recentes_reais(limite=MAX_RECENTES):
+    """A lista de projetos recentes DO QGIS (D8).
+
+    O QGIS ja mantem a lista de verdade em QgsSettings, sob
+    `UI/recentProjects/<n>/{title,path,crs}` - a mesma que alimenta a welcome
+    nativa. Lemos dela; nao inventamos nenhuma.
+
+    Devolve [(titulo, caminho, existe)], so com projetos cujo arquivo ainda
+    esta no disco: um recente apagado do disco e um link morto, e link morto
+    e a mesma mentira dos dados de exemplo, com outra cara.
+    """
+    itens = []
+    try:
+        from qgis.core import QgsSettings
+        s = QgsSettings()
+        s.beginGroup("UI/recentProjects")
+        try:
+            for chave in s.childGroups():
+                s.beginGroup(chave)
+                try:
+                    caminho = s.value("path", "") or ""
+                    titulo = s.value("title", "") or ""
+                finally:
+                    s.endGroup()
+                if not caminho:
+                    continue
+                if not os.path.exists(caminho):
+                    continue
+                if not titulo:
+                    titulo = os.path.splitext(os.path.basename(caminho))[0]
+                itens.append((titulo, caminho))
+        finally:
+            s.endGroup()
+    except Exception:
+        return []
+    return itens[:limite]
+
+
+def _item_recente(pal, titulo, caminho, on_click):
+    """Um recente REAL, e clicavel de verdade (D8)."""
+    f = ClickableFrame()
+    f.setObjectName("rec")
+    f.setCursor(Qt.PointingHandCursor)
+    v = QVBoxLayout(f)
+    v.setContentsMargins(10, 8, 10, 8)
+    v.setSpacing(1)
+    t = QLabel(titulo)
+    t.setStyleSheet("font-size:13px;font-weight:600;color:%s;" % pal["text"])
+    c = QLabel(caminho)
+    c.setStyleSheet("font-size:11px;color:%s;" % pal["text_faint"])
+    v.addWidget(t)
+    v.addWidget(c)
+    f.setStyleSheet("QFrame#rec{background:transparent;border:1px solid transparent;"
+                    "border-radius:10px;}"
+                    "QFrame#rec:hover{background:%s;border:1px solid %s;}"
+                    % (pal["panel"], pal["border"]))
+    f.clicked.connect(on_click)
+    return f
+
+
+def _vazio(pal, texto):
+    """Estado vazio EXPLICITO (D8): sem hover, sem cursor de mao, sem moldura
+    de cartao - nada que prometa clique."""
+    l = QLabel(texto)
+    l.setWordWrap(True)
+    l.setStyleSheet("font-size:12px;color:%s;padding:10px 0;" % pal["text_faint"])
+    return l
+
+
 def _section_title(pal, text):
     l = QLabel(text)
     l.setStyleSheet("font-size:15px;font-weight:600;color:%s;" % pal["text"])
@@ -195,63 +264,24 @@ def build_home(iface=None):
         qa.addWidget(_card(pal, g, key, t, s, cb), 0, i)
     L.addLayout(qa)
 
-    # two columns
-    cols = QHBoxLayout()
-    cols.setSpacing(24)
-    rec = QVBoxLayout()
-    rec.setSpacing(8)
-    rec.addWidget(_section_title(pal, "Projetos recentes"))
-    for name, path, date in RECENTS:
-        item = QLabel(
-            "<table width='100%%'><tr>"
-            "<td><div style='font-size:13px;font-weight:600;color:%s'>%s</div>"
-            "<div style='font-size:12px;color:%s'>%s</div></td>"
-            "<td align='right' style='color:%s;font-size:11px'>%s</td></tr></table>"
-            % (pal["text"], name, pal["text_faint"], path, pal["text_faint"], date))
-        item.setTextFormat(Qt.RichText)
-        item.setStyleSheet("QLabel{padding:9px 10px;border-radius:10px;}"
-                           "QLabel:hover{background:%s;}" % pal["panel"])
-        rec.addWidget(item)
-    rec.addStretch(1)
-    cols.addLayout(rec, 3)
-
-    tpl = QVBoxLayout()
-    tpl.setSpacing(8)
-    tpl.addWidget(_section_title(pal, "Modelos de projeto"))
-    grid = QGridLayout()
-    grid.setSpacing(11)
-    for idx, (name, meta) in enumerate(TEMPLATES):
-        card = QFrame()
-        card.setStyleSheet("QFrame{background:%s;border:1px solid %s;border-radius:12px;}"
-                           "QFrame:hover{border:1px solid %s;}"
-                           % (pal["panel"], pal["border"], pal["brand_2"]))
-        cv = QVBoxLayout(card)
-        cv.setContentsMargins(11, 10, 11, 10)
-        cv.setSpacing(3)
-        n = QLabel(name)
-        n.setStyleSheet("font-size:12.5px;font-weight:600;color:%s;" % pal["text"])
-        n.setWordWrap(True)
-        m = QLabel(meta)
-        m.setStyleSheet("font-size:11px;color:%s;" % pal["text_faint"])
-        cv.addWidget(n)
-        cv.addWidget(m)
-        grid.addWidget(card, idx // 2, idx % 2)
-    tpl.addLayout(grid)
-    tpl.addStretch(1)
-    cols.addLayout(tpl, 2)
-    L.addLayout(cols)
-
-    # recursos
-    L.addWidget(_section_title(pal, "Recursos & atalhos"))
-    chips = QHBoxLayout()
-    chips.setSpacing(9)
-    for c in CHIPS:
-        ch = QLabel("●  " + c)
-        ch.setStyleSheet("font-size:12px;color:%s;background:%s;border:1px solid %s;border-radius:9px;padding:7px 12px;"
-                         % (pal["text_muted"], pal["panel"], pal["border"]))
-        chips.addWidget(ch)
-    chips.addStretch(1)
-    L.addLayout(chips)
+    # --------------------------------------------- projetos recentes (D8)
+    # A lista vem do QGIS. Vazia, mostra-se vazia.
+    L.addWidget(_section_title(pal, "Projetos recentes"))
+    recentes = recentes_reais()
+    if recentes:
+        for titulo, caminho in recentes:
+            def _abre(c=caminho):
+                if iface is not None:
+                    try:
+                        iface.addProject(c)
+                    except Exception:
+                        pass
+            L.addWidget(_item_recente(pal, titulo, caminho, _abre))
+    else:
+        L.addWidget(_vazio(
+            pal,
+            "Nenhum projeto recente ainda. Comece por “Novo projeto” "
+            "ou abra um projeto existente — os que você usar aparecem aqui."))
 
     # créditos do QGIS (BL-1/BL-2)
     L.addWidget(_divider(pal))
