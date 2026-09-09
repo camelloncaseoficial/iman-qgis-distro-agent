@@ -105,7 +105,10 @@ def _card(pal, glyph, accent_key, title, sub, on_click=None):
     tile.setObjectName("qatile")
     tile.setAlignment(Qt.AlignCenter)
     tile.setFixedSize(42, 42)
-    tile.setStyleSheet("QLabel#qatile{background:%s;color:%s;border-radius:11px;font-size:20px;}"
+    # RAIO no style.qss (#027). Cor e font-size ficam: a cor e interpolada de
+    # brand.COLOR_* por PAPEL (accent_key muda por cartao), e mover isso para o
+    # .qss exigiria uma regra por papel - deixaria de ser recolocacao.
+    tile.setStyleSheet("QLabel#qatile{background:%s;color:%s;font-size:20px;}"
                        % (pal["active_bg"], pal[accent_key]))
     v.addWidget(tile)
     t = QLabel("<div style='font-size:14px;font-weight:600;color:%s'>%s</div>"
@@ -113,7 +116,9 @@ def _card(pal, glyph, accent_key, title, sub, on_click=None):
                % (pal["text"], title, pal["text_faint"], sub))
     t.setTextFormat(Qt.RichText)
     v.addWidget(t)
-    f.setStyleSheet("QFrame#qa{background:%s;border:1px solid %s;border-radius:14px;}"
+    # RAIO no style.qss (#027). A borda de :hover fica: ela e interpolada por
+    # papel (accent_key), como a cor do tile acima.
+    f.setStyleSheet("QFrame#qa{background:%s;border:1px solid %s;}"
                     "QFrame#qa:hover{border:1px solid %s;}"
                     % (pal["panel"], pal["border"], pal[accent_key]))
     if on_click is not None:
@@ -173,8 +178,8 @@ def _item_recente(pal, titulo, caminho, on_click):
     c.setStyleSheet("font-size:11px;color:%s;" % pal["text_faint"])
     v.addWidget(t)
     v.addWidget(c)
-    f.setStyleSheet("QFrame#rec{background:transparent;border:1px solid transparent;"
-                    "border-radius:10px;}"
+    # RAIO no style.qss (#027).
+    f.setStyleSheet("QFrame#rec{background:transparent;border:1px solid transparent;}"
                     "QFrame#rec:hover{background:%s;border:1px solid %s;}"
                     % (pal["panel"], pal["border"]))
     f.clicked.connect(on_click)
@@ -245,7 +250,14 @@ def build_home(iface=None):
     # commit curto do BUILD_ID.txt que o instalador entregou. Sem o arquivo
     # (arvore de desenvolvimento) mostra so a versao - nao inventa commit.
     ver = QLabel("● versão %s" % brand.versao_exibida())
-    ver.setStyleSheet("font-size:12px;color:%s;background:%s;border:1px solid %s;border-radius:9px;padding:6px 11px;"
+    # NOME DE OBJETO NOVO (#027), e nome de objeto e CONTRATO: este estilo nao
+    # tinha seletor nenhum - era uma lista de propriedades solta - e sem nome
+    # nao havia como o .qss alcancar so este QLabel. "ImanHomeVersao" e o badge
+    # de versao da home, e o style.qss depende dele.
+    ver.setObjectName("ImanHomeVersao")
+    # RAIO no style.qss (#027).
+    ver.setStyleSheet("QLabel#ImanHomeVersao{font-size:12px;color:%s;background:%s;"
+                      "border:1px solid %s;padding:6px 11px;}"
                       % (pal["text_muted"], pal["panel"], pal["border"]))
     right.addWidget(ver, 0, Qt.AlignRight)
     crs = QLabel("🌐 " + CRS_LABEL)

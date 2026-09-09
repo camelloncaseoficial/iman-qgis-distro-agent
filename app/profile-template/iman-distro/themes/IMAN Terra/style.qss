@@ -142,5 +142,35 @@ QScrollBar::handle:horizontal:hover { background: #1E7A4D; }
 QScrollBar::add-line, QScrollBar::sub-line { background: none; border: none; width: 0; height: 0; }
 QScrollBar::add-page, QScrollBar::sub-page { background: none; }
 
+/* ---- Superficies da CAMADA DE MARCA (home, Sobre, botao de marca) --------
+   #027: estas seis regras existiam INLINE, em Python, com raios de 8 a 14 px.
+   Ficaram de fora da arbitragem "2px em tudo" do #022 porque a guarda estatica
+   so le ESTE arquivo - e, enquanto houvesse estilo inline, ela era guarda de um
+   ARQUIVO, nao do TEMA. Agora o tema e um lugar so, e a guarda alcanca tudo.
+
+   SO O RAIO VEIO. Cor, borda, fundo, padding e font-size continuam em Python,
+   e de proposito: varios sao interpolados de brand.COLOR_* POR PAPEL (o accent
+   de cada cartao da home muda com a acao), e traze-los para ca exigiria uma
+   regra por papel - deixaria de ser recolocacao e viraria reescrita. Como so o
+   raio veio, NENHUM literal de cor entrou aqui: zero token orfao (V.5), e a
+   regra do cabecalho deste arquivo continua valendo trivialmente.
+
+   Dois nomes de objeto NASCERAM aqui, e nome de objeto e CONTRATO:
+     QLabel#ImanHomeVersao    - o badge de versao da home; o estilo dele era uma
+                                lista de propriedades solta, sem seletor nenhum;
+     QLabel#ImanSobreCreditos - o bloco de creditos do QGIS no dialogo Sobre; o
+                                seletor era `QLabel` NU, que inline atinge so o
+                                widget, mas aqui pegaria TODO QLabel do produto.
+   Os outros quatro ja tinham nome (#qa, #qatile, #rec, #ImanTerraMenuBtn) - por
+   isso a fatia e barata: recolocacao, nao reescrita.
+
+   O dialogo Sobre e filho da janela principal, entao herda esta folha. */
+QFrame#qa { border-radius: 2px; }                    /* cartao de acao rapida */
+QLabel#qatile { border-radius: 2px; }                /* tile dentro do cartao */
+QFrame#rec { border-radius: 2px; }                   /* item de projeto recente */
+QLabel#ImanHomeVersao { border-radius: 2px; }        /* badge de versao */
+QLabel#ImanSobreCreditos { border-radius: 2px; }     /* creditos no Sobre */
+QToolButton#ImanTerraMenuBtn { border-radius: 2px; } /* botao de marca */
+
 /* ---- Tooltip: claro, borda verde de marca ---- */
 QToolTip { background-color: #FFFFFF; color: #1A231D; border: 1px solid #1E7A4D; padding: 4px 8px; border-radius: 2px; }
