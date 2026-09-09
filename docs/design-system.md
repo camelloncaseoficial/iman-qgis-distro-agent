@@ -100,10 +100,15 @@ batem — BL-4).
 > (`iman-symbol.png`, raster sem master vetorial) **não** foi re-colorido — espera o `IMAN.cdr`,
 > que, chegando, **prevalece** sobre tudo.~~
 
-> ### ✅ O `IMAN.cdr` CHEGOU — e CONFIRMOU esta paleta (2026-09-09, fatia `#021`)
+> ### ✅ A ARTE OFICIAL CHEGOU — e CONFIRMOU esta paleta (2026-09-09, fatias `#021`/`#022`)
 >
 > O sponsor entregou o export do **CorelDRAW 2021** da arte oficial. Ele **prevalece**, como a regra
-> mandava — e a medição mostrou que **não há nada a mudar aqui**:
+> mandava — e a medição mostrou que **não há nada a mudar aqui**.
+>
+> **Procedência, corrigida na `#022`:** a fonte é **`IMAN Terra.cdr`** (2026-09-09 05:03) /
+> **`IMAN Terra.svg`** (05:04) — **não** o `IMAN.cdr` (2025-06-30, 7,16 MB). Prova: `IMAN Terra.svg`
+> e o `splash-iman-terra.svg` commitado têm o mesmo MD5, `32a43bb2b8babae2d0868b89f27cfbe7`, e os
+> mesmos 104.557 bytes.
 >
 > | | |
 > |---|---|

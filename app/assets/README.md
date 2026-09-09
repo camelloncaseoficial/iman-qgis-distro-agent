@@ -11,9 +11,23 @@ em `docs/`; aqui viram a fonte única de asset da distro. Nada de raster de trab
 > tinha sido re-derivado por script (`derive-interim-palette.py`) e era declarado **INTERIM**,
 > com a regra "o `IMAN.cdr`, chegando, prevalece".
 >
-> ### ✅ O `IMAN.cdr` CHEGOU (2026-09-09, drop do sponsor, ingerido na fatia `#021`)
+> ### ✅ A ARTE OFICIAL CHEGOU (2026-09-09, drop do sponsor, ingerida na fatia `#021`)
 >
-> `splash-iman-terra.svg` é agora o **export do CorelDRAW 2021** da arte oficial, e
+> ⚠ **CORREÇÃO DE PROCEDÊNCIA (`#022`).** Este bloco dizia que a fonte era o `IMAN.cdr`. **Não é**, e
+> o erro tem consequência: o sponsor leu "IMAN.cdr" e concluiu que a arte nova tinha sido ignorada.
+> Medido pelo arquiteto e reconferido nesta bancada (`E.5`):
+>
+> | | |
+> |---|---|
+> | `IMAN.cdr` | **2025-06-30**, 7,16 MB — **não é a fonte** |
+> | fonte real | **`IMAN Terra.cdr`** (2026-09-09 05:03) e **`IMAN Terra.svg`** (05:04) |
+> | prova | `IMAN Terra.svg` e o `splash-iman-terra.svg` commitado têm o **mesmo MD5**, `32a43bb2b8babae2d0868b89f27cfbe7`, e os mesmos **104.557 bytes** |
+>
+> O artefato sempre esteve certo; o **registro** dele é que estava errado — e é assim que um acerto
+> parece omissão. É a classe do `P0.8`: procedência se declara pelo que o sistema mostra, não pelo
+> nome que a gente lembra.
+>
+> `splash-iman-terra.svg` é o **export do CorelDRAW 2021** de `IMAN Terra.cdr`, e
 > `splash-iman-terra-master.png` (3128×1504) é o raster que o próprio Corel exportou. Os dois são
 > **masters**; tudo que é 1000×480 ou menor é derivado deles.
 >
@@ -32,18 +46,26 @@ em `docs/`; aqui viram a fonte única de asset da distro. Nada de raster de trab
 > **Créditos do QGIS preservados (BL-1/BL-2):** a arte traz `POWERED BY QGIS` — verificado no
 > texto do SVG **e** no pixel do raster final.
 >
-> **Dois STOP-AND-FLAG que a arte trouxe, e que são do sponsor, não da crew:**
-> 1. o rodapé diz **`v1.0 · LTR`**, e o produto está em **`0.3.0`** (`ProductVersion` do `.iss`).
->    É uma versão que não existe, cravada na arte — a mesma classe do `D9`, só que fora do código.
->    A crew não edita a arte do sponsor; fica declarado.
-> 2. a faixa diz **`VERSÃO INSTITUCIONAL · CAUCAIA LTR`** — nomeia um município específico dentro
->    do splash de um produto distribuído para além dele. É decisão de escopo de produto.
+> ### CERCA ZERO — a arte é ARBITRADA (sponsor, 2026-09-09)
+>
+> A crew levantou dois pontos: o rodapé diz **`v1.0 · LTR`** com o produto em **`0.3.0`**, e a faixa
+> diz **`VERSÃO INSTITUCIONAL · CAUCAIA LTR`**. **A decisão veio, e é esta**, literal:
+> *"é para usar as novas imagens as is, sem perguntas"*.
+>
+> São **entrada arbitrada, não defeito pendente** — registrado em `reference_decisions.md`, emenda de
+> 2026-09-09, com o flag do arquiteto preservado ao lado. Em consequência:
+>
+> - **não editar a arte**, em nenhum master ou derivado;
+> - **nenhuma asserção pode reprovar o produto por causa desses dois textos**;
+> - **não "consertar"** a versão do splash para casar com o `BUILD_INFO`.
+>
+> Levantar foi certo. A decisão veio, e a cerca fecha o assunto.
 
 ## Masters (arte-fonte)
 
 | Arquivo | O que é |
 |---|---|
-| `splash-iman-terra.svg` | **Master vetorial** do splash — export do **CorelDRAW 2021** do `IMAN.cdr` oficial (viewBox `26478×12720`, ≈2,082:1). Fonte legível da paleta. **Não é mais a entrada da rasterização** — ver a armadilha do QtSvg abaixo. |
+| `splash-iman-terra.svg` | **Master vetorial** do splash — export do **CorelDRAW 2021** de **`IMAN Terra.cdr`** (2026-09-09 05:03), idêntico ao `IMAN Terra.svg` (05:04): MD5 `32a43bb2b8babae2d0868b89f27cfbe7`, 104.557 bytes. viewBox `26478×12720`, ≈2,082:1. Fonte legível da paleta. **Não é mais a entrada da rasterização** — ver a armadilha do QtSvg abaixo. **NÃO confundir com `IMAN.cdr`** (2025-06-30, 7,16 MB), que **não** é a fonte desta arte. |
 | `splash-iman-terra-master.png` | **Master raster**, 3128×1504, exportado pelo **próprio Corel**. É daqui que saem todos os rasters do splash. Existe porque nenhum rasterizador desta bancada renderiza o SVG fielmente. |
 | `iman-symbol.png` | **Símbolo** oficial (folha + globo), 512×512 transparente. Master dos ícones. **Não re-colorido** (sem master vetorial). Proveniência: **`docs/icons/android-chrome-512x512.png`**, do favicon set oficial do Instituto IMAN — ver nota abaixo. |
 | `logo-iman.png` | Logo institucional (arte própria IMAN). |
@@ -68,7 +90,7 @@ em `docs/`; aqui viram a fonte única de asset da distro. Nada de raster de trab
 
 > ### ⚠️ Armadilha conhecida: o QtSvg NÃO rasteriza este master — e apaga o crédito do QGIS
 >
-> **Medido em 2026-09-09, ao ingerir o `IMAN.cdr`.** O export do Corel embute a fonte como
+> **Medido em 2026-09-09, ao ingerir a arte oficial.** O export do Corel embute a fonte como
 > **SVG font** (`<font>` + `<glyph>`) e quebra o texto em **164 elementos `<text>` de um
 > caractere**. O `QSvgRenderer` do Qt **não implementa SVG fonts** — e não falha: ele **omite os
 > glifos** e devolve uma imagem que continua bonita.

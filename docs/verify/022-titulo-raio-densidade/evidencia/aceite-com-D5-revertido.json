@@ -1,5 +1,5 @@
 {
-  "quando": "2026-09-09T10:24:04.465310",
+  "quando": "2026-09-09T10:31:51.773186",
   "qgis": "3.44.13-Solothurn",
   "startup_real": "ok",
   "baseline": {
@@ -327,55 +327,55 @@
         "estados_fora_do_criterio": 5,
         "quais_fora": [
           {
-            "titulo": "Projeto sem título — IMAN Terra",
-            "sufixo_de_marca": "Projeto sem título — IMAN Terra",
+            "titulo": "Projeto sem título — QGIS [iman-distro]",
+            "sufixo_de_marca": "Projeto sem título — QGIS [iman-distro]",
             "a_termina_com_a_marca": false,
-            "b_sem_QGIS_como_autodesignacao": true,
-            "c_sem_colchete_de_perfil": true,
+            "b_sem_QGIS_como_autodesignacao": false,
+            "c_sem_colchete_de_perfil": false,
             "d_sem_travessao_nem_meia_risca": false,
             "estado": "sem projeto (pouso)",
             "nome_do_projeto": null,
             "ok": false
           },
           {
-            "titulo": "spike017-projeto-alfa — IMAN Terra",
-            "sufixo_de_marca": " — IMAN Terra",
+            "titulo": "spike017-projeto-alfa — QGIS [iman-distro]",
+            "sufixo_de_marca": " — QGIS [iman-distro]",
             "a_termina_com_a_marca": false,
-            "b_sem_QGIS_como_autodesignacao": true,
-            "c_sem_colchete_de_perfil": true,
+            "b_sem_QGIS_como_autodesignacao": false,
+            "c_sem_colchete_de_perfil": false,
             "d_sem_travessao_nem_meia_risca": false,
             "estado": "projeto aberto",
             "nome_do_projeto": "spike017-projeto-alfa",
             "ok": false
           },
           {
-            "titulo": "Projeto sem título — IMAN Terra",
-            "sufixo_de_marca": "Projeto sem título — IMAN Terra",
+            "titulo": "Projeto sem título — QGIS [iman-distro]",
+            "sufixo_de_marca": "Projeto sem título — QGIS [iman-distro]",
             "a_termina_com_a_marca": false,
-            "b_sem_QGIS_como_autodesignacao": true,
-            "c_sem_colchete_de_perfil": true,
+            "b_sem_QGIS_como_autodesignacao": false,
+            "c_sem_colchete_de_perfil": false,
             "d_sem_travessao_nem_meia_risca": false,
             "estado": "projeto novo",
             "nome_do_projeto": null,
             "ok": false
           },
           {
-            "titulo": "*Projeto sem título — IMAN Terra",
-            "sufixo_de_marca": "*Projeto sem título — IMAN Terra",
+            "titulo": "*Projeto sem título — QGIS [iman-distro]",
+            "sufixo_de_marca": "*Projeto sem título — QGIS [iman-distro]",
             "a_termina_com_a_marca": false,
-            "b_sem_QGIS_como_autodesignacao": true,
-            "c_sem_colchete_de_perfil": true,
+            "b_sem_QGIS_como_autodesignacao": false,
+            "c_sem_colchete_de_perfil": false,
             "d_sem_travessao_nem_meia_risca": false,
             "estado": "projeto modificado sem salvar",
             "nome_do_projeto": null,
             "ok": false
           },
           {
-            "titulo": "Caucaia — Setor 3 (QGIS) — IMAN Terra",
-            "sufixo_de_marca": " — IMAN Terra",
+            "titulo": "Caucaia — Setor 3 (QGIS) — QGIS [iman-distro]",
+            "sufixo_de_marca": " — QGIS [iman-distro]",
             "a_termina_com_a_marca": false,
-            "b_sem_QGIS_como_autodesignacao": true,
-            "c_sem_colchete_de_perfil": true,
+            "b_sem_QGIS_como_autodesignacao": false,
+            "c_sem_colchete_de_perfil": false,
             "d_sem_travessao_nem_meia_risca": false,
             "estado": "CONTROLE - projeto de nome hostil",
             "nome_do_projeto": "Caucaia — Setor 3 (QGIS)",
@@ -384,55 +384,55 @@
         ],
         "por_estado": [
           {
-            "titulo": "Projeto sem título — IMAN Terra",
-            "sufixo_de_marca": "Projeto sem título — IMAN Terra",
+            "titulo": "Projeto sem título — QGIS [iman-distro]",
+            "sufixo_de_marca": "Projeto sem título — QGIS [iman-distro]",
             "a_termina_com_a_marca": false,
-            "b_sem_QGIS_como_autodesignacao": true,
-            "c_sem_colchete_de_perfil": true,
+            "b_sem_QGIS_como_autodesignacao": false,
+            "c_sem_colchete_de_perfil": false,
             "d_sem_travessao_nem_meia_risca": false,
             "estado": "sem projeto (pouso)",
             "nome_do_projeto": null,
             "ok": false
           },
           {
-            "titulo": "spike017-projeto-alfa — IMAN Terra",
-            "sufixo_de_marca": " — IMAN Terra",
+            "titulo": "spike017-projeto-alfa — QGIS [iman-distro]",
+            "sufixo_de_marca": " — QGIS [iman-distro]",
             "a_termina_com_a_marca": false,
-            "b_sem_QGIS_como_autodesignacao": true,
-            "c_sem_colchete_de_perfil": true,
+            "b_sem_QGIS_como_autodesignacao": false,
+            "c_sem_colchete_de_perfil": false,
             "d_sem_travessao_nem_meia_risca": false,
             "estado": "projeto aberto",
             "nome_do_projeto": "spike017-projeto-alfa",
             "ok": false
           },
           {
-            "titulo": "Projeto sem título — IMAN Terra",
-            "sufixo_de_marca": "Projeto sem título — IMAN Terra",
+            "titulo": "Projeto sem título — QGIS [iman-distro]",
+            "sufixo_de_marca": "Projeto sem título — QGIS [iman-distro]",
             "a_termina_com_a_marca": false,
-            "b_sem_QGIS_como_autodesignacao": true,
-            "c_sem_colchete_de_perfil": true,
+            "b_sem_QGIS_como_autodesignacao": false,
+            "c_sem_colchete_de_perfil": false,
             "d_sem_travessao_nem_meia_risca": false,
             "estado": "projeto novo",
             "nome_do_projeto": null,
             "ok": false
           },
           {
-            "titulo": "*Projeto sem título — IMAN Terra",
-            "sufixo_de_marca": "*Projeto sem título — IMAN Terra",
+            "titulo": "*Projeto sem título — QGIS [iman-distro]",
+            "sufixo_de_marca": "*Projeto sem título — QGIS [iman-distro]",
             "a_termina_com_a_marca": false,
-            "b_sem_QGIS_como_autodesignacao": true,
-            "c_sem_colchete_de_perfil": true,
+            "b_sem_QGIS_como_autodesignacao": false,
+            "c_sem_colchete_de_perfil": false,
             "d_sem_travessao_nem_meia_risca": false,
             "estado": "projeto modificado sem salvar",
             "nome_do_projeto": null,
             "ok": false
           },
           {
-            "titulo": "Caucaia — Setor 3 (QGIS) — IMAN Terra",
-            "sufixo_de_marca": " — IMAN Terra",
+            "titulo": "Caucaia — Setor 3 (QGIS) — QGIS [iman-distro]",
+            "sufixo_de_marca": " — QGIS [iman-distro]",
             "a_termina_com_a_marca": false,
-            "b_sem_QGIS_como_autodesignacao": true,
-            "c_sem_colchete_de_perfil": true,
+            "b_sem_QGIS_como_autodesignacao": false,
+            "c_sem_colchete_de_perfil": false,
             "d_sem_travessao_nem_meia_risca": false,
             "estado": "CONTROLE - projeto de nome hostil",
             "nome_do_projeto": "Caucaia — Setor 3 (QGIS)",
@@ -444,37 +444,38 @@
         "separador_de_marca_exigido": " - ",
         "CONTROLE_falso_positivo": {
           "projeto": "Caucaia — Setor 3 (QGIS)",
-          "titulo": "Caucaia — Setor 3 (QGIS) — IMAN Terra",
+          "titulo": "Caucaia — Setor 3 (QGIS) — QGIS [iman-distro]",
           "NOTA": "o nome do arquivo tem travessao E a palavra QGIS. O criterio olha so o SUFIXO, entao o prefixo passa intocado - e o produto sao nao reprova."
         },
         "CENSO_DE_JANELAS": {
           "NOTA": "o conserto do D5 mexe em iface.mainWindow(). Janela com sufixo do QGIS fora dela e ACHADO, e vira fatia propria - nao entra no criterio desta.",
           "janelas_de_topo": 7,
-          "com_sufixo_do_qgis": 0,
-          "quais_com_sufixo": [],
+          "com_sufixo_do_qgis": 1,
+          "quais_com_sufixo": [
+            {
+              "classe": "QgisApp",
+              "objectName": "QgisApp",
+              "titulo": "Caucaia — Setor 3 (QGIS) — QGIS [iman-distro]",
+              "visivel": true,
+              "e_a_janela_principal": true,
+              "tem_sufixo_do_qgis": true,
+              "tem_colchete_de_perfil": true
+            }
+          ],
           "lista_crua": [
             {
-              "classe": "QgsGpsToolBar",
-              "objectName": "mGpsToolBar",
-              "titulo": "Barra de Ferramenta GPS",
+              "classe": "QgsMeasureDialog",
+              "objectName": "QgsMeasureBase",
+              "titulo": "Medir",
               "visivel": false,
               "e_a_janela_principal": false,
               "tem_sufixo_do_qgis": false,
               "tem_colchete_de_perfil": false
             },
             {
-              "classe": "MetaSearchDialog",
-              "objectName": "MetaSearchDialog",
-              "titulo": "Metabusca",
-              "visivel": false,
-              "e_a_janela_principal": false,
-              "tem_sufixo_do_qgis": false,
-              "tem_colchete_de_perfil": false
-            },
-            {
-              "classe": "QgsPluginManager",
-              "objectName": "QgsPluginManagerBase",
-              "titulo": "Complementos | Tudo (0)",
+              "classe": "QgsCredentialDialog",
+              "objectName": "QgsCredentialDialog",
+              "titulo": "Entre com as credenciais",
               "visivel": false,
               "e_a_janela_principal": false,
               "tem_sufixo_do_qgis": false,
@@ -490,27 +491,36 @@
               "tem_colchete_de_perfil": false
             },
             {
-              "classe": "QgisApp",
-              "objectName": "QgisApp",
-              "titulo": "Caucaia — Setor 3 (QGIS) — IMAN Terra",
-              "visivel": true,
-              "e_a_janela_principal": true,
-              "tem_sufixo_do_qgis": false,
-              "tem_colchete_de_perfil": false
-            },
-            {
-              "classe": "QgsCredentialDialog",
-              "objectName": "QgsCredentialDialog",
-              "titulo": "Entre com as credenciais",
+              "classe": "QgsGpsToolBar",
+              "objectName": "mGpsToolBar",
+              "titulo": "Barra de Ferramenta GPS",
               "visivel": false,
               "e_a_janela_principal": false,
               "tem_sufixo_do_qgis": false,
               "tem_colchete_de_perfil": false
             },
             {
-              "classe": "QgsMeasureDialog",
-              "objectName": "QgsMeasureBase",
-              "titulo": "Medir",
+              "classe": "QgsPluginManager",
+              "objectName": "QgsPluginManagerBase",
+              "titulo": "Complementos | Tudo (0)",
+              "visivel": false,
+              "e_a_janela_principal": false,
+              "tem_sufixo_do_qgis": false,
+              "tem_colchete_de_perfil": false
+            },
+            {
+              "classe": "QgisApp",
+              "objectName": "QgisApp",
+              "titulo": "Caucaia — Setor 3 (QGIS) — QGIS [iman-distro]",
+              "visivel": true,
+              "e_a_janela_principal": true,
+              "tem_sufixo_do_qgis": true,
+              "tem_colchete_de_perfil": true
+            },
+            {
+              "classe": "MetaSearchDialog",
+              "objectName": "MetaSearchDialog",
+              "titulo": "Metabusca",
               "visivel": false,
               "e_a_janela_principal": false,
               "tem_sufixo_do_qgis": false,
@@ -577,7 +587,7 @@
             "indice": 1,
             "welcome_nativa_visivel": false,
             "modo_do_host": "central",
-            "titulo": "Caucaia — Setor 3 (QGIS) — IMAN Terra",
+            "titulo": "Caucaia — Setor 3 (QGIS) — QGIS [iman-distro]",
             "ok": true
           },
           {
@@ -588,7 +598,7 @@
             "indice": 0,
             "welcome_nativa_visivel": false,
             "modo_do_host": "central",
-            "titulo": "IMAN Terra — Boas-vindas (powered by QGIS) — IMAN Terra",
+            "titulo": "IMAN Terra — Boas-vindas (powered by QGIS) — QGIS [iman-distro]",
             "ok": true
           },
           {
@@ -599,7 +609,7 @@
             "indice": 1,
             "welcome_nativa_visivel": false,
             "modo_do_host": "central",
-            "titulo": "IMAN Terra — Boas-vindas (powered by QGIS) — IMAN Terra",
+            "titulo": "IMAN Terra — Boas-vindas (powered by QGIS) — QGIS [iman-distro]",
             "ok": true
           },
           {
@@ -610,7 +620,7 @@
             "indice": 0,
             "welcome_nativa_visivel": false,
             "modo_do_host": "central",
-            "titulo": "Projeto sem título — IMAN Terra",
+            "titulo": "Projeto sem título — QGIS [iman-distro]",
             "ok": true
           }
         ],

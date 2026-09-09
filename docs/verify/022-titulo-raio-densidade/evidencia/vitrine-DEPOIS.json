@@ -1,0 +1,109 @@
+{
+  "titulo_da_janela": "Projeto sem título - IMAN Terra",
+  "dialogo": "IMAN Terra — exemplo de diálogo",
+  "docks_visiveis": [
+    "Camadas",
+    "Navegador"
+  ],
+  "menu_aberto": "Camada",
+  "itens_da_barra": [
+    {
+      "rotulo": "Projeto",
+      "x": 6,
+      "largura": 47,
+      "largura_do_texto": 38,
+      "folga_no_item": 9
+    },
+    {
+      "rotulo": "Editar",
+      "x": 59,
+      "largura": 39,
+      "largura_do_texto": 30,
+      "folga_no_item": 9
+    },
+    {
+      "rotulo": "Exibir",
+      "x": 104,
+      "largura": 37,
+      "largura_do_texto": 29,
+      "folga_no_item": 8
+    },
+    {
+      "rotulo": "Camada",
+      "x": 147,
+      "largura": 52,
+      "largura_do_texto": 43,
+      "folga_no_item": 9
+    },
+    {
+      "rotulo": "Configurações",
+      "x": 205,
+      "largura": 84,
+      "largura_do_texto": 76,
+      "folga_no_item": 8
+    },
+    {
+      "rotulo": "Complementos",
+      "x": 295,
+      "largura": 89,
+      "largura_do_texto": 81,
+      "folga_no_item": 8
+    },
+    {
+      "rotulo": "Vetor",
+      "x": 390,
+      "largura": 37,
+      "largura_do_texto": 28,
+      "folga_no_item": 9
+    },
+    {
+      "rotulo": "Raster",
+      "x": 433,
+      "largura": 41,
+      "largura_do_texto": 33,
+      "folga_no_item": 8
+    },
+    {
+      "rotulo": "Banco de Dados",
+      "x": 480,
+      "largura": 94,
+      "largura_do_texto": 86,
+      "folga_no_item": 8
+    },
+    {
+      "rotulo": "Web",
+      "x": 580,
+      "largura": 33,
+      "largura_do_texto": 24,
+      "folga_no_item": 9
+    },
+    {
+      "rotulo": "Malha",
+      "x": 619,
+      "largura": 41,
+      "largura_do_texto": 33,
+      "folga_no_item": 8
+    },
+    {
+      "rotulo": "Processamento",
+      "x": 666,
+      "largura": 89,
+      "largura_do_texto": 80,
+      "folga_no_item": 9
+    },
+    {
+      "rotulo": "Ajuda",
+      "x": 761,
+      "largura": 39,
+      "largura_do_texto": 31,
+      "folga_no_item": 8
+    }
+  ],
+  "barra_de_menus": {
+    "itens": 13,
+    "x_do_primeiro": 6,
+    "fim_do_ultimo": 800,
+    "largura_total_ocupada": 794,
+    "folga_media_por_item": 8.5
+  }
+}
