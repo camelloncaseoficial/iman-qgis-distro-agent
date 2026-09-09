@@ -26,6 +26,7 @@
    4  falha do compilador Inno Setup
    5  payload do QGIS (ausente, download falhou ou SHA-256 nao confere)
    6  guarda de integridade (o launcher nao recusa arvore do QGIS truncada)
+   7  guarda estatica do tema (style.qss fora do que o sponsor arbitrou)
 
  REQUISITOS: PowerShell 5.1, git no PATH, Inno Setup 7 ou 6 (D-IMAN-030).
  (Este script roda na BANCADA do dev, nao na VM limpa. Os helpers que vao para a
@@ -592,6 +593,44 @@ if ($ManifestExit -ne 0) {
 }
 
 Write-Ok "a guarda recusa abrir sobre arvore quebrada (placar completo acima)"
+
+# --- guarda estatica do tema (#022) ------------------------------------------
+#
+# POR QUE ELA ENTRA NO BUILD, e nao so no aceite: "screenshot nao distingue 2px
+# de 5px", e o aceite sobe o QGIS para medir WIDGET - ele nunca vai dizer quanto
+# vale um raio no .qss. Trocar 11 das 12 declaracoes e esquecer uma passaria por
+# tudo o que existia antes desta guarda.
+#
+# As asse rcoes 3 e 4 dela valem mais do que a fatia que as criou: reprovam a
+# REGRESSAO do D2 (padding no QStatusBar espremia o campo de coordenadas para 1
+# caractere de 19) e do D4 (padding vertical no QDockWidget::title cortava o
+# glifo do titulo) sem precisar subir o QGIS - em milissegundos, no build.
+
+Write-Step "Rodando a GUARDA ESTATICA do tema (style.qss)"
+
+$TemaTest = Join-Path $RepoRoot 'tools\test-tema-qss.ps1'
+if (-not (Test-Path -LiteralPath $TemaTest)) {
+    Fail 2 "guarda estatica do tema nao encontrada" @(
+        "Esperado em: $TemaTest",
+        "Sem ela o build nao sabe se o tema ainda esta como o sponsor arbitrou."
+    )
+}
+
+& $PsExe -NoProfile -ExecutionPolicy Bypass -File $TemaTest
+$TemaExit = $LASTEXITCODE
+
+if ($TemaExit -ne 0) {
+    Fail 7 "a guarda estatica do tema REPROVOU" @(
+        "Teste : tools\test-tema-qss.ps1   (exit $TemaExit)",
+        "As linhas reprovadas estao logo acima, com arquivo e numero de linha.",
+        "",
+        "Se a mudanca foi DELIBERADA (uma regra nasceu, outra morreu), o numero",
+        "esperado muda no proprio teste - deliberadamente, e num commit que diga",
+        "por que. O que esta guarda nao aceita e o valor mudar sozinho."
+    )
+}
+
+Write-Ok "o tema esta como o sponsor arbitrou (5 de 5 asse rcoes)"
 
 # --- localizacao do ISCC -----------------------------------------------------
 
