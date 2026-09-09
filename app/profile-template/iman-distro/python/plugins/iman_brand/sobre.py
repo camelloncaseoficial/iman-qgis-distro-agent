@@ -93,7 +93,7 @@ class SobreDialog(QDialog):
             "<div style='font-size:12px;color:%s;margin-top:6px'>%s<br>%s</div>"
             % (brand.COLOR_PRIMARY_DEEP, brand.PRODUCT_NAME,
                pal_texto, brand.PRODUCT_SUBTITLE,
-               pal_fraco, brand.VERSION, _versao_do_qgis(),
+               pal_fraco, brand.versao_exibida(), _versao_do_qgis(),
                pal_fraco, brand.PUBLISHER, brand.ORG_FULL))
         ident.setTextFormat(Qt.RichText)
         ident.setWordWrap(True)

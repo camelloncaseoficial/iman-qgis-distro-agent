@@ -375,7 +375,7 @@ class ImanBrandPlugin:
                 brand.PRODUCT_NAME,
                 "Versão %s — plataforma geoespacial institucional, powered by QGIS. "
                 "Comece pela home (Complementos ▸ %s ▸ Início)."
-                % (brand.VERSION, brand.PRODUCT_NAME),
+                % (brand.versao_exibida(), brand.PRODUCT_NAME),
                 level=0, duration=9)
         except Exception:
             pass
