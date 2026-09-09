@@ -1,0 +1,63 @@
+﻿{
+    "QuandoUtc":  "2026-09-09T13:23:31.1166227Z",
+    "Referencia":  {
+                       "A07b":  "PASS",
+                       "A02":  "PASS",
+                       "A06":  "PASS",
+                       "A03":  "PASS",
+                       "A01":  "PASS",
+                       "A07":  "PASS",
+                       "A05":  "PASS",
+                       "M-D11":  "N/E",
+                       "A04":  "PASS",
+                       "A08":  "PASS",
+                       "A10":  "PASS",
+                       "A09":  "PASS",
+                       "A11":  "PASS",
+                       "A12":  "PASS"
+                   },
+    "Resultados":  [
+                       {
+                           "Defeito":  "D1",
+                           "Assercao":  "A01",
+                           "StatusDaAssercao":  "FAIL",
+                           "Voltou":  true,
+                           "Arrastou":  [
+
+                                        ],
+                           "ArrastouEsperado":  [
+
+                                                ],
+                           "Ok":  true
+                       },
+                       {
+                           "Defeito":  "D5",
+                           "Assercao":  "A05",
+                           "StatusDaAssercao":  "FAIL",
+                           "Voltou":  true,
+                           "Arrastou":  [
+
+                                        ],
+                           "ArrastouEsperado":  [
+
+                                                ],
+                           "Ok":  true
+                       },
+                       {
+                           "Defeito":  "D8",
+                           "Assercao":  "A08",
+                           "StatusDaAssercao":  "FAIL",
+                           "Voltou":  true,
+                           "Arrastou":  [
+
+                                        ],
+                           "ArrastouEsperado":  [
+
+                                                ],
+                           "Ok":  true
+                       }
+                   ],
+    "Reprovas":  [
+
+                 ]
+}
