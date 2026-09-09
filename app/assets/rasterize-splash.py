@@ -1,38 +1,67 @@
 # -*- coding: utf-8 -*-
-"""Rasteriza o master splash-iman-terra.svg -> splash-iman-terra.png (1000x480).
+"""Deriva os rasters do splash a partir do master OFICIAL do sponsor.
 
-Rasterizador determinístico disponível no ambiente: **QtSvg** (`QSvgRenderer`), via
-o Python do QGIS. NÃO usar a plataforma 'offscreen' (dá tofu nas fontes) — usar a
-'windows' (base de fontes real). Rodar:
+    python app/assets/rasterize-splash.py
 
-    C:\\OSGeo4W\\bin\\python-qgis-ltr.bat app\\assets\\rasterize-splash.py
+Produz, a partir de `splash-iman-terra-master.png` (export do CorelDRAW,
+3128x1504):
 
-Resolve o href relativo `iman-symbol.png` fazendo chdir p/ app/assets/.
+    app/assets/splash-iman-terra.png                              1000x480
+    app/profile-template/iman-distro/QGIS/splash.png              1000x480  (splash NATIVO de boot)
+    .../iman_brand/resources/splash.png                            760x365  (banner do dock)
+
+POR QUE ISTO NÃO RASTERIZA MAIS O SVG — e por que não é preguiça
+----------------------------------------------------------------
+Até 2026-09-09 este script rasterizava `splash-iman-terra.svg` com o QtSvg
+(`QSvgRenderer`), porque o master era um SVG-texto com fontes do sistema.
+
+O master virou o **export do CorelDRAW 2021** (`IMAN.cdr`, drop do sponsor de
+2026-09-09), que embute a fonte como **SVG font** (`<font>` + `<glyph>`) e
+quebra o texto em 164 elementos `<text>` de um caractere. **O QtSvg não
+implementa SVG fonts.** Rasterizado por ele, o resultado sai com glifos
+FALTANDO — medido nesta bancada:
+
+    "IMAN Terra"                        ->  "IMA Terra"
+    "VERSÃO INSTITUCIONAL"              ->  "ERS O I STITUCIO AL"
+    "REGULARIZAÇÃO FUNDIÁRIA"           ->  "REGULARI A   O U DIÁRIA"
+    "POWERED BY QGIS"                   ->  "POWERED BY GIS"      <-- BL-1
+
+A última linha é o motivo pelo qual isto está no código e não num comentário
+de commit: rasterizar o SVG com QtSvg **apaga o crédito do QGIS** do splash de
+boot. Não é degradação estética — é violação de invariante de licença, e sai
+silenciosa, porque a imagem continua bonita.
+
+O master vetorial (`splash-iman-terra.svg`) continua versionado como
+**proveniência** e como fonte legível da paleta. O que ele NÃO é mais é a
+entrada da rasterização: o raster vem do PNG que o próprio Corel exportou.
+
+Se um dia entrar um rasterizador com suporte a SVG fonts (Inkscape, resvg,
+librsvg), dá para voltar a sair do vetor — e aí este arquivo volta a mudar.
+Enquanto isso, reduzir o raster oficial é o caminho FIEL, e é reprodutível.
+
+Aspecto: o master é 3128x1504 (2,0798:1) e o alvo é 1000x480 (2,0833:1) — uma
+diferença de 0,17%, absorvida no resize. Não há corte nem barra.
 """
 import os
-import sys
 
-from qgis.PyQt.QtWidgets import QApplication
-from qgis.PyQt.QtSvg import QSvgRenderer
-from qgis.PyQt.QtGui import QImage, QPainter, QColor
-from qgis.PyQt.QtCore import QRectF
+from PIL import Image
 
 ASSETS = os.path.dirname(os.path.abspath(__file__))
-SVG = os.path.join(ASSETS, "splash-iman-terra.svg")
-PNG = os.path.join(ASSETS, "splash-iman-terra.png")
-W, H = 1000, 480
+APP = os.path.dirname(ASSETS)
 
-app = QApplication(sys.argv)
-os.chdir(ASSETS)  # href relativo do símbolo
-r = QSvgRenderer(SVG)
-assert r.isValid(), "SVG inválido"
-img = QImage(W, H, QImage.Format_ARGB32)
-img.fill(QColor("#0e1a14"))  # bg opaco (o SVG cobre tudo; segurança contra máscara)
-p = QPainter(img)
-p.setRenderHint(QPainter.Antialiasing, True)
-p.setRenderHint(QPainter.TextAntialiasing, True)
-p.setRenderHint(QPainter.SmoothPixmapTransform, True)
-r.render(p, QRectF(0, 0, W, H))
-p.end()
-img.save(PNG)
-print("splash rasterizado:", PNG, os.path.getsize(PNG), "bytes")
+MASTER = os.path.join(ASSETS, "splash-iman-terra-master.png")
+
+SAIDAS = [
+    (os.path.join(ASSETS, "splash-iman-terra.png"), (1000, 480)),
+    (os.path.join(APP, "profile-template", "iman-distro", "QGIS", "splash.png"), (1000, 480)),
+    (os.path.join(APP, "profile-template", "iman-distro", "python", "plugins",
+                  "iman_brand", "resources", "splash.png"), (760, 365)),
+]
+
+src = Image.open(MASTER).convert("RGBA")
+print("master: %s  %dx%d" % (os.path.basename(MASTER), src.width, src.height))
+
+for destino, (w, h) in SAIDAS:
+    Image.open(MASTER).convert("RGBA").resize((w, h), Image.LANCZOS).save(destino)
+    print("  -> %-70s %dx%d  %d bytes"
+          % (os.path.relpath(destino, APP), w, h, os.path.getsize(destino)))

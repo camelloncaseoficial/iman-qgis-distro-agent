@@ -1,0 +1,118 @@
+﻿{
+    "quando":  "2026-09-09T08:38:00.0305282Z",
+    "instalador":  "D:\\_projetos\\iman-webgeo\\iman-qgis-distro-agent\\installer\\dist\\Instituto-IMAN-IMAN-Terra-Setup-0.3.0.exe",
+    "instalador_sha256":  "EB9108C574C5DEDC03A102E19CB38AAFDC310236D7ED57B08C40ECECCED05350",
+    "instalador_bytes":  512802051,
+    "destino":  "C:\\Users\\Francisco\\AppData\\Local\\Programs\\IMAN Terra",
+    "passos":  [
+                   {
+                       "passo":  "destino virgem",
+                       "virgem":  true
+                   },
+                   {
+                       "passo":  "instalar em destino virgem",
+                       "exit":  0,
+                       "segundos":  90.7,
+                       "arquivos_na_arvore":  37337,
+                       "total_do_manifesto":  37337,
+                       "diferenca":  0,
+                       "integridade_ok":  true,
+                       "integridade_exit":  0,
+                       "integridade_saida":  "INTEGRIDADE=OK QGIS_ROOT=C:\\Users\\Francisco\\AppData\\Local\\Programs\\IMAN Terra\\qgis"
+                   },
+                   {
+                       "passo":  "abrir (1a vez)",
+                       "subiu":  true,
+                       "pousou_na_marca":  false,
+                       "titulo_da_janela":  "Projeto sem título — QGIS [iman-distro]",
+                       "titulos_vistos":  [
+                                              "QGIS3",
+                                              "Projeto sem título — QGIS [iman-distro]"
+                                          ],
+                       "segundos_aberto_apos_pousar":  0,
+                       "arquivos_na_arvore":  38154
+                   },
+                   {
+                       "passo":  "reabrir (2a vez)",
+                       "subiu":  true,
+                       "pousou_na_marca":  false,
+                       "titulo_da_janela":  "Projeto sem título — QGIS [iman-distro]",
+                       "titulos_vistos":  [
+                                              "QGIS3",
+                                              "Projeto sem título — QGIS [iman-distro]"
+                                          ],
+                       "segundos_aberto_apos_pousar":  0,
+                       "arquivos_na_arvore":  38154
+                   },
+                   {
+                       "passo":  "instalar sobre instalacao existente",
+                       "exit":  0,
+                       "segundos":  134,
+                       "arquivos_na_arvore":  37337,
+                       "total_do_manifesto":  37337,
+                       "diferenca":  0,
+                       "integridade_ok":  true,
+                       "integridade_exit":  0,
+                       "integridade_saida":  "INTEGRIDADE=OK QGIS_ROOT=C:\\Users\\Francisco\\AppData\\Local\\Programs\\IMAN Terra\\qgis"
+                   },
+                   {
+                       "passo":  "corromper a arvore",
+                       "arquivos_injetados":  25,
+                       "arquivos_na_arvore":  37362,
+                       "onde":  "apps\\Python312"
+                   },
+                   {
+                       "passo":  "instalar sobre arvore corrompida",
+                       "exit":  0,
+                       "segundos":  176.3,
+                       "arquivos_na_arvore":  37337,
+                       "total_do_manifesto":  37337,
+                       "diferenca":  0,
+                       "integridade_ok":  true,
+                       "integridade_exit":  0,
+                       "integridade_saida":  "INTEGRIDADE=OK QGIS_ROOT=C:\\Users\\Francisco\\AppData\\Local\\Programs\\IMAN Terra\\qgis"
+                   },
+                   {
+                       "passo":  "sujeira apos reinstalar",
+                       "sobreviventes":  0
+                   },
+                   {
+                       "passo":  "abrir (ciclo limpo, 1a vez)",
+                       "subiu":  true,
+                       "pousou_na_marca":  false,
+                       "titulo_da_janela":  "Projeto sem título — QGIS [iman-distro]",
+                       "titulos_vistos":  [
+                                              "QGIS3",
+                                              "Projeto sem título — QGIS [iman-distro]"
+                                          ],
+                       "segundos_aberto_apos_pousar":  0,
+                       "arquivos_na_arvore":  38154
+                   },
+                   {
+                       "passo":  "reabrir (ciclo limpo, 2a vez)",
+                       "subiu":  true,
+                       "pousou_na_marca":  false,
+                       "titulo_da_janela":  "Projeto sem título — QGIS [iman-distro]",
+                       "titulos_vistos":  [
+                                              "QGIS3",
+                                              "Projeto sem título — QGIS [iman-distro]"
+                                          ],
+                       "segundos_aberto_apos_pousar":  0,
+                       "arquivos_na_arvore":  38154
+                   },
+                   {
+                       "passo":  "desinstalar",
+                       "exit":  0,
+                       "segundos":  10.4,
+                       "raiz_ainda_existe":  false,
+                       "sobras_arquivos":  0,
+                       "sobras_bytes":  0,
+                       "sobras_por_extensao":  {
+
+                                               },
+                       "amostra":  [
+
+                                   ]
+                   }
+               ]
+}

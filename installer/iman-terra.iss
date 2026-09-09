@@ -129,6 +129,34 @@ Name: "brazilianportuguese"; MessagesFile: "compiler:Languages\BrazilianPortugue
 [Tasks]
 Name: "desktopicon"; Description: "Criar um atalho na Area de Trabalho"; GroupDescription: "Atalhos adicionais:"; Flags: unchecked
 
+[InstallDelete]
+; D-IMAN-028/DB-22 - "REINSTALE" PASSA A SER VERDADE.
+;
+; O DEFEITO, medido pelo arquiteto no gate do #23 (2026-09-07): instalando
+; SOBRE uma instalacao anterior, o instalador FUNDIA a arvore nova sobre a
+; velha em vez de limpa-la. Resultado: exit 5, e uma arvore MISTURADA de dois
+; builds (38.154 arquivos contra os 37.337 do manifesto). A guarda do launcher
+; mandava "reinstalar o IMAN Terra" - e reinstalar fundia de novo. LACO
+; FECHADO, a mesma classe do DB-20: a mensagem desviava o diagnostico.
+;
+; O conserto nao e na mensagem. E aqui: a arvore antiga sai ANTES de a nova
+; entrar. O Inno executa esta secao antes da secao [Files], entao a copia
+; sempre pousa em terreno limpo, e "reinstalar" conserta de verdade - inclusive
+; uma arvore em que alguem ACRESCENTOU arquivos, que o merge nunca removeria.
+;
+; POR QUE {app}\qgis E NAO {app}. Limpar {app} inteiro apagaria o unins000.exe
+; que esta em uso naquele instante, e levaria junto qualquer coisa que o
+; usuario tenha posto sob a raiz do produto. {app}\qgis, ao contrario, e 100%
+; nosso: nasce deste instalador, e nao ha nada do usuario la dentro - os dados
+; dele vivem no perfil isolado em %APPDATA% (BL-3), que esta fora de {app} e
+; nao e tocado nem aqui nem no uninstall.
+;
+; O QUE FICA PRESERVADO, de proposito: unins000.exe / unins000.dat (o
+; desinstalador em uso), a camada de marca em {app} (assets, demo, launcher,
+; notices, profile-template, startup - reescrita pela secao [Files] logo
+; abaixo) e todo o perfil do usuario em %APPDATA%\InstitutoIMAN.
+Type: filesandordirs; Name: "{app}\qgis"
+
 [Files]
 ; --- a ARVORE PRIVADA do QGIS ---------------------------------------------
 ; Vira {app}\qgis\ - a raiz OSGeo4W do produto. E o que o launcher chama, e o

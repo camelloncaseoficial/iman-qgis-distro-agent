@@ -7,17 +7,44 @@ em `docs/`; aqui viram a fonte única de asset da distro. Nada de raster de trab
 > A paleta de marca é derivada **destes** assets (o `splash-iman-terra.svg` é a fonte legível por
 > máquina). Os valores travados vivem em `docs/design-system.md` **e** em `brand.py` (BL-4).
 
-> **Re-derivação INTERIM (fatia #005, D-IMAN-026):** o master SVG foi re-derivado para a
-> paleta nova + copy REURB/Ceará de forma **determinística** (mapa OLD→NEW por papel, do
-> arquiteto), via `derive-interim-palette.py`. **INTERIM** — o `IMAN.cdr`/manual, chegando,
-> prevalece. O **símbolo** (`iman-symbol.png`) NÃO foi re-colorido (raster sem master
-> vetorial — STOP-AND-FLAG). Créditos do QGIS preservados no splash (BL-1/BL-2).
+> **~~Re-derivação INTERIM (fatia #005, D-IMAN-026)~~ — SUPERADA em 2026-09-09.** O master SVG
+> tinha sido re-derivado por script (`derive-interim-palette.py`) e era declarado **INTERIM**,
+> com a regra "o `IMAN.cdr`, chegando, prevalece".
+>
+> ### ✅ O `IMAN.cdr` CHEGOU (2026-09-09, drop do sponsor, ingerido na fatia `#021`)
+>
+> `splash-iman-terra.svg` é agora o **export do CorelDRAW 2021** da arte oficial, e
+> `splash-iman-terra-master.png` (3128×1504) é o raster que o próprio Corel exportou. Os dois são
+> **masters**; tudo que é 1000×480 ou menor é derivado deles.
+>
+> **A paleta NÃO mudou, e isso foi medido, não presumido.** Das 18 cores distintas da arte nova,
+> **8 são token exato** de `brand.py` — `#0E1A14` `ink`, `#82D3A6` `mint`, `#EBEEE8` `bg`,
+> `#8A7A55` `warm`/`earth`, `#2B8FD6` `accent`, `#E4F0E8` `active-bg`, `#1E7A4D` `primary`,
+> `#103D29` `primary-deep`. As 10 restantes são **cor de emblema e de degradê de fundo**
+> (`#00A85A` `#00AFF0` `#5AA832` `#059452` `#58AD55` `#ACC658` do símbolo folha+globo;
+> `#6E5E3F` e `#F5F1E8` da faixa; `#0F3021` e `#0E2219` do `bgGrad`), que **nunca foram token
+> de UI**. Ou seja: a arte oficial foi desenhada sobre a paleta de produção — **nenhum
+> `COLOR_*`, nenhum QSS e nenhum derivado de ícone precisou mudar**.
+>
+> **O símbolo (`iman-symbol.png`) continua o mesmo arquivo**, e por isso `.ico`, `icon-*.png` e
+> os dois `wizard-*.png` **não foram regerados** — eles derivam do símbolo, não do splash.
+>
+> **Créditos do QGIS preservados (BL-1/BL-2):** a arte traz `POWERED BY QGIS` — verificado no
+> texto do SVG **e** no pixel do raster final.
+>
+> **Dois STOP-AND-FLAG que a arte trouxe, e que são do sponsor, não da crew:**
+> 1. o rodapé diz **`v1.0 · LTR`**, e o produto está em **`0.3.0`** (`ProductVersion` do `.iss`).
+>    É uma versão que não existe, cravada na arte — a mesma classe do `D9`, só que fora do código.
+>    A crew não edita a arte do sponsor; fica declarado.
+> 2. a faixa diz **`VERSÃO INSTITUCIONAL · CAUCAIA LTR`** — nomeia um município específico dentro
+>    do splash de um produto distribuído para além dele. É decisão de escopo de produto.
 
 ## Masters (arte-fonte)
 
 | Arquivo | O que é |
 |---|---|
-| `splash-iman-terra.svg` | **Master vetorial** do splash (1000×480), SVG-texto. Fonte da paleta. Re-derivável INTERIM por script (acima); sobreponível pelo `IMAN.cdr`. |
+| `splash-iman-terra.svg` | **Master vetorial** do splash — export do **CorelDRAW 2021** do `IMAN.cdr` oficial (viewBox `26478×12720`, ≈2,082:1). Fonte legível da paleta. **Não é mais a entrada da rasterização** — ver a armadilha do QtSvg abaixo. |
+| `splash-iman-terra-master.png` | **Master raster**, 3128×1504, exportado pelo **próprio Corel**. É daqui que saem todos os rasters do splash. Existe porque nenhum rasterizador desta bancada renderiza o SVG fielmente. |
 | `iman-symbol.png` | **Símbolo** oficial (folha + globo), 512×512 transparente. Master dos ícones. **Não re-colorido** (sem master vetorial). Proveniência: **`docs/icons/android-chrome-512x512.png`**, do favicon set oficial do Instituto IMAN — ver nota abaixo. |
 | `logo-iman.png` | Logo institucional (arte própria IMAN). |
 | `backgrounds/bg-iman-branco.jpeg` | Fundo institucional claro. |
@@ -36,47 +63,50 @@ em `docs/`; aqui viram a fonte única de asset da distro. Nada de raster de trab
 > 1. A arte oficial traz um **contorno branco** em volta de toda a forma (tratamento de favicon,
 >    feito para assentar sobre qualquer fundo). Sobre o verde `brand` do `wizard-large` ele fica
 >    **visível e marcante** — é uma mudança de aparência, não só a correção do corte.
-> 2. O **`splash-iman-terra.png` commitado está dessincronizado do próprio master** — ver a
->    armadilha logo abaixo. Hoje: ícones com o globo inteiro, splash com o globo cortado.
+> 2. ~~O `splash-iman-terra.png` commitado está dessincronizado do próprio master.~~ **RESOLVIDO em
+>    2026-09-09:** o splash passou a sair do master oficial do Corel, com o globo inteiro.
 
-> ### ⚠️ Armadilha conhecida: o splash **não** tem master próprio de símbolo
+> ### ⚠️ Armadilha conhecida: o QtSvg NÃO rasteriza este master — e apaga o crédito do QGIS
 >
-> O `splash-iman-terra.svg` **referencia o `iman-symbol.png`** em duas tags `<image>`:
+> **Medido em 2026-09-09, ao ingerir o `IMAN.cdr`.** O export do Corel embute a fonte como
+> **SVG font** (`<font>` + `<glyph>`) e quebra o texto em **164 elementos `<text>` de um
+> caractere**. O `QSvgRenderer` do Qt **não implementa SVG fonts** — e não falha: ele **omite os
+> glifos** e devolve uma imagem que continua bonita.
 >
-> | Linha | Caixa | Proporção |
-> |---|---|---|
-> | 43 | `785.7 × 660` (marca d'água, `opacity 0.10`) | 1,1905:1 |
-> | 82 | `128.6 × 108` (símbolo ao lado do wordmark) | 1,1907:1 |
+> | o que a arte diz | o que o QtSvg desenhou |
+> |---|---|
+> | `IMAN Terra` | `IMA Terra` |
+> | `VERSÃO INSTITUCIONAL` | `ERS O I STITUCIO AL` |
+> | `REGULARIZAÇÃO FUNDIÁRIA` | `REGULARI A   O U DIÁRIA` |
+> | **`POWERED BY QGIS`** | **`POWERED BY GIS`** |
 >
-> As caixas foram dimensionadas para o master **antigo** (411×333 = **1,2342:1**). O master agora é
-> **1:1**. Nenhuma das duas tags declara `preserveAspectRatio`, então vale o default
-> **`xMidYMid meet`**: a imagem é encaixada **preservando o aspect** e centralizada — não é
-> esticada. O efeito prático de re-rasterizar hoje, portanto, **não é distorção e sim mudança de
-> escala e posição**: um símbolo 1:1 dentro de uma caixa 1,19:1 passa a ser limitado pela **altura**,
-> ficando mais estreito e com folga lateral.
+> A última linha é a que importa: rasterizar este SVG com QtSvg **apaga o crédito do QGIS** do
+> splash de boot. Não é degradação estética — é **BL-1**, e sai em silêncio.
 >
-> Consequência: **o `splash-iman-terra.png` commitado já não é o que o SVG produziria hoje.** Ele foi
-> rasterizado quando o master era o recortado. Isso é dívida registrada, **não** foi tocada nesta
-> fatia (splash está fora do escopo) e **não** se resolve rodando `rasterize-splash.py` sem antes
-> corrigir as caixas.
+> **Por isso o raster vem do `splash-iman-terra-master.png`**, que o próprio Corel exportou, e
+> `rasterize-splash.py` passou a **reduzir** esse PNG em vez de rasterizar o vetor. O SVG continua
+> versionado como proveniência e como fonte legível da paleta.
 >
-> **Fatia de reconciliação (a fazer):** recalcular as duas caixas para 1:1 — decidindo se a âncora é
-> a largura ou a altura em cada uso — e **re-rasterizar com o python do QGIS**
-> (`C:\Program Files\QGIS 3.44.9\bin\python-qgis-ltr.bat app\assets\rasterize-splash.py`, que usa
-> QtSvg; ver `.memory/reference_build_environment.md`). Enquanto isso não acontecer, **não**
-> re-rasterizar o splash.
+> **Quando isso pode voltar a sair do vetor:** com um rasterizador que implemente SVG fonts
+> (Inkscape, resvg, librsvg) — nenhum deles existe nesta bancada hoje. Até lá, **não** apontar
+> `rasterize-splash.py` para o SVG "porque é o master": o master ele é; renderizável aqui, não.
+>
+> ~~Armadilha anterior (fatia #007): as duas tags `<image>` do SVG interino referenciavam o
+> `iman-symbol.png` com caixas dimensionadas para o master antigo (411×333).~~ **PERDEU OBJETO:**
+> o SVG novo tem **zero** tags `<image>` — é autocontido.
 
 ## Derivados reprodutíveis (regeráveis a partir dos masters)
 
 | Arquivo | Como é gerado | Uso |
 |---|---|---|
-| `splash-iman-terra.png` | **rasterizado do master SVG via QtSvg** (`rasterize-splash.py`, plataforma 'windows' p/ fontes), 1000×480 | **splash NATIVO de boot** (customização, no-fork) + banner do dock |
+| `splash-iman-terra.png` | **reduzido do master raster do Corel** com Pillow/LANCZOS (`rasterize-splash.py`), 1000×480 | **splash NATIVO de boot** (customização, no-fork) |
+| `../profile-template/iman-distro/QGIS/splash.png` | idêntico ao de cima (`rasterize-splash.py`), 1000×480 | é o arquivo que a customização do perfil aponta no boot |
 | `icon-iman-terra.ico` | símbolo → ICO 16/24/32/48/64/128/256, **transparente**, **sem respiro extra** (`regenerate-icons.py`) | atalho / `SetupIconFile` / `UninstallDisplayIcon` |
 | `icon-iman-terra.png` | símbolo → 512×512, transparente (`regenerate-icons.py`) | ícone da janela (startup) |
 | `wizard-large.png` | símbolo sobre `brand` (#103D29, paleta nova), 410×797 (`regenerate-brand-derivatives.py`) | `WizardImageFile` (Inno) |
 | `wizard-small.png` | símbolo sobre **fundo transparente** (alfa real, RGBA), 138×140 (`regenerate-brand-derivatives.py`) | `WizardSmallImageFile` (Inno), com `WizardImageAlphaFormat=defined` |
 | `../profile-template/iman-distro/python/plugins/iman_brand/resources/icon.png` | símbolo → 256×256 (`regenerate-icons.py`) | ícone do plugin/toolbar/Sobre |
-| `../profile-template/iman-distro/python/plugins/iman_brand/resources/splash.png` | splash → 760×365 | banner do dock de boas-vindas |
+| `../profile-template/iman-distro/python/plugins/iman_brand/resources/splash.png` | master raster → 760×365 (`rasterize-splash.py`) | banner do dock de boas-vindas |
 
 **Regeneração:** os derivados são produzidos a partir dos masters com Pillow (PIL disponível no
 `python` do sistema — ver `.memory/reference_build_environment.md`). O `.ico` é multi-resolução e
@@ -84,8 +114,9 @@ em `docs/`; aqui viram a fonte única de asset da distro. Nada de raster de trab
 regenerar os derivados a partir dele — não editar os derivados à mão.
 
 ```
+python app/assets/rasterize-splash.py             # splash 1000×480 + perfil + banner do dock
 python app/assets/regenerate-icons.py             # ícones (a partir de iman-symbol.png)
-python app/assets/regenerate-brand-derivatives.py # wizards + banner do dock
+python app/assets/regenerate-brand-derivatives.py # wizards
 ```
 
 > **Por que o `.ico` deixou de ter "respiro 10%" — e o que isso custa.**
