@@ -179,6 +179,49 @@ if ($ReusarPerfil) {
 }
 if ($nArq -le 0) { throw 'Perfil saiu vazio. Abortado.' }
 
+# ------------------------------- 3.1 SEMENTE DE RECENTE REAL (#021/Entrega 3)
+#
+# POR QUE ISTO EXISTE. O A08 passou a asserir PROCEDENCIA: todo item exibido em
+# "Projetos recentes" corresponde a uma entrada real. Num perfil recem-criado a
+# lista do QGIS esta VAZIA, a secao se mostra vazia, e "nenhum item sem
+# procedencia" passaria por VACUIDADE - a mesma tautologia que a versao anterior
+# da assercao tinha, um nivel acima.
+#
+# A semente desfaz isso: um projeto que EXISTE no disco entra na lista de
+# recentes DO PROPRIO QGIS antes de o produto subir. Dai a assercao pode exigir
+# PRESENCA ("o recente semeado chegou a tela") e nao so ausencia de invencao.
+#
+# A home e construida uma unica vez, no load do plugin - por isso a semente tem
+# de estar no .ini ANTES do arranque; semear com o QGIS ja aberto nao apareceria.
+$semente = Join-Path $raizRepo 'app\demo\welcome.qgz'
+if (-not (Test-Path -LiteralPath $semente)) {
+    throw "Projeto da semente nao encontrado: $semente (ele e o demo que o produto instala)."
+}
+$semente = (Get-Item -LiteralPath $semente).FullName
+if (-not $ReusarPerfil) {
+    $ini = Join-Path $perfilDir 'QGIS\QGIS3.ini'
+    if (-not (Test-Path -LiteralPath $ini)) { throw "QGIS3.ini nao encontrado em $ini" }
+    # QSettings/ini: a chave UI/recentProjects/1/path vira 'recentProjects\1\path'
+    # dentro da secao [UI]. Barra normal no valor de proposito - e como o QGIS
+    # grava, e os dois lados da comparacao normalizam.
+    $sementeIni = $semente.Replace('\', '/')
+    $linhas = Get-Content -LiteralPath $ini
+    $novo = New-Object System.Collections.ArrayList
+    foreach ($l in $linhas) {
+        [void]$novo.Add($l)
+        if ($l.Trim() -eq '[UI]') {
+            [void]$novo.Add('; semeado pelo teste de aceite (#021/E3) - projeto REAL, existente em disco')
+            [void]$novo.Add("recentProjects\1\path=$sementeIni")
+            [void]$novo.Add('recentProjects\1\title=Boas-vindas ao IMAN Terra')
+            [void]$novo.Add('recentProjects\1\crs=EPSG:31984')
+        }
+    }
+    Set-Content -LiteralPath $ini -Value $novo -Encoding UTF8
+    Escreve "  semente : $semente  (recente REAL na lista do proprio QGIS)"
+} else {
+    Escreve "  semente : (perfil reaproveitado - a lista de recentes e a que ficou)" 'Yellow'
+}
+
 # ----------------------------------------------------------- 4. saida limpa
 $saida = Join-Path $Base 'saida'
 if ((Test-Path -LiteralPath $saida) -and (-not $ReusarPerfil)) {
@@ -202,6 +245,9 @@ $env:SPIKE017_FASE     = $Fase
 # outro que estivesse na maquina. Sem isso, "rodou contra o produto" seria
 # afirmacao do orquestrador sobre si mesmo.
 $env:SPIKE017_QGIS_ROOT = $Qgis
+# #021/E3: o recente REAL semeado. O A08 exige que ele chegue a tela - e o que
+# tira a assercao da vacuidade quando a lista de recentes esta vazia.
+$env:SPIKE017_RECENTE_SEMEADO = $(if ($ReusarPerfil) { '' } else { $semente })
 
 Escreve "  sonda   : $sondaPath"
 Escreve "  startup : $startup  (o de verdade)"

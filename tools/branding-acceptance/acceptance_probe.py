@@ -589,20 +589,150 @@ def a04_titulo_dos_docks():
         falhou('A04', 'D4', 'títulos e botões de dock', crit, se_q)
 
 
+def recentes_do_qgis():
+    """A lista de recentes DO PROPRIO QGIS - a fonte da verdade contra a qual a
+    procedencia e conferida. Lida aqui, no processo vivo, e nao do codigo do
+    produto: se ela viesse do dashboard.py, a assercao estaria conferindo o
+    produto contra ele mesmo."""
+    fonte = {}
+    try:
+        from qgis.core import QgsSettings
+        s = QgsSettings()
+        s.beginGroup('UI/recentProjects')
+        try:
+            for chave in s.childGroups():
+                s.beginGroup(chave)
+                try:
+                    caminho = s.value('path', '') or ''
+                    titulo = s.value('title', '') or ''
+                finally:
+                    s.endGroup()
+                if caminho:
+                    fonte[chave_de_caminho(caminho)] = {
+                        'chave': chave, 'path': caminho, 'title': titulo}
+        finally:
+            s.endGroup()
+    except Exception:
+        pass
+    return fonte
+
+
+def chave_de_caminho(p):
+    """Forma canonica para comparar caminhos: o QGIS grava com barra normal, o
+    Windows nao distingue maiuscula, e a semente entra pelo .ini. Comparar
+    string crua daria 'sem procedencia' num item legitimo."""
+    try:
+        return os.path.normcase(os.path.abspath(os.path.normpath(str(p))))
+    except Exception:
+        return str(p)
+
+
 def a08_home_sem_dado_inventado():
-    """D8 - RECENTS/TEMPLATES/CHIPS fabricados"""
-    crit = ('nenhuma string das constantes RECENTS/TEMPLATES/CHIPS do '
-            'dashboard.py alcanca a tela; e nenhum widget se pinta como '
-            'clicavel (regra :hover propria) sem ser clicavel de verdade')
+    """D8 - dado fabricado na home.
+
+    CRITERIO TROCADO NA #021 (Entrega 3), e a troca e DECLARADA.
+
+    Ate a #020 esta assercao procurava, na tela, as strings das constantes
+    RECENTS/TEMPLATES/CHIPS do dashboard.py. Com as constantes REMOVIDAS pelo
+    conserto do D8, `getattr(dash, 'RECENTS', [])` devolve lista vazia, o
+    conjunto de strings procuradas fica vazio, e a metade passava por
+    TAUTOLOGIA - a propria crew declarou a ressalva no #018.
+
+    Ela servia como guarda de regressao DESTE conserto (o revert do D8 a
+    acende), mas era cega a um dataset fabricado NOVO, com outras strings: foi
+    escrita contra a INSTANCIA do defeito, nao contra a CLASSE.
+
+    O criterio novo e PROCEDENCIA: todo item exibido em "Projetos recentes"
+    corresponde a uma entrada REAL - caminho que existe em disco E entrada da
+    lista de recentes do proprio QGIS. Assim, dado fabricado com QUALQUER
+    string e pego. E o C.2 - asserir propriedade, nunca representacao - um
+    nivel acima.
+
+    A contagem de strings das constantes continua sendo MEDIDA e relatada,
+    mas NAO entra mais no criterio: ela e observacao historica, nao evidencia.
+    """
+    crit = ('PROCEDENCIA: todo item exibido em "Projetos recentes" corresponde '
+            'a uma entrada REAL - o caminho existe em disco E esta na lista de '
+            'recentes do proprio QGIS, com o mesmo titulo. E o recente REAL '
+            'semeado antes do arranque CHEGA a tela (senao a assercao passaria '
+            'por lista vazia). E nenhum widget se pinta como clicavel (regra '
+            ':hover propria) sem ser clicavel de verdade')
     se_q = ('a maquete "funciona": os QLabel existem e o layout fica bonito. '
             'Uma assercao do tipo "a home tem conteudo" passaria justamente '
-            'porque o conteudo inventado esta la.')
+            'porque o conteudo inventado esta la. E uma assercao sobre as '
+            'strings CONHECIDAS passaria com um dataset fabricado NOVO - por '
+            'isso o criterio e procedencia, e nao lista de strings.')
     try:
         home = home_widget()
         if home is None:
             registra('A08', 'D8', 'home', crit, False,
                      {'erro': 'home nao encontrada'}, se_q, status='N/E')
             return
+
+        def texto_limpo(w):
+            return re.sub(r'<[^>]+>', ' ', w.text() or '')
+
+        # ------------------------------------------------ 1. o que ESTA na tela
+        # Os itens de recente sao QFrame#rec com dois QLabel: titulo e caminho.
+        # Se o nome de objeto mudar, nenhum item e encontrado - e a exigencia de
+        # PRESENCA da semente reprova alto, em vez de passar em silencio.
+        itens = []
+        for f in home.findChildren(QWidget):
+            if f.objectName() != 'rec':
+                continue
+            rotulos = [texto_limpo(l).strip() for l in f.findChildren(QLabel)]
+            rotulos = [r for r in rotulos if r]
+            itens.append({
+                'titulo': rotulos[0] if len(rotulos) > 0 else '',
+                'caminho': rotulos[1] if len(rotulos) > 1 else '',
+                'rotulos': rotulos,
+            })
+
+        fonte = recentes_do_qgis()
+        semeado = os.environ.get('SPIKE017_RECENTE_SEMEADO', '')
+
+        sem_procedencia = []
+        for it in itens:
+            k = chave_de_caminho(it['caminho'])
+            entrada = fonte.get(k)
+            existe = bool(it['caminho']) and os.path.exists(it['caminho'])
+            titulo_bate = False
+            if entrada is not None:
+                esperados = set()
+                if entrada['title']:
+                    esperados.add(entrada['title'])
+                esperados.add(os.path.splitext(os.path.basename(entrada['path']))[0])
+                titulo_bate = it['titulo'] in esperados
+            it['existe_em_disco'] = existe
+            it['na_lista_do_qgis'] = entrada is not None
+            it['titulo_bate_com_a_entrada'] = titulo_bate
+            it['ok'] = bool(existe and entrada is not None and titulo_bate)
+            if not it['ok']:
+                sem_procedencia.append(it)
+
+        # Varredura larga: um caminho fabricado pode ser pintado FORA do
+        # QFrame#rec. Todo texto com cara de CAMINHO de projeto tem de ter
+        # procedencia tambem.
+        #
+        # O padrao exige raiz (letra de unidade ou UNC): sem isso ele casava com
+        # o subtitulo do cartao "Abrir projeto / Arquivos .qgz / .qgs", que nao e
+        # caminho nenhum - falso positivo medido na 1a rodada desta versao.
+        PADRAO_CAMINHO = re.compile(r'(?:[A-Za-z]:[\\/]|\\\\)[^\r\n]*?\.qg[zs]\b', re.I)
+        fora_do_cartao = []
+        for lb in home.findChildren(QLabel):
+            for t in PADRAO_CAMINHO.findall(texto_limpo(lb)):
+                t = t.strip()
+                if any(t == it['caminho'] for it in itens):
+                    continue
+                if chave_de_caminho(t) not in fonte or not os.path.exists(t):
+                    fora_do_cartao.append(t)
+
+        semeado_na_tela = None
+        if semeado:
+            alvo = chave_de_caminho(semeado)
+            semeado_na_tela = any(chave_de_caminho(it['caminho']) == alvo for it in itens)
+
+        # ------------------------------- 2. observacao historica (fora do criterio)
         try:
             from iman_brand import dashboard as dash
         except Exception:
@@ -611,19 +741,13 @@ def a08_home_sem_dado_inventado():
             from iman_brand import dashboard as dash
 
         inventadas = set()
-        for nome, caminho, quando in getattr(dash, 'RECENTS', []):
-            inventadas.add(nome); inventadas.add(caminho)
-        for nome, meta in getattr(dash, 'TEMPLATES', []):
-            inventadas.add(nome)
+        for tupla in getattr(dash, 'RECENTS', []):
+            for parte in tupla:
+                inventadas.add(parte)
+        for tupla in getattr(dash, 'TEMPLATES', []):
+            inventadas.add(tupla[0] if isinstance(tupla, (list, tuple)) else tupla)
         for c in getattr(dash, 'CHIPS', []):
             inventadas.add(c)
-
-        # Os 4 "projetos recentes" vivem num UNICO QLabel de rich text com o
-        # nome, o caminho e a data dentro. Comparar text() por igualdade nao
-        # acha nenhum deles - a 1a versao desta assercao contou 6 de 10 por
-        # isso. Aqui o texto e limpo de marcacao e a busca e por SUBSTRING.
-        def texto_limpo(w):
-            return re.sub(r'<[^>]+>', ' ', w.text() or '')
 
         na_tela = set()
         for lb in home.findChildren(QLabel):
@@ -631,7 +755,7 @@ def a08_home_sem_dado_inventado():
             if not t.strip():
                 continue
             for s in inventadas:
-                if s and s in t:
+                if s and isinstance(s, str) and s in t:
                     na_tela.add(s)
 
         # FALSO AFORDANCE: o widget se pinta como clicavel (tem regra :hover no
@@ -662,15 +786,36 @@ def a08_home_sem_dado_inventado():
                     'texto': texto_limpo(w).strip()[:70] if isinstance(w, QLabel) else '',
                 })
 
-        ok = (len(na_tela) == 0 and len(falso_afordance) == 0)
+        ok = (len(sem_procedencia) == 0
+              and len(fora_do_cartao) == 0
+              and (semeado_na_tela is not False)
+              and len(falso_afordance) == 0)
         ev = foto(home, 'A08-home.png')
         registra('A08', 'D8', 'home', crit, ok, {
-            'strings_inventadas_no_codigo': len(inventadas),
-            'strings_inventadas_na_tela': len(na_tela),
-            'amostra': sorted(na_tela)[:12],
+            'CRITERIO': ('procedencia (#021/E3): caminho existe em disco E esta '
+                         'na lista de recentes do proprio QGIS, com o mesmo titulo'),
+            'itens_exibidos_em_projetos_recentes': len(itens),
+            'itens_sem_procedencia': len(sem_procedencia),
+            'quais_sem_procedencia': sem_procedencia[:8],
+            'itens': itens[:8],
+            'entradas_na_lista_de_recentes_do_qgis': len(fonte),
+            'lista_do_qgis': [v['path'] for v in fonte.values()][:8],
+            'recente_real_semeado': semeado,
+            'recente_semeado_chegou_a_tela': semeado_na_tela,
+            'caminhos_de_projeto_pintados_fora_do_cartao': fora_do_cartao[:8],
             'widgets_com_falso_afordance': len(falso_afordance),
             'quais': falso_afordance[:12],
             'widgets_clicaveis_de_verdade': clicaveis_de_verdade,
+            'HISTORICO_fora_do_criterio': {
+                'NOTA': ('a metade antiga procurava as strings das constantes '
+                         'RECENTS/TEMPLATES/CHIPS. Com elas removidas o conjunto '
+                         'e vazio e a busca passava por tautologia - por isso '
+                         'estes numeros sao MEDIDOS e relatados, mas nao entram '
+                         'no criterio.'),
+                'strings_inventadas_no_codigo': len(inventadas),
+                'strings_inventadas_na_tela': len(na_tela),
+                'amostra': sorted(na_tela)[:12],
+            },
         }, se_q, ev)
     except Exception:
         falhou('A08', 'D8', 'home', crit, se_q)
