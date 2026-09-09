@@ -2,9 +2,30 @@
 =============================================================================
  #017 - orquestrador do TESTE DE ACEITE da camada de marca
 
- Sobe o PRODUTO REAL (QGIS instalado + perfil iman-distro montado do
- profile-template + iman_startup.py de verdade) e roda um script de sonda
- dentro dele via --code.
+ Sobe o PRODUTO REAL (a arvore PRIVADA do QGIS que o produto carrega + perfil
+ iman-distro montado do profile-template + iman_startup.py de verdade) e roda
+ um script de sonda dentro dele via --code.
+
+ V.5 (#021, Entrega 2) - O ACEITE RODA CONTRA A ARVORE DO PRODUTO.
+
+ Ate a fatia #020 este script subia o QGIS de C:\Program Files\QGIS <versao>.
+ Isso criou um LACO na bancada depois da via A1: o harness exigia esse QGIS
+ instalado, e installer\New-ArvoreQgis.ps1 exige que ele NAO exista (a extracao
+ abre uma transacao do Windows Installer contra o mesmo ProductCode). Instalar
+ para testar desarmava o build; desinstalar para buildar desarmava o teste.
+
+ O produto nao precisa de nenhum dos dois - ele carrega o proprio QGIS. Este
+ script passa a subir ESSE:
+
+   %LOCALAPPDATA%\Programs\IMAN Terra\qgis\bin\qgis-ltr.bat
+
+ e RECUSA qualquer raiz sob %ProgramFiles% - nao por gosto, mas porque um
+ aceite que sobe um QGIS de terceiro mede a bancada, nao o produto.
+
+ Por que o .bat e nao o .exe: e o qgis-ltr.bat que chama o o4w_env.bat, que
+ deriva OSGEO4W_ROOT de %~dp0, ZERA o PATH herdado e monta PROJ_DATA/GDAL_DATA/
+ PYTHONHOME/QT_PLUGIN_PATH (medido no spike #016). E o MESMO caminho que o
+ launcher do produto usa. Chamar o .exe direto subiria sem PROJ nem GDAL.
 
  V.4 - PERFIL NOVO: o perfil e reconstruido do zero a cada rodada. Um perfil
  reaproveitado carrega estado da rodada anterior (docks movidos, projeto
@@ -26,8 +47,13 @@ param(
     # Script .py rodado dentro do QGIS via --code.
     [string]$Sonda = 'acceptance_probe.py',
 
-    # Raiz do QGIS a usar. Default: o standalone instalado nesta bancada.
+    # Raiz do QGIS a usar. Default: a ARVORE PRIVADA do produto instalado.
+    # NAO aceita raiz sob %ProgramFiles% - ver a guarda na secao 1.
     [string]$Qgis = '',
+
+    # Raiz do produto instalado (o pai da arvore do QGIS). Serve para derivar o
+    # default de -Qgis e para ler o manifesto de integridade que o acompanha.
+    [string]$Produto = (Join-Path $env:LOCALAPPDATA 'Programs\IMAN Terra'),
 
     # Onde o perfil novo e a saida da rodada vivem.
     [string]$Base = (Join-Path $env:LOCALAPPDATA 'InstitutoIMAN\_aceite017'),
@@ -56,20 +82,68 @@ $raizRepo   = (Get-Item (Join-Path $raizScript '..\..')).FullName
 
 function Escreve { param([string]$T, [string]$C = 'Gray') Write-Host $T -ForegroundColor $C }
 
+# O o4w_env.bat deriva OSGEO4W_ROOT em forma 8.3 (`%~fsi`), entao o executavel
+# do processo chega como ...\IMANTE~1\qgis\bin\qgis-ltr-bin.exe. Comparar isso
+# com o caminho longo por string acusaria "nao e o do produto" numa arvore
+# CORRETA. A comparacao e feita na forma curta dos DOIS lados.
+function Curto([string]$Caminho) {
+    if ([string]::IsNullOrEmpty($Caminho)) { return '' }
+    try {
+        $fso = New-Object -ComObject Scripting.FileSystemObject
+        return $fso.GetFile($Caminho).ShortPath
+    } catch {
+        return $Caminho
+    }
+}
+
 Escreve ''
 Escreve '  #017 - teste de aceite da camada de marca' 'White'
 Escreve ''
 
-# --------------------------------------------------------------- 1. o QGIS
+# ------------------------------------------ 1. o QGIS: o DO PRODUTO (#021/E2)
 if ([string]::IsNullOrEmpty($Qgis)) {
-    $cand = Get-ChildItem 'C:\Program Files' -Directory -Filter 'QGIS *' -ErrorAction SilentlyContinue |
-            Sort-Object Name -Descending | Select-Object -First 1
-    if (-not $cand) { throw 'Nenhum QGIS encontrado em C:\Program Files. Passe -Qgis <raiz>.' }
-    $Qgis = $cand.FullName
+    $Qgis = Join-Path $Produto 'qgis'
 }
-$exe = Join-Path $Qgis 'bin\qgis-ltr-bin.exe'
-if (-not (Test-Path -LiteralPath $exe)) { throw "qgis-ltr-bin.exe nao encontrado em $Qgis" }
+$Qgis = [IO.Path]::GetFullPath($Qgis)
+
+# GUARDA: nenhum QGIS de sistema em lugar nenhum do caminho. Esta e a assercao
+# central da Entrega 2 - sem ela, um dia alguem passa -Qgis apontando para
+# Program Files "so para destravar" e o laco volta sem ninguem perceber.
+foreach ($proibido in @($env:ProgramFiles, ${env:ProgramFiles(x86)})) {
+    if ($proibido -and $Qgis.ToLower().StartsWith($proibido.ToLower())) {
+        throw ("Raiz '$Qgis' cai em '$proibido'. O aceite NAO sobe QGIS de sistema: " +
+               "ele mede o produto, e o produto carrega a propria arvore (#021/Entrega 2).")
+    }
+}
+
+$exe       = Join-Path $Qgis 'bin\qgis-ltr-bin.exe'
+$bat       = Join-Path $Qgis 'bin\qgis-ltr.bat'
+$manifesto = Join-Path $Produto 'qgis-manifest.txt'
+
+# O E.1 comeca AQUI: sem produto instalado nao ha o que asserir. Abortar e o
+# comportamento certo - um aceite que "nao achou o produto e seguiu" mede o nada
+# e devolve verde.
+if (-not (Test-Path -LiteralPath $exe)) {
+    throw ("qgis-ltr-bin.exe nao encontrado em $Qgis.`n" +
+           "  O aceite roda contra a arvore do PRODUTO INSTALADO. Instale o IMAN Terra`n" +
+           "  (installer\dist\*.exe) ou passe -Produto <raiz do produto>.")
+}
+if (-not (Test-Path -LiteralPath $bat)) {
+    throw "qgis-ltr.bat nao encontrado em $Qgis\bin. A arvore do produto esta incompleta."
+}
+if (-not (Test-Path -LiteralPath $manifesto)) {
+    throw ("qgis-manifest.txt nao encontrado em $Produto. Isso nao e uma instalacao do " +
+           "IMAN Terra - o instalador sempre o entrega ao lado da arvore.")
+}
+$mVersao = Select-String -LiteralPath $manifesto -Pattern '^VERSAO\|(.+)$' | Select-Object -First 1
+$mTotal  = Select-String -LiteralPath $manifesto -Pattern '^TOTAL\|(\d+)\|' | Select-Object -First 1
+$versaoManifesto = if ($mVersao) { $mVersao.Matches[0].Groups[1].Value.Trim() } else { '?' }
+$totalManifesto  = if ($mTotal)  { $mTotal.Matches[0].Groups[1].Value.Trim() }  else { '?' }
+
+Escreve "  produto : $Produto"
 Escreve "  QGIS    : $Qgis"
+Escreve "            (arvore PRIVADA do produto - nenhum QGIS de sistema no caminho)"
+Escreve "  manifesto: QGIS $versaoManifesto, $totalManifesto arquivos"
 
 # --------------------------------------------------- 2. guarda BL-3 do destino
 $Base = [IO.Path]::GetFullPath($Base)
@@ -124,6 +198,10 @@ $env:SPIKE017_STARTUP  = $startup
 $env:SPIKE017_REPO     = $raizRepo
 $env:IMAN_TERRA_HOME   = (Join-Path $raizRepo 'app')
 $env:SPIKE017_FASE     = $Fase
+# A sonda confere, de DENTRO do processo, que o QGIS que subiu foi este - e nao
+# outro que estivesse na maquina. Sem isso, "rodou contra o produto" seria
+# afirmacao do orquestrador sobre si mesmo.
+$env:SPIKE017_QGIS_ROOT = $Qgis
 
 Escreve "  sonda   : $sondaPath"
 Escreve "  startup : $startup  (o de verdade)"
@@ -131,12 +209,45 @@ Escreve "  saida   : $saida"
 Escreve "  fase    : $Fase"
 
 # --------------------------------------------------------------- 6. executa
-$argv = @('--profiles-path', $perfilRaiz, '--profile', $Perfil, '--noversioncheck',
-          '--code', $sondaPath)
+$argv = @('--profiles-path', "`"$perfilRaiz`"", '--profile', $Perfil, '--noversioncheck',
+          '--code', "`"$sondaPath`"")
+
+# Uma instancia anterior tornaria ambigua a captura do PID - e o PID e o que
+# prova, logo adiante, QUAL executavel subiu.
+$sobrando = @(Get-Process -Name 'qgis-ltr-bin' -ErrorAction SilentlyContinue)
+if ($sobrando.Count -gt 0) {
+    throw ("Ja ha $($sobrando.Count) processo(s) qgis-ltr-bin rodando. Feche-os antes: " +
+           "o aceite precisa saber qual processo e o dele.")
+}
+
 Escreve ''
-Escreve "  > qgis-ltr-bin.exe --profiles-path <perfil> --profile $Perfil --noversioncheck --code <sonda>"
-$p = Start-Process -FilePath $exe -ArgumentList $argv -PassThru
-Escreve "  PID $($p.Id) - aguardando ate $Espera s pela saida da sonda..."
+Escreve "  > qgis-ltr.bat --profiles-path <perfil> --profile $Perfil --noversioncheck --code <sonda>"
+# O .bat e quem monta o ambiente OSGeo4W (o4w_env.bat). Ele termina cedo, porque
+# a ultima linha dele e `start /B` - entao o processo que interessa e localizado
+# DEPOIS, pelo nome, e conferido pelo caminho do executavel.
+Start-Process -FilePath $bat -ArgumentList $argv -WindowStyle Hidden | Out-Null
+
+$p = $null
+for ($i = 0; $i -lt 60; $i++) {
+    Start-Sleep -Milliseconds 500
+    $p = Get-Process -Name 'qgis-ltr-bin' -ErrorAction SilentlyContinue | Select-Object -First 1
+    if ($p) { break }
+}
+if (-not $p) { throw "O qgis-ltr.bat nao subiu nenhum qgis-ltr-bin em 30 s. Arvore: $Qgis" }
+
+# PROCEDENCIA DO PROCESSO: nao basta que ALGUM QGIS tenha subido - tem de ser o
+# do produto. Este e o numero que sustenta a Entrega 2.
+$exeDoProcesso = ''
+try { $exeDoProcesso = $p.Path } catch { }
+Escreve "  PID $($p.Id) - executavel: $exeDoProcesso"
+if ($exeDoProcesso -and ((Curto $exeDoProcesso).ToLower() -ne (Curto $exe).ToLower())) {
+    Get-Process -Name 'qgis-ltr-bin' -ErrorAction SilentlyContinue |
+        Stop-Process -Force -ErrorAction SilentlyContinue
+    throw ("O processo que subiu NAO e o do produto." +
+           "`n  esperado: $exe" +
+           "`n  obtido  : $exeDoProcesso")
+}
+Escreve "  aguardando ate $Espera s pela saida da sonda..."
 
 $alvos = @('descoberta.json', $(if ($Fase -eq 'segunda') { 'aceite-segunda.json' } else { 'aceite.json' }))
 $achado = $null

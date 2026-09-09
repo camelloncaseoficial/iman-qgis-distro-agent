@@ -39,6 +39,9 @@ from qgis.utils import iface
 OUT      = os.environ.get('SPIKE017_OUT', r'C:\Temp\spike017')
 STARTUP  = os.environ.get('SPIKE017_STARTUP', '')
 REPO     = os.environ.get('SPIKE017_REPO', '')
+# #021/Entrega 2: a arvore PRIVADA do QGIS que o produto carrega. O aceite nao
+# sobe mais o QGIS de C:\Program Files - e prova isso de dentro do processo.
+QGIS_ROOT = os.environ.get('SPIKE017_QGIS_ROOT', '')
 SHOTS    = os.path.join(OUT, 'shots')
 # 'primeira' = suite completa; 'segunda' = so o pouso, no perfil ja usado (D7)
 FASE     = os.environ.get('SPIKE017_FASE', 'primeira')
@@ -198,6 +201,85 @@ def acoes_do_menu(titulo_regex):
     return []
 
 
+# ================================================ #021/E2 - de QUAL QGIS somos
+def caminho_longo(p):
+    """O o4w_env.bat deriva OSGEO4W_ROOT em forma 8.3 (`%%~fsi`), entao
+    sys.executable chega como ...\\IMANTE~1\\qgis\\bin\\... . Comparar isso com o
+    caminho longo por string daria "nao e o do produto" numa arvore correta -
+    exatamente o falso positivo que este bloco existe para nao criar."""
+    if not p:
+        return ''
+    try:
+        import ctypes
+        from ctypes import wintypes
+        f = ctypes.windll.kernel32.GetLongPathNameW
+        f.argtypes = [wintypes.LPCWSTR, wintypes.LPWSTR, wintypes.DWORD]
+        f.restype = wintypes.DWORD
+        buf = ctypes.create_unicode_buffer(32768)
+        if f(p, buf, 32768):
+            return os.path.normpath(buf.value)
+    except Exception:
+        pass
+    return os.path.normpath(p)
+
+
+def sob(caminho, raiz):
+    if not caminho or not raiz:
+        return False
+    c = caminho_longo(caminho).lower().rstrip('\\')
+    r = caminho_longo(raiz).lower().rstrip('\\')
+    return c == r or c.startswith(r + '\\')
+
+
+def procedencia_do_qgis():
+    """De onde veio o QGIS que esta rodando ESTA sonda.
+
+    O orquestrador diz qual arvore mandou subir; aqui se confere o que o
+    processo REALMENTE carregou. Sem isto, "o aceite roda contra a arvore do
+    produto" seria afirmacao do orquestrador sobre si mesmo - e foi assim que
+    a bancada passou meses medindo o QGIS de Program Files sem perceber.
+    """
+    prog = [d for d in (os.environ.get('ProgramFiles'),
+                        os.environ.get('ProgramFiles(x86)'),
+                        os.environ.get('ProgramW6432')) if d]
+
+    fontes = {
+        'sys.executable': sys.executable or '',
+        'QgsApplication.prefixPath': QgsApplication.prefixPath() or '',
+        'QgsApplication.pkgDataPath': QgsApplication.pkgDataPath() or '',
+        'OSGEO4W_ROOT': os.environ.get('OSGEO4W_ROOT', ''),
+        'QGIS_PREFIX_PATH': os.environ.get('QGIS_PREFIX_PATH', ''),
+        'PROJ_DATA': os.environ.get('PROJ_DATA', ''),
+        'GDAL_DATA': os.environ.get('GDAL_DATA', ''),
+    }
+    resolvidas = dict((k, caminho_longo(v.replace('/', '\\')) if v else '')
+                      for k, v in fontes.items())
+
+    # "Sem QGIS de sistema em lugar nenhum do caminho" - medido, nao assumido.
+    em_program_files = []
+    for k, v in list(resolvidas.items()):
+        if v and any(sob(v, d) for d in prog):
+            em_program_files.append({'fonte': k, 'caminho': v})
+    for entrada in sys.path:
+        if entrada and any(sob(entrada, d) for d in prog):
+            em_program_files.append({'fonte': 'sys.path', 'caminho': caminho_longo(entrada)})
+
+    raiz = caminho_longo(QGIS_ROOT) if QGIS_ROOT else ''
+    dentro = {}
+    for k in ('sys.executable', 'QgsApplication.prefixPath',
+              'QgsApplication.pkgDataPath', 'OSGEO4W_ROOT'):
+        dentro[k] = sob(resolvidas.get(k, ''), raiz) if raiz else None
+
+    return {
+        'raiz_esperada': raiz,
+        'fontes': resolvidas,
+        'dentro_da_arvore_do_produto': dentro,
+        'tudo_dentro': all(v is True for v in dentro.values()) if raiz else None,
+        'caminhos_em_program_files': em_program_files,
+        'qgis_de_sistema_no_caminho': len(em_program_files) > 0,
+    }
+
+
 # ============================================================ E.1 - BASELINE
 def valida_baseline():
     """Um aceite que roda sem a camada de marca instalada nao mede o produto -
@@ -217,8 +299,19 @@ def valida_baseline():
     b['docks_visiveis'] = len(docks_visiveis())
     b['qgis'] = Qgis.QGIS_VERSION
     b['startup_real'] = STARTUP
+    # #021/Entrega 2 - o baseline novo: produto instalado, e o QGIS que subiu e
+    # o DELE. Um aceite verde rodado sobre um QGIS de terceiro nao aprova nada.
+    b['procedencia_do_qgis'] = procedencia_do_qgis()
 
     falhas = []
+    proc = b['procedencia_do_qgis']
+    if proc['raiz_esperada'] and proc['tudo_dentro'] is not True:
+        fora = [k for k, v in proc['dentro_da_arvore_do_produto'].items() if v is not True]
+        falhas.append('o QGIS que subiu nao e o da arvore do produto (fora: %s)'
+                      % ', '.join(fora))
+    if proc['qgis_de_sistema_no_caminho']:
+        falhas.append('ha caminho sob %%ProgramFiles%% no ambiente do QGIS: %s'
+                      % proc['caminhos_em_program_files'][:4])
     if not b['perfil_e_iman_distro']:
         falhas.append('o perfil em uso nao e o iman-distro (%s)' % b['perfil'])
     if not b['plugin_carregado']:
