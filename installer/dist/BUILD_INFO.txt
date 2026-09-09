@@ -4,15 +4,15 @@ Este arquivo amarra o instalador ao commit que o gerou. Sem ele, um .exe
 numa VM e apenas um binario sem procedencia.
 
 Artefato              : Instituto-IMAN-IMAN-Terra-Setup-0.3.0.exe
-SHA-256               : 3E8C4681D8BCF3D2B516A9ED933597A477FD0E5B966083D138B7505A4242F3AA
-Tamanho (bytes)       : 512807152
+SHA-256               : 38DA4709FB121C89C6A52FD96A107C5502316FBDD1BFEC07CE8B2809F68B73E7
+Tamanho (bytes)       : 512808129
 
 ProductVersion        : 0.3.0
-Commit                : 33ac0ff803feb7fd7c6cdc7e821730903c3b9f05
-Commit (curto)        : 33ac0ff
-Data do commit        : 2026-09-09T14:48:15-03:00
-Branch                : feat/025-db23-evento-db24-procedencia
-Build canonico        : NAO  <<< artefato de branch de trabalho, nao de integracao
+Commit                : 327d9ee2585da067296eeae0dacbcbbd37dbfca3
+Commit (curto)        : 327d9ee
+Data do commit        : 2026-09-09T16:25:30-03:00
+Branch                : develop
+Build canonico        : SIM
 
 -----------------------------------------------------------------------
 QGIS EMBARCADO (D-IMAN-028 / via A1 - arvore privada)
@@ -39,7 +39,7 @@ Origem oficial        : https://download.qgis.org/downloads/QGIS-OSGeo4W-3.44.13
 QGIS na bancada       : nao detectado
 Compilador            : Inno Setup 7.1.0
 Compilador (caminho)  : C:\Program Files\Inno Setup 7\ISCC.exe
-Data/hora do build    : 2026-09-09 15:04:16 -03:00
+Data/hora do build    : 2026-09-09 19:32:21 -03:00
 
 -----------------------------------------------------------------------
 SOBRE REPRODUTIBILIDADE
