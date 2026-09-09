@@ -264,7 +264,16 @@ if (-not (Test-Path -LiteralPath $startup)) { throw "iman_startup.py nao encontr
 $env:SPIKE017_OUT      = $saida
 $env:SPIKE017_STARTUP  = $startup
 $env:SPIKE017_REPO     = $raizRepo
-$env:IMAN_TERRA_HOME   = (Join-Path $raizRepo 'app')
+# DB-24: IMAN_TERRA_HOME passa a apontar para o {app} do PRODUTO INSTALADO, e
+# nao para o app\ do repo. E o que o launcher faz na maquina do usuario, e e o
+# unico jeito de o produto achar o {app}\BUILD_ID.txt que o instalador entrega
+# - sem isso o A13 mediria uma arvore de desenvolvimento, onde a identidade do
+# build nao existe por construcao.
+# O que muda de fato: `demo\welcome.qgz` e `notices\THIRD_PARTY_NOTICES.md`
+# passam a vir do produto instalado. Sao os mesmos arquivos que o build
+# empacotou deste commit - se divergirem, e porque a arvore de trabalho tem
+# alteracao nao compilada, e isso e informacao, nao ruido.
+$env:IMAN_TERRA_HOME   = $Produto
 $env:SPIKE017_FASE     = $Fase
 # A sonda confere, de DENTRO do processo, que o QGIS que subiu foi este - e nao
 # outro que estivesse na maquina. Sem isso, "rodou contra o produto" seria

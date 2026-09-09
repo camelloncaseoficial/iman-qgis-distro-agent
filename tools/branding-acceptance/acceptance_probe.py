@@ -485,6 +485,18 @@ def a01_botao_fechar_dock():
         falhou('A01', 'D1', 'títulos e botões de dock', crit, se_q)
 
 
+def _diagnostico_do_campo():
+    """O que o filtro de largura do plugin diz sobre si mesmo (DB-23)."""
+    try:
+        p = plugin_marca()
+        f = getattr(p, '_contem_coords', None)
+        if f is None:
+            return {'erro': 'filtro de largura nao instalado'}
+        return f.diagnostico()
+    except Exception as e:
+        return {'erro': repr(e)}
+
+
 def a02_campo_coordenadas():
     """D2 - QStatusBar QLineEdit { padding: 2px 8px } em widget de largura fixa"""
     crit = ('o campo de coordenadas cabe a coordenada canonica do produto '
@@ -523,6 +535,9 @@ def a02_campo_coordenadas():
             'largura_minima_fixada_px': le.minimumWidth(),
             'largura_maxima_fixada_px': le.maximumWidth(),
             'sizeHint_px': le.sizeHint().width(),
+            # DB-23: QUEM fechou a conta do piso - o evento de estilo ou a rede
+            # de seguranca. E o que prova, de fora, que o mecanismo e o evento.
+            'DB23_diagnostico_do_filtro': _diagnostico_do_campo(),
         }, se_q, ev)
     except Exception:
         falhou('A02', 'D2', 'status bar · coordenadas', crit, se_q)
@@ -925,6 +940,98 @@ def a08_home_sem_dado_inventado():
         }, se_q, ev)
     except Exception:
         falhou('A08', 'D8', 'home', crit, se_q)
+
+
+def a13_identidade_do_build():
+    """DB-24 - o produto instalado sabe dizer QUAL build ele e.
+
+    O proprio BUILD_INFO.txt declara que a identidade de um artefato e o par
+    (ProductVersion, Commit): o SHA-256 muda com o mtime que o Inno grava e o
+    git nao preserva. Mas o Commit nao chegava ao usuario - o produto declarava
+    so "0.3.0", e o artefato de branch das 05:29 e o canonico eram ambos 0.3.0
+    e INDISTINGUIVEIS de dentro do produto.
+
+    Esta assercao mede a cadeia inteira: o arquivo que o instalador entregou,
+    o valor que o produto LE dele, e o que chega a TELA. Se qualquer elo
+    quebrar, o produto volta a nao saber de si.
+    """
+    crit = ('o produto exibe, na home, uma identidade de build que casa com o '
+            '{app}\BUILD_ID.txt entregue pelo instalador: o commit curto na '
+            'tela e o mesmo do arquivo, o arquivo traz versao/commit/branch, e '
+            'o commit curto e prefixo do commit completo')
+    se_q = ('sem isto o produto exibe "versao 0.3.0" e nada mais - uma string '
+            'valida, bonita, e identica em TODO artefato 0.3.0 ja compilado. '
+            'Uma assercao do tipo "a home mostra uma versao" passa com o '
+            'defeito presente, porque a versao esta la; o que nao esta e a '
+            'resposta a pergunta "qual build e este?".')
+    try:
+        home = home_widget()
+        app = os.environ.get('IMAN_TERRA_HOME', '')
+        arquivo = os.path.join(app, 'BUILD_ID.txt') if app else ''
+
+        if not arquivo or not os.path.isfile(arquivo):
+            registra('A13', 'DB-24', 'identidade do build', crit, False, {
+                'IMAN_TERRA_HOME': app,
+                'arquivo_procurado': arquivo,
+                'erro': ('BUILD_ID.txt nao encontrado. Numa arvore de '
+                         'desenvolvimento isso e esperado - o arquivo nasce no '
+                         'build; contra um PRODUTO INSTALADO, e o defeito.'),
+            }, se_q, status='N/E')
+            return
+
+        do_arquivo = {}
+        with open(arquivo, 'r', encoding='utf-8', errors='replace') as fh:
+            for linha in fh:
+                linha = linha.strip()
+                if linha and not linha.startswith('#') and '=' in linha:
+                    k, v = linha.split('=', 1)
+                    do_arquivo[k.strip()] = v.strip()
+
+        curto = do_arquivo.get('commit_curto', '')
+        completo = do_arquivo.get('commit', '')
+        versao_arq = do_arquivo.get('versao', '')
+
+        # o que chegou a TELA
+        na_tela = None
+        for lb in (home.findChildren(QLabel) if home else []):
+            t = re.sub(r'<[^>]+>', ' ', lb.text() or '')
+            m = re.search(r'vers[aã]o\s*([0-9]+\.[0-9]+\.[0-9]+)\s*[^\w]*\s*([0-9a-f]{7,40})', t, re.I)
+            if m:
+                na_tela = {'versao': m.group(1), 'commit_curto': m.group(2),
+                           'texto': t.strip()}
+                break
+
+        # o que o proprio produto diz de si
+        do_produto = None
+        try:
+            from iman_brand import brand as _b
+            do_produto = {'versao_exibida': _b.versao_exibida(),
+                          'commit_curto': _b.build_commit_curto(),
+                          'arquivo_lido': _b.build_id().get('_arquivo')}
+        except Exception as e:
+            do_produto = {'erro': repr(e)}
+
+        campos_ok = all(do_arquivo.get(k) for k in ('versao', 'commit', 'commit_curto', 'branch'))
+        curto_e_prefixo = bool(curto) and bool(completo) and completo.startswith(curto)
+        tela_bate = bool(na_tela) and na_tela['commit_curto'] == curto
+        versao_bate = bool(na_tela) and na_tela['versao'] == versao_arq
+
+        ok = campos_ok and curto_e_prefixo and tela_bate and versao_bate
+        registra('A13', 'DB-24', 'identidade do build', crit, ok, {
+            'arquivo': arquivo,
+            'do_arquivo': do_arquivo,
+            'na_tela': na_tela,
+            'o_que_o_produto_diz': do_produto,
+            'campos_obrigatorios_presentes': campos_ok,
+            'commit_curto_e_prefixo_do_completo': curto_e_prefixo,
+            'commit_da_tela_bate_com_o_arquivo': tela_bate,
+            'versao_da_tela_bate_com_o_arquivo': versao_bate,
+            'NOTA_SHA': ('o SHA-256 do .exe NAO esta no BUILD_ID de proposito: '
+                         'ele so existe depois de compilar, e o arquivo entra '
+                         'NA compilacao. Ele vive no BUILD_INFO.txt do repo.'),
+        }, se_q, foto(home, 'A13-identidade-do-build.png') if home else '')
+    except Exception:
+        falhou('A13', 'DB-24', 'identidade do build', crit, se_q)
 
 
 def a09_versao():
@@ -1512,6 +1619,7 @@ def principal():
             a02_campo_coordenadas()
             a08_home_sem_dado_inventado()
             a09_versao()
+            a13_identidade_do_build()
             a10_sobre_alcancavel()
             a11_icone_janela_e_taskbar()
             a12_logo_do_qgis_na_ui()
