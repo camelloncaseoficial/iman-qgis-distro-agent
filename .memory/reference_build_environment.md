@@ -15,14 +15,31 @@ Fatos não óbvios do ambiente onde a distro é montada/verificada. Complementa
 
 ## QGIS LTR (runtime)
 
+> **Re-verificado em 2026-09-09 (fatia #021): NÃO HÁ MAIS QGIS DE SISTEMA nesta bancada.**
+> `C:\Program Files\QGIS *` não existe e não há entrada na ARP. O QGIS que a bancada usa é o
+> **do produto instalado** — `%LOCALAPPDATA%\Programs\IMAN Terra\qgis\`. **Isso é a condição
+> normal agora, não uma pane**: a `#021/Entrega 2` repontou o teste de aceite justamente para
+> que a bancada **não precise voltar a ter** um QGIS instalado. Não "conserte" reinstalando.
+
 - **`C:\OSGeo4W` NÃO EXISTE MAIS nesta máquina** (removido; confirmado 2026-07-22). Qualquer
   receita que comece por `C:\OSGeo4W\...` está morta aqui.
-- O QGIS vivo é **standalone**: `C:\Program Files\QGIS 3.44.13\` (era `3.44.9` até 2026-09-01;
-  a `3.44.9` foi **removida** desta máquina e não está mais em disco)
-  - GUI: `C:\Program Files\QGIS 3.44.13\bin\qgis-ltr-bin.exe`
-  - **PyQGIS headless**: `C:\Program Files\QGIS 3.44.13\bin\python-qgis-ltr.bat <script.py>`
-    (a receita headless sobreviveu — só mudou de casa). Usado para gerar `welcome.qgz` e o
-    smoke estático.
+- ~~O QGIS vivo é standalone em `C:\Program Files\QGIS 3.44.13\`~~ — **sumiu na sessão do #019**
+  (laudo em `docs/verify/019-a1-qgis-embarcado/README.md`, seção 6). Toda receita que comece por
+  `C:\Program Files\QGIS ...` está **morta aqui**.
+- **O QGIS de trabalho é o do produto**, e ele é relocável por construção:
+  - GUI (o caminho REAL, o mesmo que o launcher usa):
+    `%LOCALAPPDATA%\Programs\IMAN Terra\qgis\bin\qgis-ltr.bat`
+    — **chamar o `.bat`, nunca o `.exe` direto**: é ele que roda o `o4w_env.bat`, que monta
+    `PROJ_DATA`/`GDAL_DATA`/`PYTHONHOME`/`QT_PLUGIN_PATH` e **zera o `PATH` herdado**.
+  - **PyQGIS headless**: `%LOCALAPPDATA%\Programs\IMAN Terra\qgis\bin\python-qgis-ltr.bat`.
+  - `OSGEO4W_ROOT` sai em **forma 8.3** (`IMANTE~1`) — comparar caminhos por string sem
+    normalizar dá falso negativo. Na sonda: `GetLongPathNameW`; no PowerShell:
+    `Scripting.FileSystemObject.ShortPath` nos **dois** lados.
+- **Teste de aceite:** `tools\branding-acceptance\Invoke-Aceite.ps1` sobe essa árvore e **recusa**
+  qualquer raiz sob `%ProgramFiles%`. Ele exige o produto **instalado** — sem produto, aborta.
+- **Build:** `installer\New-ArvoreQgis.ps1` exige o oposto — **nenhum** QGIS 3.44.13 instalado na
+  máquina (a extração abre transação do Windows Installer contra o mesmo ProductCode). Hoje as
+  duas exigências convivem porque nenhuma delas depende mais de um QGIS de sistema.
 - **Baseline EMBARCADA: QGIS LTR 3.44.13** desde a fatia #013 (decisão do sponsor, 2026-09-01);
   a `3.44.13` **ainda não passou pela VM limpa** — a versão certificada é a que rodou o BL-7. Ver
   `docs/distro-architecture.md`. O launcher aceita qualquer `QGIS *` que encontrar; isso é
