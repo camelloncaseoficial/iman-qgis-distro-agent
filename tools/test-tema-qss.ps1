@@ -15,11 +15,18 @@
  precisar subir o QGIS.
 
  O QUE ELA ASSERE
-   1. ha exatamente 12 declaracoes de `border-radius`, e todas valem 2px;
+   1. ha exatamente 18 declaracoes de `border-radius`, e todas valem 2px;
    2. `QMenuBar::item` tem padding exatamente `3px 4px`;
    3. `QStatusBar` NAO tem declaracao de padding            (regressao do D2);
    4. `QDockWidget::title` NAO tem padding vertical         (regressao do D4);
-   5. os 2 cantos especificos da aba valem 2px           (extensao declarada).
+   5. os 2 cantos especificos da aba valem 2px           (extensao declarada);
+   6. ZERO `border-radius` inline no Python da camada de marca      (#027).
+
+ A asse rcao 6 e a que fecha o buraco do #022. Ate ela existir, esta guarda era
+ guarda de um ARQUIVO, e nao do TEMA: seis raios viviam inline em Python, de 8 a
+ 14 px, fora do alcance dela - e a arbitragem "2px em tudo" nao valia para a
+ primeira tela que o usuario ve. Enquanto ninguem puder reintroduzir estilo
+ inline em silencio, o tema continua sendo um lugar so.
 
  SAIDA: exit 0 se tudo passa; exit 1 nomeando ARQUIVO e LINHA do que falhou.
 
@@ -42,7 +49,7 @@ if ([string]::IsNullOrWhiteSpace($Qss)) {
 }
 
 $RAIO_ESPERADO       = 2
-$RAIOS_ESPERADOS     = 12
+$RAIOS_ESPERADOS     = 18
 $CANTOS_ESPERADOS    = 2
 $MENUBAR_PADDING     = '3px 4px'
 
@@ -64,8 +71,13 @@ $linhas = @(Get-Content -LiteralPath $Qss)
 $rel = $Qss.Replace($raizRepo, '').TrimStart('\')
 
 $falhas = New-Object System.Collections.ArrayList
-function Reprova { param([int]$Linha, [string]$Texto)
-    [void]$falhas.Add([pscustomobject]@{ Linha = $Linha; Texto = $Texto })
+# `Arquivo` existe porque a asse rcao 6 reprova em OUTRO arquivo que nao o .qss.
+# Sem ele o veredito prefixava tudo com o caminho do .qss, e um problema do
+# dashboard.py aparecia anunciado como problema do style.qss - o relato mandava
+# quem le para o arquivo errado.
+function Reprova { param([int]$Linha, [string]$Texto, [string]$Arquivo = '')
+    if (-not $Arquivo) { $Arquivo = $rel }
+    [void]$falhas.Add([pscustomobject]@{ Arquivo = $Arquivo; Linha = $Linha; Texto = $Texto })
 }
 
 # ---- 1. border-radius: exatamente 12, todos 2px -----------------------------
@@ -167,19 +179,52 @@ foreach ($c in $foraDoCanto) {
 Escreve ("  [5] cantos da aba  : {0} declaracoes, {1} fora de {2}px" -f $cantos.Count, $foraDoCanto.Count, $RAIO_ESPERADO) `
         $(if ($cantos.Count -eq $CANTOS_ESPERADOS -and $foraDoCanto.Count -eq 0) { 'Green' } else { 'Red' })
 
+
+# ---- 6. ZERO border-radius inline no Python (#027) --------------------------
+# O tema tem de ser UM LUGAR. Um `border-radius` inline num setStyleSheet de
+# Python e invisivel para as cinco asse rcoes acima - foi assim que o badge de
+# versao da home ficou em 9px enquanto o .qss inteiro estava em 2px.
+$pyRaios = @()
+$raizesPy = @(
+    (Join-Path $raizRepo 'app\profile-template'),
+    (Join-Path $raizRepo 'app\startup')
+)
+foreach ($raizPy in $raizesPy) {
+    if (-not (Test-Path -LiteralPath $raizPy)) { continue }
+    foreach ($py in (Get-ChildItem -LiteralPath $raizPy -Recurse -File -Filter '*.py' -ErrorAction SilentlyContinue)) {
+        if ($py.FullName -like '*__pycache__*') { continue }
+        $n = 0
+        foreach ($l in (Get-Content -LiteralPath $py.FullName)) {
+            $n++
+            foreach ($m in [regex]::Matches($l, 'border-radius\s*:\s*(\d+)px')) {
+                $pyRaios += [pscustomobject]@{
+                    Arquivo = $py.FullName.Replace($raizRepo, '').TrimStart('\')
+                    Linha   = $n
+                    Valor   = $m.Groups[1].Value
+                }
+            }
+        }
+    }
+}
+foreach ($p in $pyRaios) {
+    Reprova $p.Linha ("[6] border-radius INLINE em Python ({0}px). O tema e o style.qss - mova a regra para la." -f $p.Valor) $p.Arquivo
+}
+Escreve ("  [6] raio inline em Python : {0} ocorrencia(s)" -f $pyRaios.Count) `
+        $(if ($pyRaios.Count -eq 0) { 'Green' } else { 'Red' })
+
 # ------------------------------------------------------------------ veredito
 Write-Host ''
 if ($falhas.Count -eq 0) {
-    Escreve '  5 de 5 asse rcoes passaram. O tema esta como o sponsor arbitrou.' 'Green'
+    Escreve '  6 de 6 asse rcoes passaram. O tema esta como o sponsor arbitrou, e num lugar so.' 'Green'
     Write-Host ''
     exit 0
 }
 Escreve "  GUARDA REPROVOU - $($falhas.Count) problema(s):" 'Red'
 foreach ($f in $falhas) {
     if ($f.Linha -gt 0) {
-        Escreve ("    {0}:{1}  {2}" -f $rel, $f.Linha, $f.Texto) 'Yellow'
+        Escreve ("    {0}:{1}  {2}" -f $f.Arquivo, $f.Linha, $f.Texto) 'Yellow'
     } else {
-        Escreve ("    {0}      {1}" -f $rel, $f.Texto) 'Yellow'
+        Escreve ("    {0}      {1}" -f $f.Arquivo, $f.Texto) 'Yellow'
     }
 }
 Write-Host ''

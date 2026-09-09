@@ -275,8 +275,9 @@ class ImanBrandPlugin:
             menu.addAction(a)
         btn.setMenu(menu)
         btn.setStyleSheet(
+            # RAIO no style.qss (#027).
             "QToolButton#ImanTerraMenuBtn{background:%s;color:#FFFFFF;border:none;"
-            "border-radius:8px;padding:5px 10px;font-weight:600;}"
+            "padding:5px 10px;font-weight:600;}"
             "QToolButton#ImanTerraMenuBtn:hover{background:%s;}"
             "QToolButton#ImanTerraMenuBtn::menu-indicator{image:none;width:0;}"
             % (brand.COLOR_PRIMARY, brand.COLOR_PRIMARY_DEEP))

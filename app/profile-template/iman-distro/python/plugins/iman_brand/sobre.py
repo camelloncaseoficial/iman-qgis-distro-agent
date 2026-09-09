@@ -104,8 +104,14 @@ class SobreDialog(QDialog):
         creditos = QLabel(brand.CREDITS_QGIS.replace("\n", "<br>"))
         creditos.setTextFormat(Qt.RichText)
         creditos.setWordWrap(True)
+        # NOME DE OBJETO NOVO (#027), e nome de objeto e CONTRATO: o seletor
+        # era `QLabel` NU. Inline isso so atinge este widget, mas no .qss
+        # pegaria TODO QLabel da aplicacao. "ImanSobreCreditos" e o bloco de
+        # creditos do QGIS no dialogo Sobre, e o style.qss depende dele.
+        creditos.setObjectName("ImanSobreCreditos")
+        # RAIO no style.qss (#027).
         creditos.setStyleSheet(
-            "QLabel{background:%s;border:1px solid %s;border-radius:10px;"
+            "QLabel#ImanSobreCreditos{background:%s;border:1px solid %s;"
             "padding:12px 14px;font-size:12px;color:%s;}"
             % (brand.COLOR_PANEL_2, brand.COLOR_BORDER, pal_texto))
         raiz.addWidget(creditos)
