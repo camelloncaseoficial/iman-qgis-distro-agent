@@ -1,5 +1,5 @@
 {
-  "quando": "2026-09-09T05:59:58.444631",
+  "quando": "2026-09-09T05:59:02.587465",
   "qgis": "3.44.13-Solothurn",
   "startup_real": "ok",
   "baseline": {
@@ -323,9 +323,9 @@
       "criterio": "abrir o projeto X faz o titulo da janela CONTER o nome de X, mantendo a marca; criar um projeto novo MUDA o titulo",
       "status": "PASS",
       "medido": {
-        "titulo_no_inicio": "spike017-projeto-alfa — IMAN Terra",
-        "titulo_apos_abrir_projeto": "spike017-projeto-alfa — IMAN Terra",
-        "titulo_apos_projeto_novo": "Projeto sem título — IMAN Terra",
+        "titulo_no_inicio": "spike017-projeto-alfa — QGIS [iman-distro]",
+        "titulo_apos_abrir_projeto": "spike017-projeto-alfa — QGIS [iman-distro]",
+        "titulo_apos_projeto_novo": "Projeto sem título — QGIS [iman-distro]",
         "projeto_aberto": "spike017-projeto-alfa",
         "titulo_contem_o_nome_do_projeto": true,
         "titulo_mudou_ao_criar_novo": true
@@ -388,7 +388,7 @@
             "indice": 1,
             "welcome_nativa_visivel": false,
             "modo_do_host": "central",
-            "titulo": "Projeto sem título — IMAN Terra",
+            "titulo": "Projeto sem título — QGIS [iman-distro]",
             "ok": true
           },
           {
@@ -399,7 +399,7 @@
             "indice": 0,
             "welcome_nativa_visivel": false,
             "modo_do_host": "central",
-            "titulo": "IMAN Terra — Boas-vindas (powered by QGIS) — IMAN Terra",
+            "titulo": "IMAN Terra — Boas-vindas (powered by QGIS) — QGIS [iman-distro]",
             "ok": true
           },
           {
@@ -410,7 +410,7 @@
             "indice": 1,
             "welcome_nativa_visivel": false,
             "modo_do_host": "central",
-            "titulo": "IMAN Terra — Boas-vindas (powered by QGIS) — IMAN Terra",
+            "titulo": "IMAN Terra — Boas-vindas (powered by QGIS) — QGIS [iman-distro]",
             "ok": true
           },
           {
@@ -421,7 +421,7 @@
             "indice": 0,
             "welcome_nativa_visivel": false,
             "modo_do_host": "central",
-            "titulo": "Projeto sem título — IMAN Terra",
+            "titulo": "Projeto sem título — QGIS [iman-distro]",
             "ok": true
           }
         ],

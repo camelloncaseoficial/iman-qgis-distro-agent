@@ -45,8 +45,17 @@ param(
     # Quantos arquivos de sujeira injetar no passo 4.
     [int]$ArquivosDeSujeira = 25,
 
-    # Segundos de espera por cada abertura do produto.
-    [int]$EsperaAbrir = 45
+    # Segundos de espera pela JANELA PRINCIPAL do produto em cada abertura.
+    [int]$EsperaAbrir = 120,
+
+    # Segundos que o produto fica ABERTO depois de a janela assentar.
+    #
+    # NAO E ENFEITE. Na 1a rodada desta medicao o processo era encerrado assim
+    # que QUALQUER janela aparecia - e a primeira que aparece e o SPLASH, cujo
+    # titulo e 'QGIS3'. O QGIS morria antes de importar os plugins, nenhum .pyc
+    # era escrito, e o ciclo devolvia "0 sobras" por nao ter usado o produto.
+    # Um numero certo pela razao errada e pior que um numero faltando.
+    [int]$Assenta = 25
 )
 
 $ErrorActionPreference = 'Stop'
@@ -160,26 +169,41 @@ function Abre-E-Fecha {
     }
     $subiu = [bool]$p
     $titulo = ''
+    $titulos = @()
+    $pousou = $false
     if ($subiu) {
-        # Espera a janela principal existir: e o que prova que o produto ABRIU,
-        # e nao so que um processo nasceu e morreu.
-        for ($i = 0; $i -lt 60; $i++) {
+        # Espera a JANELA PRINCIPAL DO PRODUTO, nao qualquer janela: a primeira
+        # a aparecer e o SPLASH, cujo titulo e 'QGIS3'. Encerrar ali mata o QGIS
+        # ANTES de ele importar os plugins - nenhum .pyc e escrito, e a medicao
+        # de sobras sai 0 por nao ter usado o produto.
+        # O criterio de pouso e o titulo trazer a marca (o startup retitula).
+        for ($i = 0; $i -lt $EsperaAbrir; $i++) {
             Start-Sleep -Seconds 1
             $p.Refresh()
             if ($p.HasExited) { break }
-            if ($p.MainWindowTitle) { $titulo = $p.MainWindowTitle; break }
+            $t = $p.MainWindowTitle
+            if ($t) {
+                if ($titulos -notcontains $t) { $titulos += $t }
+                $titulo = $t
+                if ($t -match 'IMAN Terra') { $pousou = $true; break }
+            }
         }
+        if ($pousou) { Start-Sleep -Seconds $Assenta }
     }
     Mata-Qgis
     $n = Conta-Arvore
     $r = [ordered]@{
         passo              = $Rotulo
         subiu              = $subiu
+        pousou_na_marca    = $pousou
         titulo_da_janela   = $titulo
+        titulos_vistos     = $titulos
+        segundos_aberto_apos_pousar = $(if ($pousou) { $Assenta } else { 0 })
         arquivos_na_arvore = $n
     }
-    Escreve ("    subiu {0} | titulo '{1}' | arvore {2}" -f $subiu, $titulo, $n) `
-             $(if ($subiu -and $titulo) { 'Green' } else { 'Red' })
+    Escreve ("    subiu {0} | pousou {1} | titulo '{2}' | arvore {3}" -f
+             $subiu, $pousou, $titulo, $n) `
+             $(if ($pousou) { 'Green' } else { 'Red' })
     return $r
 }
 
