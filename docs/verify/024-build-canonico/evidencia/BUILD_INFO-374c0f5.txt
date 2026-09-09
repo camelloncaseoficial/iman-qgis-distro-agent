@@ -1,0 +1,64 @@
+﻿IMAN Terra - BUILD_INFO
+=======================================================================
+Este arquivo amarra o instalador ao commit que o gerou. Sem ele, um .exe
+numa VM e apenas um binario sem procedencia.
+
+Artefato              : Instituto-IMAN-IMAN-Terra-Setup-0.3.0.exe
+SHA-256               : F7BB8AAA9C25828B78EB71FC5A0E54AA73F8580EA653D330DA4BFCC200A6C74D
+Tamanho (bytes)       : 512804117
+
+ProductVersion        : 0.3.0
+Commit                : 374c0f50699187c14aaaa68f78d80dfc2d7e51e8
+Commit (curto)        : 374c0f5
+Data do commit        : 2026-09-09T11:42:51-03:00
+Branch                : develop
+Build canonico        : SIM
+
+-----------------------------------------------------------------------
+QGIS EMBARCADO (D-IMAN-028 / via A1 - arvore privada)
+Este instalador NAO instala o QGIS ao lado e NAO exige QGIS previamente
+instalado: ele CARREGA uma copia privada do QGIS, que vive dentro do
+produto em {app}\qgis e sai junto no uninstall. Nada em Program Files,
+nada no registro, nenhuma elevacao.
+
+QGIS embarcado        : 3.44.13
+Arvore (arquivos)     : 37337
+Arvore (bytes)        : 2387710878
+Manifesto             : {app}\qgis-manifest.txt
+
+ANCORA DE PROCEDENCIA - a arvore foi extraida com 'msiexec /a' DESTE
+payload oficial, sem modificacao. E o SHA-256 abaixo que amarra a arvore
+embarcada ao binario publicado pelo QGIS.ORG:
+
+Payload de origem     : QGIS-OSGeo4W-3.44.13-1.msi
+Payload SHA-256       : 42E2F1A6047A827454BC991F8E8CAA069961B9CB4B877E1F5568A43D98844EB4
+Payload (bytes)       : 582197248
+Origem oficial        : https://download.qgis.org/downloads/QGIS-OSGeo4W-3.44.13-1.msi
+-----------------------------------------------------------------------
+
+QGIS na bancada       : nao detectado
+Compilador            : Inno Setup 7.1.0
+Compilador (caminho)  : C:\Program Files\Inno Setup 7\ISCC.exe
+Data/hora do build    : 2026-09-09 12:12:49 -03:00
+
+-----------------------------------------------------------------------
+SOBRE REPRODUTIBILIDADE
+O que este arquivo GARANTE e o par (ProductVersion, Commit): recompilar o
+MESMO commit limpo produz sempre os mesmos valores. E isso que amarra o
+artefato ao codigo.
+
+Sobre o SHA-256: ele NAO e funcao apenas do commit. Recompilar sem tocar em
+nada da o MESMO hash, mas o Inno Setup grava a DATA DE MODIFICACAO de cada
+arquivo empacotado, e o git NAO preserva mtime. Entao um clone novo, um
+checkout ou um rebase mudam o hash com o codigo IDENTICO - verificado nesta
+bancada: um rebase que so reescreveu a autoria, sem alterar um byte de app/,
+trocou o SHA-256 do instalador.
+
+CONSEQUENCIA PRATICA: nao use o SHA-256 para conferir 'e o mesmo codigo?'.
+Para isso serve o par (ProductVersion, Commit). O SHA-256 responde outra
+pergunta, tambem necessaria: 'o arquivo que chegou na VM e exatamente este
+que eu gerei?' - contra download truncado, trocado ou corrompido.
+
+COMO CONFERIR NA VM (PowerShell 5.1):
+  Get-FileHash .\Instituto-IMAN-IMAN-Terra-Setup-0.3.0.exe -Algorithm SHA256
+-----------------------------------------------------------------------
