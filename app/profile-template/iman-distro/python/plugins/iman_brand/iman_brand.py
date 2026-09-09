@@ -137,6 +137,24 @@ class ImanBrandPlugin:
         QTimer.singleShot(1600, self._declutter_toolbars)
         QTimer.singleShot(1800, self._ajusta_campo_de_coordenadas)
         QTimer.singleShot(2200, self._version_banner)
+        # SEGUNDA PASSADA no campo de coordenadas, DEPOIS que o tema assenta.
+        #
+        # O piso do D2 e calculado a partir do "cromo" - o que a borda e o tema
+        # comem do widget - e o cromo so vale se o QSS ja estiver aplicado
+        # quando se mede. O iman_startup.py reaplica o tema em 800, 1500, 2500 e
+        # 4000 ms (para nao ser sobrescrito pelo QGIS no boot), e a passada de
+        # 1800 ms cai NO MEIO disso: numa maquina lenta ela mede o widget
+        # despolido, cromo sai 2 px em vez de 16, e o piso sai 108 px onde
+        # deviam ser 122.
+        #
+        # Medido em 2026-09-09, em 2 de 6 rodadas: A02 FAIL com largura util de
+        # 92 px para os 104 px que a coordenada canonica precisa - o D2 de volta,
+        # de forma intermitente. Nao e flake do teste: o usuario de uma maquina
+        # lenta recebia o campo espremido.
+        #
+        # Esta passada roda depois da ULTIMA reaplicacao do tema e recalcula o
+        # piso com o cromo real. E idempotente (ver o inicio do metodo).
+        QTimer.singleShot(4600, self._ajusta_campo_de_coordenadas)
 
     def _build_menu_button(self, icon):
         btn = QToolButton(self.iface.mainWindow())
@@ -204,6 +222,16 @@ class ImanBrandPlugin:
         le = self._campo_de_coordenadas()
         if le is None:
             return
+        # IDEMPOTENTE: este metodo roda duas vezes (1800 ms e 4600 ms). Sem
+        # retirar o filtro anterior, o segundo se empilharia sobre o primeiro e
+        # o piso VELHO - o medido antes de o tema assentar - continuaria sendo
+        # reimposto a cada evento de geometria, desfazendo o conserto.
+        try:
+            if self._contem_coords is not None and self._campo_coords is not None:
+                self._campo_coords.removeEventFilter(self._contem_coords)
+        except Exception:
+            pass
+        self._contem_coords = None
         try:
             fm = le.fontMetrics()
             # cromo = o que a borda/o tema consomem, medido no proprio widget
@@ -278,16 +306,55 @@ class ImanBrandPlugin:
         except Exception:
             pass
 
+    # Separador de marca: HIFEN, sempre. O QGIS compoe com TRAVESSAO (U+2014,
+    # medido no #021); o produto nao. Quem escreve o sufixo somos nos, entao a
+    # pontuacao do sufixo e nossa - o prefixo continua como o usuario o nomeou.
+    SEPARADOR_DE_MARCA = " - "
+
+    # O que o QGIS pendura no FIM do titulo:
+    #     [separador opcional] QGIS [ " [<perfil>]" opcional ]
+    #
+    # O colchete so aparece quando ha MAIS DE UM perfil na raiz de perfis - e
+    # foi por ele que o D5 reabriu. A ancora anterior era `QGIS(\s*)$`: com
+    # " [iman-distro]" depois, "QGIS" deixa de estar no fim, a regex nao casa,
+    # e a substituicao NUNCA acontece. O produto passava a exibir o nome do
+    # QGIS como se fosse o seu, e o nome interno do perfil vazava para a barra
+    # de titulo. Medido em 2026-09-09: a propria bancada ja estava nesse
+    # estado, com dois perfis na raiz do produto.
+    #
+    # A classe de separadores e larga de proposito (hifen, hifen inquebravel,
+    # travessao de figura, meia-risca, travessao, barra horizontal): o QGIS
+    # compoe em U+2014 hoje, e nao ha contrato upstream que o congele.
+    _RE_SUFIXO_DO_QGIS = re.compile(
+        u"(?:\\s*[‐-―\\-]\\s*)?QGIS\\s*(?:\\[[^\\]]*\\])?\\s*$"
+    )
+
     @staticmethod
     def compoe_titulo(titulo):
-        """"<Projeto> - QGIS"  ->  "<Projeto> - IMAN Terra".
+        """"<Projeto> — QGIS [perfil]"  ->  "<Projeto> - IMAN Terra".
 
-        Ancorado no FIM: so o sufixo sai. Se o titulo ja termina com o nome do
-        produto, nada muda - e por isso o gancho nao se realimenta.
+        SO O SUFIXO E NOSSO. O prefixo e o nome que o usuario deu ao arquivo -
+        pode ter travessao, pode ter a palavra QGIS, pode ter qualquer coisa - e
+        sai daqui intocado. Quem sabe qual projeto esta aberto e se ha alteracao
+        nao salva e o QGIS; recompor o titulo do zero foi o defeito original do
+        D5 e nao volta.
+
+        NAO SE REALIMENTA: depois da troca o titulo termina em IMAN Terra, e
+        `_RE_SUFIXO_DO_QGIS` exige QGIS no fim - entao a segunda passada nao
+        casa e devolve a mesma string. `_retitula` so chama `setWindowTitle`
+        quando o valor MUDA, e ainda ha o guarda `_retitulando`. Sao tres
+        travas, e a primeira e a propria forma da regex.
         """
         if not titulo:
             return titulo
-        return re.sub(r'QGIS(\s*)$', brand.PRODUCT_NAME + r'\1', titulo)
+        m = ImanBrandPlugin._RE_SUFIXO_DO_QGIS.search(titulo)
+        if m is None:
+            return titulo
+        prefixo = titulo[:m.start()].rstrip()
+        if not prefixo:
+            # O QGIS nao pendurou projeto nenhum: o titulo E o sufixo.
+            return brand.PRODUCT_NAME
+        return prefixo + ImanBrandPlugin.SEPARADOR_DE_MARCA + brand.PRODUCT_NAME
 
     def _retitula(self, titulo=None):
         if self._retitulando:

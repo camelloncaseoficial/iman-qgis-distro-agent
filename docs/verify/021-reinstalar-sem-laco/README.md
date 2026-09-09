@@ -250,12 +250,18 @@ troca de critério não foi cosmética.
 
 ---
 
-## 4. O `IMAN.cdr` chegou no meio da fatia
+## 4. A arte oficial chegou no meio da fatia
+
+> ⚠ **CORRIGIDO PELA `#022`:** esta seção dizia `IMAN.cdr`. A fonte real é **`IMAN Terra.cdr`**
+> (2026-09-09 05:03) / **`IMAN Terra.svg`** (05:04) — o `IMAN.cdr` é de **2025-06-30**, tem 7,16 MB e
+> **não** é a fonte. Prova: `IMAN Terra.svg` e o `splash-iman-terra.svg` commitado têm o mesmo MD5,
+> `32a43bb2b8babae2d0868b89f27cfbe7`, e os mesmos 104.557 bytes. O artefato estava certo; o registro,
+> errado — e foi assim que um acerto pareceu omissão.
 
 **Não estava no briefing.** Durante a compilação, três arquivos de marca mudaram no disco: o
 `splash-iman-terra.svg` virou um export do **CorelDRAW 2021**, e o `splash-iman-terra.png` e o
-`profile-template/.../QGIS/splash.png` saltaram de 85 KB para 1,03 MB. É exatamente o
-`IMAN.cdr` que o `STOP-AND-FLAG` da fatia `#002` esperava, com a regra *"chegando, prevalece"*.
+`profile-template/.../QGIS/splash.png` saltaram de 85 KB para 1,03 MB. É a arte oficial que o
+`STOP-AND-FLAG` da fatia `#002` esperava, com a regra *"chegando, prevalece"*.
 
 **Ingerido por decisão do sponsor**, e não em silêncio — o que ele custou está em
 `app/assets/README.md` e `docs/design-system.md`.
@@ -345,7 +351,7 @@ mesma versão do QGIS instalada.** Hoje a bancada não tem — e a Entrega 2 é 
 que ela **não precise voltar a ter**.
 
 > Este build carregará, pela primeira vez, os avisos de licença corrigidos do `#020` **e** a arte
-> oficial do `IMAN.cdr`.
+> oficial (`IMAN Terra.cdr`).
 
 ---
 

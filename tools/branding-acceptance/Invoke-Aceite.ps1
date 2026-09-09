@@ -179,6 +179,31 @@ if ($ReusarPerfil) {
 }
 if ($nArq -le 0) { throw 'Perfil saiu vazio. Abortado.' }
 
+# ------------------- 3.0 SEGUNDO PERFIL: a condicao REAL do produto (#022)
+#
+# POR QUE O HARNESS PRECISA DE DOIS PERFIS, e por que ter UM escondeu um
+# defeito por quatro fatias.
+#
+# O QGIS so acrescenta " [<perfil>]" ao titulo da janela quando ha MAIS DE UM
+# perfil na raiz de perfis. O harness sempre montou UM, entao nunca viu o
+# sufixo - e o A05 deu PASS enquanto o produto instalado exibia
+# "Projeto sem titulo - QGIS [iman-distro]" na cara do usuario (medido no #021,
+# evidencia/aceite-com-dois-perfis.json). A raiz do produto tem dois perfis na
+# propria bancada; a do teste tinha um. O teste era mais estreito que o
+# produto, e a diferenca era exatamente o defeito.
+#
+# Este perfil-vizinho e VAZIO e nao e carregado: ele existe para o QGIS
+# CONTAR mais de um. E a diferenca entre exercitar o produto e exercitar uma
+# versao mais gentil dele.
+$perfilVizinho = Join-Path $perfilRaiz 'profiles\_vizinho-so-para-contar'
+if (-not (Test-Path -LiteralPath $perfilVizinho)) {
+    New-Item -ItemType Directory -Path (Join-Path $perfilVizinho 'QGIS') -Force | Out-Null
+}
+Set-Content -LiteralPath (Join-Path $perfilVizinho 'QGIS\QGIS3.ini') `
+            -Value "[qgis]`nshowTips=false" -Encoding UTF8
+$nPerfis = @(Get-ChildItem -LiteralPath (Join-Path $perfilRaiz 'profiles') -Directory).Count
+Escreve "  perfis  : $nPerfis na raiz (o QGIS so pendura ' [<perfil>]' com mais de um)"
+
 # ------------------------------- 3.1 SEMENTE DE RECENTE REAL (#021/Entrega 3)
 #
 # POR QUE ISTO EXISTE. O A08 passou a asserir PROCEDENCIA: todo item exibido em

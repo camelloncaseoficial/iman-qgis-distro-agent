@@ -53,6 +53,10 @@ COORD_CANONICA = '555519,9  9585490,5'
 
 resultados = []
 notas = []
+# Titulo do POUSO - capturado antes de qualquer projeto ser tocado (#022).
+# Sem isso o estado "sem projeto" media o titulo DEPOIS de o A05 ja ter
+# gravado um projeto, e o rotulo mentia sobre o que estava sendo medido.
+titulo_do_pouso = {'valor': None}
 
 
 # ============================================================ infraestrutura
@@ -278,6 +282,108 @@ def procedencia_do_qgis():
         'caminhos_em_program_files': em_program_files,
         'qgis_de_sistema_no_caminho': len(em_program_files) > 0,
     }
+
+
+# ====================================== #022 - o titulo, por REGIAO (V.2)
+#
+# O titulo tem DUAS regioes, e so uma e nossa:
+#
+#   <prefixo do QGIS>            <sufixo de marca>
+#   Caucaia - Setor 3 (QGIS)  -  IMAN Terra
+#   ^ do usuario, nada se assere    ^ nosso, e aqui tudo se assere
+#
+# Foi essa distincao que faltou ate agora. A versao anterior do A05 perguntava
+# so "contem o nome do projeto?" e "mudou?", e as duas continuavam verdadeiras
+# com "QGIS [iman-distro]" na tela - foi assim que ele deu PASS com o D5
+# reaberto (medido no #021, evidencia/aceite-com-dois-perfis.json).
+#
+# Mas assere rir sobre o titulo INTEIRO seria pior: o prefixo e o nome do
+# arquivo que o usuario escolheu. Ele pode conter travessao, pode conter a
+# palavra QGIS, pode conter qualquer coisa. Um oraculo que reprova o produto
+# porque o usuario chamou o projeto de "Caucaia - Setor 3 (QGIS)" e pior que
+# oraculo nenhum.
+SEPARADOR_DE_MARCA = ' - '
+PRODUTO = 'IMAN Terra'
+# Travessao, meia-risca, hifen inquebravel, travessao de figura, barra
+# horizontal. O hifen ASCII NAO entra: ele e o separador legitimo.
+_TRACOS_PROIBIDOS = u'‐‑‒–—―'
+
+
+def sufixo_de_marca(titulo, nome_projeto=None):
+    """A regiao do titulo que a camada de marca POSSUI.
+
+    Com o nome do projeto conhecido, o sufixo e tudo depois da ULTIMA ocorrencia
+    dele - o que vem antes e do usuario (criterio `g`). Sem projeto conhecido, o
+    prefixo e a string que o QGIS compoe para "sem projeto", que nao carrega
+    nenhum dos tokens proibidos; ai o sufixo e o titulo inteiro, e isso e mais
+    severo, nao menos.
+    """
+    t = titulo or ''
+    if nome_projeto:
+        i = t.lower().rfind(nome_projeto.lower())
+        if i >= 0:
+            return t[i + len(nome_projeto):]
+    return t
+
+
+def avalia_titulo(titulo, nome_projeto=None):
+    """Os criterios (a)..(d) do #022, aplicados SO no sufixo de marca."""
+    t = titulo or ''
+    suf = sufixo_de_marca(t, nome_projeto)
+
+    # (b) `powered by QGIS` e ATRIBUICAO obrigatoria (BL-1), definida em
+    # brand.PRODUCT_SUBTITLE e usada em quatro lugares. Nenhuma assercao pode
+    # reprovar o produto por exibi-la - o que se procura e QGIS como
+    # AUTODESIGNACAO, entao a atribuicao sai antes da busca.
+    suf_sem_atribuicao = re.sub(r'powered\s+by\s+QGIS', '', suf, flags=re.I)
+
+    return {
+        'titulo': t,
+        'sufixo_de_marca': suf,
+        'a_termina_com_a_marca': t.endswith(SEPARADOR_DE_MARCA + PRODUTO) or t == PRODUTO,
+        'b_sem_QGIS_como_autodesignacao': 'qgis' not in suf_sem_atribuicao.lower(),
+        'c_sem_colchete_de_perfil': ('[' not in suf) and (']' not in suf),
+        'd_sem_travessao_nem_meia_risca': not any(c in suf for c in _TRACOS_PROIBIDOS),
+    }
+
+
+def censo_de_janelas():
+    """As janelas de topo e seus titulos, cruas (#022).
+
+    O conserto do D5 mexe em `iface.mainWindow()`. Se houver janela FORA do
+    alcance desse gancho exibindo o sufixo do QGIS, isso e achado - e vira
+    fatia propria, nao conserto improvisado. Por isso a lista sai crua, com
+    quem tem e quem nao tem o sufixo, em vez de um veredito.
+    """
+    linhas = []
+    try:
+        vistos = set()
+        for w in QApplication.topLevelWidgets():
+            try:
+                if not w.isWindow():
+                    continue
+                t = w.windowTitle() or ''
+                chave = (w.metaObject().className(), w.objectName(), t)
+                if chave in vistos:
+                    continue
+                vistos.add(chave)
+                if not t and not w.isVisible():
+                    continue
+                linhas.append({
+                    'classe': w.metaObject().className(),
+                    'objectName': w.objectName(),
+                    'titulo': t,
+                    'visivel': bool(w.isVisible()),
+                    'e_a_janela_principal': (w is win()),
+                    'tem_sufixo_do_qgis': bool(re.search(
+                        r'QGIS\s*(?:\[[^\]]*\])?\s*$', t)),
+                    'tem_colchete_de_perfil': bool(re.search(r'\[[^\]]*\]\s*$', t)),
+                })
+            except Exception:
+                continue
+    except Exception:
+        pass
+    return linhas
 
 
 # ============================================================ E.1 - BASELINE
@@ -1035,11 +1141,20 @@ def a12_logo_do_qgis_na_ui():
 # ------------------------------------------------- fases que dirigem a UI
 def a05_a06_a07_ciclo_de_projeto():
     """D5 (titulo estatico) · D6 (novo projeto inerte) · D7 (home some)"""
-    crit5 = ('abrir o projeto X faz o titulo da janela CONTER o nome de X, '
-             'mantendo a marca; criar um projeto novo MUDA o titulo')
-    seq5 = ('o titulo estatico e uma string valida e bonita - nada falha. Uma '
-            'assercao "o titulo contem IMAN Terra" passaria em 100% dos casos, '
-            'inclusive com o titulo nunca mudando, que e o defeito.')
+    crit5 = ('CRITERIO POR REGIAO (#022): em cada estado - sem projeto, projeto '
+             'aberto, projeto novo, projeto modificado sem salvar - (a) o titulo '
+             'termina com " - IMAN Terra", com HIFEN; e no SUFIXO DE MARCA '
+             '(b) nao ha QGIS como autodesignacao (a atribuicao "powered by '
+             'QGIS" nao reprova), (c) nao ha colchete de perfil, (d) nao ha '
+             'travessao nem meia-risca. Com projeto aberto, (e) o titulo contem '
+             'o nome do projeto e (f) o titulo muda ao criar um novo. '
+             '(g) NADA se assere sobre o prefixo alem de (e)')
+    seq5 = ('o titulo estatico e uma string valida e bonita - nada falha. E o '
+            'criterio ANTERIOR ("contem o nome do projeto" + "mudou") continuava '
+            'VERDADEIRO com "QGIS [iman-distro]" na tela: foi assim que o A05 '
+            'deu PASS com o D5 reaberto, medido no #021. Um titulo que perde a '
+            'marca, ou que vaza o nome interno do perfil, so aparece se a '
+            'assercao olhar a REGIAO que a camada de marca possui.')
     crit6 = ('depois de criar um projeto novo, o miolo mostra o CANVAS - o '
              'usuario ve que algo aconteceu')
     seq6 = ('a home continua desenhando normalmente; nenhuma excecao. Uma '
@@ -1101,17 +1216,96 @@ def a05_a06_a07_ciclo_de_projeto():
         ev = foto(win(), 'A06-apos-novo-projeto.png')
 
         # ---------------------------------------------------------- A05 / D5
+        #
+        # ESTADO EXTRA (#022) - o projeto modificado sem salvar. O QGIS marca o
+        # titulo quando o projeto fica sujo, e essa marca entra no PREFIXO;
+        # serve para provar que o sufixo nao se desfaz quando o prefixo muda.
+        try:
+            QgsProject.instance().setDirty(True)
+            espera(1500)
+        except Exception:
+            pass
+        titulo_modificado = win().windowTitle()
+
+        # CONTROLE DE FALSO POSITIVO (#022, obrigatorio). Um projeto cujo NOME
+        # tem travessao e a palavra QGIS. Se o A05 reprovar aqui, ele nao esta
+        # medindo o produto - esta medindo o gosto de quem nomeia arquivo, e
+        # "um oraculo que reprova produto sao e pior que oraculo nenhum".
+        nome_hostil = u'Caucaia — Setor 3 (QGIS)'
+        titulo_hostil = None
+        try:
+            caminho_hostil = os.path.join(OUT, nome_hostil + '.qgz')
+            ph = QgsProject.instance()
+            ph.setTitle(nome_hostil)
+            ph.write(caminho_hostil)
+            espera(600)
+            iface.addProject(caminho_hostil)
+            espera(2500)
+            titulo_hostil = win().windowTitle()
+        except Exception:
+            titulo_hostil = None
+
+        estados = [
+            {'estado': 'sem projeto (pouso)', 'nome_projeto': None,
+             'titulo': titulo_do_pouso['valor'] or titulo_antes},
+            {'estado': 'projeto aberto', 'nome_projeto': nome_proj,
+             'titulo': titulo_apos_abrir},
+            {'estado': 'projeto novo', 'nome_projeto': None,
+             'titulo': titulo_apos_novo},
+            {'estado': 'projeto modificado sem salvar', 'nome_projeto': None,
+             'titulo': titulo_modificado},
+        ]
+        if titulo_hostil is not None:
+            estados.append({'estado': u'CONTROLE - projeto de nome hostil',
+                            'nome_projeto': nome_hostil,
+                            'titulo': titulo_hostil})
+
+        avaliados = []
+        for e in estados:
+            r = avalia_titulo(e['titulo'], e['nome_projeto'])
+            r['estado'] = e['estado']
+            r['nome_do_projeto'] = e['nome_projeto']
+            r['ok'] = (r['a_termina_com_a_marca']
+                       and r['b_sem_QGIS_como_autodesignacao']
+                       and r['c_sem_colchete_de_perfil']
+                       and r['d_sem_travessao_nem_meia_risca'])
+            avaliados.append(r)
+
+        fora = [r for r in avaliados if not r['ok']]
+
+        # (e) e (f) - os criterios de hoje, mantidos
         contem_nome = nome_proj.lower() in (titulo_apos_abrir or '').lower()
         mudou = (titulo_apos_novo != titulo_apos_abrir)
-        registra('A05', 'D5', 'título da janela', crit5,
-                 contem_nome and mudou, {
-                     'titulo_no_inicio': titulo_antes,
-                     'titulo_apos_abrir_projeto': titulo_apos_abrir,
-                     'titulo_apos_projeto_novo': titulo_apos_novo,
-                     'projeto_aberto': nome_proj,
-                     'titulo_contem_o_nome_do_projeto': contem_nome,
-                     'titulo_mudou_ao_criar_novo': mudou,
-                 }, seq5, 'A05-apos-abrir-projeto.png')
+
+        janelas = censo_de_janelas()
+        com_sufixo = [j for j in janelas if j['tem_sufixo_do_qgis']]
+
+        ok5 = (len(fora) == 0 and contem_nome and mudou)
+        registra('A05', 'D5', 'título da janela', crit5, ok5, {
+            'estados_avaliados': len(avaliados),
+            'estados_fora_do_criterio': len(fora),
+            'quais_fora': fora,
+            'por_estado': avaliados,
+            'e_titulo_contem_o_nome_do_projeto': contem_nome,
+            'f_titulo_mudou_ao_criar_novo': mudou,
+            'separador_de_marca_exigido': SEPARADOR_DE_MARCA,
+            'CONTROLE_falso_positivo': {
+                'projeto': nome_hostil,
+                'titulo': titulo_hostil,
+                'NOTA': ('o nome do arquivo tem travessao E a palavra QGIS. O '
+                         'criterio olha so o SUFIXO, entao o prefixo passa '
+                         'intocado - e o produto sao nao reprova.'),
+            },
+            'CENSO_DE_JANELAS': {
+                'NOTA': ('o conserto do D5 mexe em iface.mainWindow(). Janela '
+                         'com sufixo do QGIS fora dela e ACHADO, e vira fatia '
+                         'propria - nao entra no criterio desta.'),
+                'janelas_de_topo': len(janelas),
+                'com_sufixo_do_qgis': len(com_sufixo),
+                'quais_com_sufixo': com_sufixo,
+                'lista_crua': janelas,
+            },
+        }, seq5, 'A05-apos-abrir-projeto.png')
 
         # ---------------------------------------------------------- A06 / D6
         mostra_canvas = (pagina_novo is not None and 'ImanHome' not in str(pagina_novo))
@@ -1306,6 +1500,7 @@ def principal():
             gravar(doc)
             return
 
+        titulo_do_pouso['valor'] = win().windowTitle()
         foto(win(), 'A00-janela-inteira.png')
         foto(win().statusBar(), 'A00-status-bar.png')
 
