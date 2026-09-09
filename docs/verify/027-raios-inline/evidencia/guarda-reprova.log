@@ -1,0 +1,33 @@
+########## CASO A - devolve um border-radius:9px INLINE no dashboard.py (o badge de versao) ##########
+
+  #022 - guarda estatica do tema
+  qss : D:\_projetos\iman-webgeo\iman-qgis-distro-agent\app\profile-template\iman-distro\themes\IMAN Terra\style.qss
+
+  [1] border-radius : 18 declaracoes, 0 fora de 2px
+  [2] QMenuBar::item : padding '3px 4px'
+  [3] QStatusBar     : 0 declaracao(oes) de padding
+  [4] QDockWidget::title : 0 declaracao(oes) de padding vertical
+  [5] cantos da aba  : 2 declaracoes, 0 fora de 2px
+  [6] raio inline em Python : 1 ocorrencia(s)
+
+  GUARDA REPROVOU - 1 problema(s):
+    app\profile-template\iman-distro\python\plugins\iman_brand\dashboard.py:259  [6] border-radius INLINE em Python (9px). O tema e o style.qss - mova a regra para la.
+
+exit=1
+
+########## CASO B - devolve um raio do .qss para 6px ##########
+
+  #022 - guarda estatica do tema
+  qss : D:\_projetos\iman-webgeo\iman-qgis-distro-agent\app\profile-template\iman-distro\themes\IMAN Terra\style.qss
+
+  [1] border-radius : 18 declaracoes, 1 fora de 2px
+  [2] QMenuBar::item : padding '3px 4px'
+  [3] QStatusBar     : 0 declaracao(oes) de padding
+  [4] QDockWidget::title : 0 declaracao(oes) de padding vertical
+  [5] cantos da aba  : 2 declaracoes, 0 fora de 2px
+  [6] raio inline em Python : 0 ocorrencia(s)
+
+  GUARDA REPROVOU - 1 problema(s):
+    app\profile-template\iman-distro\themes\IMAN Terra\style.qss:171  [1] border-radius: 6px  (esperado 2px)
+
+exit=1
