@@ -96,9 +96,30 @@ batem — BL-4).
 > a arte de `app/assets/` foi **RE-DERIVADA** para esta paleta (splash re-rasterizado +
 > copy REURB/Ceará; wizard/banner na paleta nova) — **deixa de ser STALE**. Reprodutível por
 > `app/assets/derive-interim-palette.py` + `rasterize-splash.py` + `regenerate-brand-derivatives.py`.
-> **INTERIM (STOP-AND-FLAG):** o mapa OLD→NEW é do arquiteto (D-IMAN-026); o **símbolo**
+> ~~**INTERIM (STOP-AND-FLAG):** o mapa OLD→NEW é do arquiteto (D-IMAN-026); o **símbolo**
 > (`iman-symbol.png`, raster sem master vetorial) **não** foi re-colorido — espera o `IMAN.cdr`,
-> que, chegando, **prevalece** sobre tudo (autoridade final, regra abaixo permanece viva).
+> que, chegando, **prevalece** sobre tudo.~~
+
+> ### ✅ O `IMAN.cdr` CHEGOU — e CONFIRMOU esta paleta (2026-09-09, fatia `#021`)
+>
+> O sponsor entregou o export do **CorelDRAW 2021** da arte oficial. Ele **prevalece**, como a regra
+> mandava — e a medição mostrou que **não há nada a mudar aqui**:
+>
+> | | |
+> |---|---|
+> | cores distintas na arte oficial | **18** |
+> | que são **token exato** de `brand.py` | **8** — `ink #0E1A14` · `mint #82D3A6` · `bg #EBEEE8` · `warm/earth #8A7A55` · `accent #2B8FD6` · `active-bg #E4F0E8` · `primary #1E7A4D` · `primary-deep #103D29` |
+> | as outras 10 | cor de **emblema** (folha+globo: `#00A85A` `#00AFF0` `#5AA832` `#059452` `#58AD55` `#ACC658`), da **faixa** (`#6E5E3F` `#F5F1E8`) e do **degradê de fundo** (`#0F3021` `#0E2219`) — nunca foram token de UI |
+> | `COLOR_*` alterados | **nenhum** |
+> | QSS alterado | **nenhum** |
+> | derivados de ícone regerados | **nenhum** — eles saem do `iman-symbol.png`, que não mudou |
+>
+> Ou seja: a arte oficial foi desenhada **sobre** esta paleta. O que a fatia `#021` trocou foi o
+> **master do splash** (e os rasters derivados dele), não a identidade cromática.
+>
+> **O que a arte trouxe e é decisão do sponsor, não da crew:** o rodapé do splash diz **`v1.0 · LTR`**
+> (o produto está em `0.3.0`) e a faixa diz **`VERSÃO INSTITUCIONAL · CAUCAIA LTR`**. Registrado em
+> `app/assets/README.md`.
 
 ## Cores — paleta 002 (OBSOLETA · superada por D-IMAN-026 · mantida como registro)
 
