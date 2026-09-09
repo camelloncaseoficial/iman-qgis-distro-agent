@@ -1,25 +1,31 @@
 # `#022` — O que o usuário lê e vê: título, raio e densidade
 
 **Executado em:** 2026-09-09 · branch `feat/022-titulo-raio-densidade`
-**Base:** `feat/021-reinstalar-sem-laco-e-aceite` (`1b6a919`) — ver §0.
+**Base de trabalho:** `1b6a919` (ponta da `#021`), hoje ancestral de `develop` — ver §0.
 **Bancada:** Windows 11 Pro 10.0.26200 · PowerShell 5.1 · Inno Setup 7.1.0 · **sem QGIS de sistema**
 
 ---
 
-## 0. ⚠ Uma premissa do briefing NÃO foi satisfeita — e o que fiz com isso
+## 0. A premissa do briefing: satisfeita DEPOIS, e como a fatia foi feita antes
 
 O briefing diz: *"Depende do PR #24 … Não comecem antes do merge"*, e declara a base como
 `develop` **depois** do merge.
 
-**O PR #24 continua `OPEN`.** `origin/develop` segue em `ba58d14`, sem as Entregas do `#021`. O
-`P0.6` me proíbe mergear, então a premissa não estava ao meu alcance.
+**Quando esta fatia foi executada, o PR #24 estava `OPEN`** e `origin/develop` seguia em `ba58d14`.
+O `P0.6` proíbe a crew de mergear, então a premissa não estava ao alcance da execução. A saída foi
+**empilhar** esta fatia sobre `feat/021-reinstalar-sem-laco-e-aceite`, onde o harness repontado
+vive — trabalho **idêntico** ao que sairia de uma `develop` já mergeada, porque a `#021` era
+fast-forward sobre `ba58d14`: diferença de ordem de merge, não de conteúdo.
 
-**O que fiz:** empilhei esta fatia sobre `feat/021-reinstalar-sem-laco-e-aceite`, onde o harness
-repontado vive. O trabalho é **idêntico** ao que sairia de uma `develop` já mergeada — a `#021` é
-fast-forward sobre `ba58d14`, então não há diferença de conteúdo, só de ordem de merge.
-
-**Consequência para quem for mergear:** o PR desta fatia tem base
-`feat/021-reinstalar-sem-laco-e-aceite`. **Mergeie o `#24` primeiro.**
+> ### ✅ RESOLVIDO: o `#24` foi mergeado (`develop` = `a8673c3`)
+>
+> A premissa passou a valer, e o empilhamento deixou de ser necessário. O PR desta fatia foi
+> **reapontado para `develop`**, e os 10 commits que ele acrescenta são exatamente os do `#022`
+> — conferido com `git diff origin/develop...feat/022-titulo-raio-densidade`: **27 arquivos**,
+> nenhum deles do `#021`.
+>
+> Fica o registro de **como** a fatia foi produzida, que é o que o `E.6` pede: a base de trabalho
+> foi `1b6a919`, a ponta da `#021`, e ela hoje é ancestral da `develop`.
 
 ---
 
