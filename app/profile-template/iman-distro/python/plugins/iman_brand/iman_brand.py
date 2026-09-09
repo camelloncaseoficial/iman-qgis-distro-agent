@@ -137,6 +137,24 @@ class ImanBrandPlugin:
         QTimer.singleShot(1600, self._declutter_toolbars)
         QTimer.singleShot(1800, self._ajusta_campo_de_coordenadas)
         QTimer.singleShot(2200, self._version_banner)
+        # SEGUNDA PASSADA no campo de coordenadas, DEPOIS que o tema assenta.
+        #
+        # O piso do D2 e calculado a partir do "cromo" - o que a borda e o tema
+        # comem do widget - e o cromo so vale se o QSS ja estiver aplicado
+        # quando se mede. O iman_startup.py reaplica o tema em 800, 1500, 2500 e
+        # 4000 ms (para nao ser sobrescrito pelo QGIS no boot), e a passada de
+        # 1800 ms cai NO MEIO disso: numa maquina lenta ela mede o widget
+        # despolido, cromo sai 2 px em vez de 16, e o piso sai 108 px onde
+        # deviam ser 122.
+        #
+        # Medido em 2026-09-09, em 2 de 6 rodadas: A02 FAIL com largura util de
+        # 92 px para os 104 px que a coordenada canonica precisa - o D2 de volta,
+        # de forma intermitente. Nao e flake do teste: o usuario de uma maquina
+        # lenta recebia o campo espremido.
+        #
+        # Esta passada roda depois da ULTIMA reaplicacao do tema e recalcula o
+        # piso com o cromo real. E idempotente (ver o inicio do metodo).
+        QTimer.singleShot(4600, self._ajusta_campo_de_coordenadas)
 
     def _build_menu_button(self, icon):
         btn = QToolButton(self.iface.mainWindow())
@@ -204,6 +222,16 @@ class ImanBrandPlugin:
         le = self._campo_de_coordenadas()
         if le is None:
             return
+        # IDEMPOTENTE: este metodo roda duas vezes (1800 ms e 4600 ms). Sem
+        # retirar o filtro anterior, o segundo se empilharia sobre o primeiro e
+        # o piso VELHO - o medido antes de o tema assentar - continuaria sendo
+        # reimposto a cada evento de geometria, desfazendo o conserto.
+        try:
+            if self._contem_coords is not None and self._campo_coords is not None:
+                self._campo_coords.removeEventFilter(self._contem_coords)
+        except Exception:
+            pass
+        self._contem_coords = None
         try:
             fm = le.fontMetrics()
             # cromo = o que a borda/o tema consomem, medido no proprio widget
