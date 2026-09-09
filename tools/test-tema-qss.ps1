@@ -71,8 +71,13 @@ $linhas = @(Get-Content -LiteralPath $Qss)
 $rel = $Qss.Replace($raizRepo, '').TrimStart('\')
 
 $falhas = New-Object System.Collections.ArrayList
-function Reprova { param([int]$Linha, [string]$Texto)
-    [void]$falhas.Add([pscustomobject]@{ Linha = $Linha; Texto = $Texto })
+# `Arquivo` existe porque a asse rcao 6 reprova em OUTRO arquivo que nao o .qss.
+# Sem ele o veredito prefixava tudo com o caminho do .qss, e um problema do
+# dashboard.py aparecia anunciado como problema do style.qss - o relato mandava
+# quem le para o arquivo errado.
+function Reprova { param([int]$Linha, [string]$Texto, [string]$Arquivo = '')
+    if (-not $Arquivo) { $Arquivo = $rel }
+    [void]$falhas.Add([pscustomobject]@{ Arquivo = $Arquivo; Linha = $Linha; Texto = $Texto })
 }
 
 # ---- 1. border-radius: exatamente 12, todos 2px -----------------------------
@@ -202,7 +207,7 @@ foreach ($raizPy in $raizesPy) {
     }
 }
 foreach ($p in $pyRaios) {
-    Reprova 0 ("[6] border-radius INLINE em Python: {0}:{1}  ({2}px). O tema e o style.qss - mova a regra para la." -f $p.Arquivo, $p.Linha, $p.Valor)
+    Reprova $p.Linha ("[6] border-radius INLINE em Python ({0}px). O tema e o style.qss - mova a regra para la." -f $p.Valor) $p.Arquivo
 }
 Escreve ("  [6] raio inline em Python : {0} ocorrencia(s)" -f $pyRaios.Count) `
         $(if ($pyRaios.Count -eq 0) { 'Green' } else { 'Red' })
@@ -217,9 +222,9 @@ if ($falhas.Count -eq 0) {
 Escreve "  GUARDA REPROVOU - $($falhas.Count) problema(s):" 'Red'
 foreach ($f in $falhas) {
     if ($f.Linha -gt 0) {
-        Escreve ("    {0}:{1}  {2}" -f $rel, $f.Linha, $f.Texto) 'Yellow'
+        Escreve ("    {0}:{1}  {2}" -f $f.Arquivo, $f.Linha, $f.Texto) 'Yellow'
     } else {
-        Escreve ("    {0}      {1}" -f $rel, $f.Texto) 'Yellow'
+        Escreve ("    {0}      {1}" -f $f.Arquivo, $f.Texto) 'Yellow'
     }
 }
 Write-Host ''
