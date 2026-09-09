@@ -241,7 +241,10 @@ def build_home(iface=None):
     right = QVBoxLayout()
     right.setAlignment(Qt.AlignRight | Qt.AlignTop)
     right.setSpacing(8)
-    ver = QLabel("● versão %s" % brand.VERSION)
+    # DB-24: a versao exibida vem de brand.versao_exibida(), que acrescenta o
+    # commit curto do BUILD_ID.txt que o instalador entregou. Sem o arquivo
+    # (arvore de desenvolvimento) mostra so a versao - nao inventa commit.
+    ver = QLabel("● versão %s" % brand.versao_exibida())
     ver.setStyleSheet("font-size:12px;color:%s;background:%s;border:1px solid %s;border-radius:9px;padding:6px 11px;"
                       % (pal["text_muted"], pal["panel"], pal["border"]))
     right.addWidget(ver, 0, Qt.AlignRight)

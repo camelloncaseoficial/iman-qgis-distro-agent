@@ -50,6 +50,8 @@
 ; extrai a arvore com `msiexec /a` para installer\stage\ em tempo de build.
 #define QgisTreeDir "stage\qgis\QGIS " + QgisBaselineVersion
 #define QgisManifest "stage\qgis-manifest.txt"
+; DB-24 - identidade do build, gerada pelo build.ps1 antes de compilar.
+#define BuildId "stage\BUILD_ID.txt"
 
 ; Guarda de compilacao: sem a arvore o .exe sairia "com o QGIS embarcado" mas
 ; vazio - e o defeito so apareceria na VM. Falhar aqui e barato; falhar la, nao.
@@ -60,6 +62,12 @@
 ; Sem ele o produto se recusaria a abrir - melhor descobrir aqui.
 #if !FileExists(AddBackslash(SourcePath) + QgisManifest)
   #error Manifesto de integridade ausente. Ele e gerado por installer\New-ArvoreQgis.ps1 junto com a arvore.
+#endif
+; DB-24, C.3 fail-loud: sem este arquivo o produto sai sem saber de que build
+; ele e - e o defeito so apareceria na tela do usuario, como "versao 0.3.0" sem
+; commit nenhum. Falhar aqui e barato.
+#if !FileExists(AddBackslash(SourcePath) + BuildId)
+  #error Identidade do build ausente (stage\BUILD_ID.txt). Ela e gerada por installer\build.ps1 - chamar o ISCC na mao pula essa etapa.
 #endif
 
 [Setup]
@@ -167,6 +175,14 @@ Source: "{#QgisTreeDir}\*"; DestDir: "{app}\qgis"; Flags: recursesubdirs createa
 ; O manifesto que o launcher confere na maquina do usuario (C.3 fail-loud).
 ; Fica FORA de {app}\qgis de proposito: dentro, ele mudaria a propria contagem.
 Source: "{#QgisManifest}"; DestDir: "{app}"; DestName: "qgis-manifest.txt"; Flags: ignoreversion
+; DB-24: a IDENTIDADE DO BUILD, que viaja dentro do produto.
+; Sem ela o produto instalado sabia dizer so "0.3.0" - e o artefato de branch e
+; o canonico eram ambos 0.3.0, indistinguiveis de dentro. A procedencia que o
+; D-IMAN-032 construiu morria aqui, na fronteira do instalador.
+; Gerado por installer\build.ps1 ANTES de compilar; contem o que ja e conhecido
+; nessa hora (versao, commit, branch, SHA-256 do PAYLOAD). O SHA-256 do proprio
+; .exe NAO esta nele, e nao pode estar: ele so existe depois desta compilacao.
+Source: "{#BuildId}"; DestDir: "{app}"; DestName: "BUILD_ID.txt"; Flags: ignoreversion
 
 ; Camada de marca completa (app/*), preservando a arvore.
 Source: "..\app\*"; DestDir: "{app}"; Excludes: "*.pyc,__pycache__,.gitkeep"; Flags: recursesubdirs createallsubdirs ignoreversion

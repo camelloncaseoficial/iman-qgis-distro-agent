@@ -45,33 +45,149 @@ EXTENSAO_REFERENCIA = "555519,9  9585490,5 : 557706,8  9587051,2"    # D3 - teto
 class _ContemLargura(QObject):
     """Mantem o campo de coordenadas entre um piso e um teto (D2 e D3).
 
+    DUAS RESPONSABILIDADES, e elas reagem a eventos DIFERENTES:
+
+    1. CALCULAR piso e teto  -> em evento de ESTILO (o widget foi repolido)
+    2. REIMPOR piso e teto   -> em evento de GEOMETRIA (o QGIS redimensionou)
+
     Chamar setMinimumWidth/setMaximumWidth uma vez nao basta: o QGIS
     redimensiona o campo a cada troca de texto e a cada troca de projeto, e
     desfaz os dois limites. Medido em 2026-09-07: depois de um ciclo abrir
-    projeto -> projeto novo, o campo voltava de 122 px para 24 px. Este filtro
-    reimpoe os limites no proximo evento de geometria.
+    projeto -> projeto novo, o campo voltava de 122 px para 24 px.
+
+    DB-23 - POR QUE O CALCULO SAIU DO RELOGIO (2026-09-09).
+    O piso sai do CROMO (o que borda e tema comem do widget), e o cromo so vale
+    se o QSS ja estiver aplicado quando se mede. O iman_startup.py reaplica o
+    tema em 800/1500/2500/4000 ms; o #022 media numa segunda passada de 4600 ms
+    e deu isso por resolvido. Nao estava: medido em 2026-09-09, numa rodada com
+    a maquina carregada (57 s contra os ~40 s de uma rodada quieta), o cromo
+    saiu 2 px em vez de 16 e o piso saiu 108 px onde deviam ser 122 - campo com
+    92 px uteis para os 104 que a coordenada canonica precisa. Enquanto for
+    TEMPO, e aposta contra a carga da maquina, e a aposta ja perdeu uma vez.
+
+    Agora o gatilho e o proprio repolimento do widget. Nao ha instante a
+    adivinhar: quem avisa que o tema chegou e o Qt.
+
+    O PISO SO CRESCE. E a defesa contra a medicao transitoria: o widget
+    DESPOLIDO mede cromo MENOR (2 px) que o polido (16 px), entao um evento que
+    chegue no meio de um repolimento nunca REBAIXA um piso ja correto. Nao ha
+    caminho em que o tema encolha de verdade - o QSS do produto so acrescenta
+    borda e recuo.
     """
 
-    def __init__(self, alvo, piso, teto, parent=None):
+    # O widget foi (re)polido: o cromo pode ter mudado -> RECALCULA.
+    EVENTOS_DE_ESTILO = (QEvent.StyleChange, QEvent.Polish, QEvent.PolishRequest,
+                         QEvent.FontChange, QEvent.ApplicationFontChange)
+    # O QGIS mexeu na geometria: os limites podem ter sido desfeitos -> REIMPOE.
+    EVENTOS_DE_GEOMETRIA = (QEvent.Resize, QEvent.LayoutRequest, QEvent.Show)
+
+    def __init__(self, alvo, texto_piso, texto_teto, parent=None):
         super().__init__(parent)
         self._alvo = alvo
-        self._piso = int(piso)
-        self._teto = int(teto)
+        self._texto_piso = texto_piso
+        self._texto_teto = texto_teto
+        self._piso = 0
+        self._teto = 0
+        self._cromo = None
+        # Como o valor VIGENTE foi obtido. E o que prova, de fora, que quem
+        # fechou a conta foi o evento e nao a rede de seguranca.
+        self.origem = 'nao-calculado'
+        self._recalculos = 0
+        self._reentrante = False
+        self.recalcula('instalacao')
 
+    # ------------------------------------------------------------- calculo
+    def _mede_cromo(self):
+        """O que borda + tema consomem do widget, medido NELE, agora."""
+        opt = QStyleOptionFrame()
+        self._alvo.initStyleOption(opt)
+        interno = self._alvo.style().subElementRect(
+            QStyle.SE_LineEditContents, opt, self._alvo).width()
+        return max(0, self._alvo.width() - interno)
+
+    def recalcula(self, origem):
+        """Recalcula piso/teto do cromo ATUAL. Devolve True se algo mudou."""
+        if self._reentrante:
+            return False
+        try:
+            fm = self._alvo.fontMetrics()
+            cromo = self._mede_cromo()
+            piso = fm.horizontalAdvance(self._texto_piso) + cromo + 2
+            teto = fm.horizontalAdvance(self._texto_teto) + cromo + 2
+        except Exception:
+            return False
+
+        mudou = False
+        if piso > self._piso:
+            self._piso, mudou = piso, True
+        if teto > self._teto:
+            self._teto, mudou = teto, True
+        if mudou:
+            self._cromo = cromo
+            self.origem = origem
+            self._recalculos += 1
+            self._aplica()
+        return mudou
+
+    # ------------------------------------------------------------- aplicacao
+    def _aplica(self):
+        """LACO: setMinimumWidth/setMaximumWidth disparam Resize e
+        LayoutRequest no proprio widget, que voltam a este filtro. O
+        `_reentrante` corta a volta; e, mesmo sem ele, o caminho de geometria
+        so REIMPOE (nao recalcula) e as comparacoes tornam a reimposicao um
+        no-op quando o valor ja esta certo. Sao duas travas, e a de dentro e a
+        que importa: recalcular NUNCA acontece a partir de um evento que o
+        proprio calculo produziu."""
+        self._reentrante = True
+        try:
+            if self._alvo.minimumWidth() != self._piso:
+                self._alvo.setMinimumWidth(self._piso)
+            if self._alvo.maximumWidth() != self._teto:
+                self._alvo.setMaximumWidth(self._teto)
+        except Exception:
+            pass
+        finally:
+            self._reentrante = False
+
+    def _reimpoe(self):
+        if self._piso <= 0:
+            return
+        self._reentrante = True
+        try:
+            if self._alvo.minimumWidth() < self._piso:
+                self._alvo.setMinimumWidth(self._piso)
+            if self._alvo.minimumWidth() > self._teto:
+                self._alvo.setMinimumWidth(self._teto)
+            if self._alvo.maximumWidth() > self._teto:
+                self._alvo.setMaximumWidth(self._teto)
+        except Exception:
+            pass
+        finally:
+            self._reentrante = False
+
+    # ------------------------------------------------------------ o filtro
     def eventFilter(self, obj, ev):
-        if obj is self._alvo and ev.type() in (
-                QEvent.Resize, QEvent.LayoutRequest, QEvent.Show,
-                QEvent.PolishRequest):
-            try:
-                if self._alvo.minimumWidth() < self._piso:
-                    self._alvo.setMinimumWidth(self._piso)
-                if self._alvo.minimumWidth() > self._teto:
-                    self._alvo.setMinimumWidth(self._teto)
-                if self._alvo.maximumWidth() > self._teto:
-                    self._alvo.setMaximumWidth(self._teto)
-            except Exception:
-                pass
+        if obj is not self._alvo or self._reentrante:
+            return False
+        try:
+            t = ev.type()
+            if t in self.EVENTOS_DE_ESTILO:
+                self.recalcula('evento-de-estilo')
+            elif t in self.EVENTOS_DE_GEOMETRIA:
+                self._reimpoe()
+        except Exception:
+            pass
         return False
+
+    # ---------------------------------------------------- leitura de fora
+    def diagnostico(self):
+        return {
+            'piso': self._piso,
+            'teto': self._teto,
+            'cromo': self._cromo,
+            'origem_do_valor_vigente': self.origem,
+            'recalculos_que_mudaram_o_valor': self._recalculos,
+        }
 
 
 def _res(name):
@@ -135,26 +251,15 @@ class ImanBrandPlugin:
         # das toolbars nativas ruidosas + banner de versão (Fase 3).
         QTimer.singleShot(900, self._install_center)
         QTimer.singleShot(1600, self._declutter_toolbars)
+        # 1800 ms: INSTALA o filtro do campo de coordenadas. Este temporizador
+        # nao decide valor nenhum - ele so espera o QGIS ter criado o widget da
+        # status bar para que haja em que instalar. O piso e o teto sao
+        # calculados pelo filtro, e RECALCULADOS a cada repolimento (DB-23).
         QTimer.singleShot(1800, self._ajusta_campo_de_coordenadas)
         QTimer.singleShot(2200, self._version_banner)
-        # SEGUNDA PASSADA no campo de coordenadas, DEPOIS que o tema assenta.
-        #
-        # O piso do D2 e calculado a partir do "cromo" - o que a borda e o tema
-        # comem do widget - e o cromo so vale se o QSS ja estiver aplicado
-        # quando se mede. O iman_startup.py reaplica o tema em 800, 1500, 2500 e
-        # 4000 ms (para nao ser sobrescrito pelo QGIS no boot), e a passada de
-        # 1800 ms cai NO MEIO disso: numa maquina lenta ela mede o widget
-        # despolido, cromo sai 2 px em vez de 16, e o piso sai 108 px onde
-        # deviam ser 122.
-        #
-        # Medido em 2026-09-09, em 2 de 6 rodadas: A02 FAIL com largura util de
-        # 92 px para os 104 px que a coordenada canonica precisa - o D2 de volta,
-        # de forma intermitente. Nao e flake do teste: o usuario de uma maquina
-        # lenta recebia o campo espremido.
-        #
-        # Esta passada roda depois da ULTIMA reaplicacao do tema e recalcula o
-        # piso com o cromo real. E idempotente (ver o inicio do metodo).
-        QTimer.singleShot(4600, self._ajusta_campo_de_coordenadas)
+        # 6000 ms: REDE DE SEGURANCA declarada, nao mecanismo. Ver
+        # _rede_do_campo_de_coordenadas.
+        QTimer.singleShot(6000, self._rede_do_campo_de_coordenadas)
 
     def _build_menu_button(self, icon):
         btn = QToolButton(self.iface.mainWindow())
@@ -222,10 +327,10 @@ class ImanBrandPlugin:
         le = self._campo_de_coordenadas()
         if le is None:
             return
-        # IDEMPOTENTE: este metodo roda duas vezes (1800 ms e 4600 ms). Sem
-        # retirar o filtro anterior, o segundo se empilharia sobre o primeiro e
-        # o piso VELHO - o medido antes de o tema assentar - continuaria sendo
-        # reimposto a cada evento de geometria, desfazendo o conserto.
+        # IDEMPOTENTE: sem retirar o filtro anterior, um segundo se empilharia
+        # sobre o primeiro e o piso VELHO continuaria sendo reimposto a cada
+        # evento de geometria, desfazendo o conserto. Vale mesmo agora que a
+        # instalacao e unica: o metodo continua chamavel mais de uma vez.
         try:
             if self._contem_coords is not None and self._campo_coords is not None:
                 self._campo_coords.removeEventFilter(self._contem_coords)
@@ -233,22 +338,33 @@ class ImanBrandPlugin:
             pass
         self._contem_coords = None
         try:
-            fm = le.fontMetrics()
-            # cromo = o que a borda/o tema consomem, medido no proprio widget
-            opt = QStyleOptionFrame()
-            le.initStyleOption(opt)
-            interno = le.style().subElementRect(
-                QStyle.SE_LineEditContents, opt, le).width()
-            cromo = max(0, le.width() - interno)
-
-            piso = fm.horizontalAdvance(COORD_REFERENCIA) + cromo + 2
-            teto = fm.horizontalAdvance(EXTENSAO_REFERENCIA) + cromo + 2
-
-            le.setMinimumWidth(piso)
-            le.setMaximumWidth(teto)
-            self._contem_coords = _ContemLargura(le, piso, teto, self.iface.mainWindow())
+            # O filtro calcula o piso sozinho, na construcao, e RECALCULA a
+            # cada repolimento do widget. Nao ha valor decidido aqui - so o
+            # texto de referencia de cada ponta.
+            self._contem_coords = _ContemLargura(
+                le, COORD_REFERENCIA, EXTENSAO_REFERENCIA, self.iface.mainWindow())
             le.installEventFilter(self._contem_coords)
             self._campo_coords = le
+        except Exception:
+            pass
+
+    def _rede_do_campo_de_coordenadas(self):
+        """REDE DE SEGURANCA, e nao mecanismo (DB-23, declarado).
+
+        O mecanismo e o evento de estilo: quem avisa que o tema chegou e o Qt.
+        Esta passada existe so para o caso de o Qt nao entregar nenhum evento
+        de estilo ao campo depois da ultima reaplicacao do tema - situacao que
+        NAO foi observada nesta bancada, mas que, se acontecesse, devolveria o
+        D2 em silencio.
+
+        Como o piso so cresce, esta chamada e inofensiva quando o evento ja fez
+        o trabalho: ela recalcula, encontra o mesmo cromo e nao muda nada. O
+        campo `origem_do_valor_vigente` diz qual dos dois fechou a conta - e e
+        assim que se verifica, de fora, que a rede continua sendo so rede.
+        """
+        try:
+            if self._contem_coords is not None:
+                self._contem_coords.recalcula('rede-de-seguranca')
         except Exception:
             pass
 
@@ -259,7 +375,7 @@ class ImanBrandPlugin:
                 brand.PRODUCT_NAME,
                 "Versão %s — plataforma geoespacial institucional, powered by QGIS. "
                 "Comece pela home (Complementos ▸ %s ▸ Início)."
-                % (brand.VERSION, brand.PRODUCT_NAME),
+                % (brand.versao_exibida(), brand.PRODUCT_NAME),
                 level=0, duration=9)
         except Exception:
             pass

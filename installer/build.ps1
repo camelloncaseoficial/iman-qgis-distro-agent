@@ -218,6 +218,9 @@ function Get-IssDefine([string]$Text, [string]$Name) {
 
 $ProductVersion = Get-IssDefine $issText 'ProductVersion'
 $QgisBaseline   = Get-IssDefine $issText 'QgisBaselineVersion'
+# Nome do produto: a MESMA fonte unica do .iss (BL-4), para o BUILD_ID.txt nao
+# repetir a string por conta propria.
+$ProductName    = Get-IssDefine $issText 'ProductName'
 
 if (-not $ProductVersion) {
     Fail 2 "#define ProductVersion nao encontrado no .iss" @("Arquivo: $IssPath")
@@ -631,6 +634,54 @@ if ($TemaExit -ne 0) {
 }
 
 Write-Ok "o tema esta como o sponsor arbitrou (5 de 5 asse rcoes)"
+
+# --- BUILD_ID.txt: a identidade que VIAJA DENTRO do produto (DB-24) ----------
+#
+# O PROBLEMA QUE ELE RESOLVE. Este proprio script grava, no BUILD_INFO.txt do
+# repo, que a identidade de um artefato e o par (ProductVersion, Commit) - o
+# SHA-256 muda com o mtime que o Inno grava e o git nao preserva. Mas o Commit
+# nunca chegava ao usuario: o produto instalado declarava so VERSION "0.3.0", e
+# o artefato de branch e o canonico eram ambos 0.3.0 e INDISTINGUIVEIS de
+# dentro do produto. A procedencia morria na fronteira do instalador.
+#
+# ORDEM, E ELA E O DETALHE CARO: este arquivo entra NA compilacao, entao so
+# pode conter o que ja e conhecido ANTES de compilar. O SHA-256 do .exe so
+# existe DEPOIS - embarca-lo exigiria um segundo passe sobre o instalador ja
+# pronto, e o hash gravado dentro mudaria o hash do arquivo que o contem. O SHA
+# do artefato continua vivendo so no BUILD_INFO.txt do repo, que e onde se
+# confere o arquivo que chegou na VM.
+#
+# Formato chave=valor, ASCII, uma linha por campo: o produto le com split('='),
+# sem depender de parser nenhum.
+
+Write-Step "Gravando a identidade do build (BUILD_ID.txt)"
+
+$BuildIdPath = Join-Path $RepoRoot 'installer\stage\BUILD_ID.txt'
+$canonicoId  = if ($Branch -eq 'develop') { 'sim' } else { 'nao' }
+$buildIdLinhas = @(
+    "# IMAN Terra - identidade do build. Gerado por installer\build.ps1.",
+    "# NAO editar a mao: o produto le este arquivo para dizer de que build ele e.",
+    "# O SHA-256 do instalador NAO esta aqui de proposito - ele so existe depois",
+    "# de compilar, e este arquivo entra na compilacao. Ele vive no BUILD_INFO.txt.",
+    "produto=$ProductName",
+    "versao=$ProductVersion",
+    "commit=$CommitFull",
+    "commit_curto=$CommitShort",
+    "data_do_commit=$CommitDate",
+    "branch=$Branch",
+    "build_canonico=$canonicoId",
+    "qgis_embarcado=$QgisBaseline",
+    "payload_sha256=$PayloadSha",
+    "compilado_em=$((Get-Date).ToString('yyyy-MM-dd HH:mm:ss zzz'))"
+)
+Set-Content -LiteralPath $BuildIdPath -Value $buildIdLinhas -Encoding Ascii
+
+# C.3 fail-loud: sem este arquivo o produto volta a nao saber de que build e, e
+# o defeito so apareceria na tela do usuario.
+if (-not (Test-Path -LiteralPath $BuildIdPath)) {
+    Fail 5 "nao foi possivel gravar o BUILD_ID.txt" @("Esperado em: $BuildIdPath")
+}
+Write-Ok "BUILD_ID.txt: $ProductVersion / $CommitShort / $Branch (canonico: $canonicoId)"
 
 # --- localizacao do ISCC -----------------------------------------------------
 

@@ -23,7 +23,7 @@ import os
 from qgis.PyQt.QtCore import Qt, QTimer, QEventLoop, QPoint
 from qgis.PyQt.QtWidgets import (
     QApplication, QDialog, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit,
-    QPushButton, QGroupBox, QDockWidget, QMenuBar,
+    QPushButton, QGroupBox, QDockWidget, QMenuBar, QWidget,
 )
 from qgis.utils import iface
 
@@ -51,6 +51,28 @@ def monta():
         pass
     espera(1200)
     doc = {'titulo_da_janela': win.windowTitle()}
+
+    # --- DB-24: o Sobre REAL do produto, nao uma imitacao. `show_about` usa
+    # exec_() e bloquearia o event loop, entao o dialogo e construido aqui e
+    # mostrado NAO-MODAL - mesma classe, mesmo conteudo, mesma fonte de versao.
+    try:
+        from iman_brand import sobre as _sobre
+        sdlg = _sobre.SobreDialog(win)
+        sdlg.setModal(False)
+        sdlg.show()
+        g0 = win.frameGeometry()
+        sdlg.move(int(g0.x() + g0.width() * 0.06), int(g0.y() + g0.height() * 0.30))
+        _vivos['sobre'] = sdlg
+        doc['sobre'] = sdlg.windowTitle()
+    except Exception as e:
+        doc['sobre'] = 'erro: %r' % (e,)
+
+    try:
+        from iman_brand import brand as _brand
+        doc['versao_exibida'] = _brand.versao_exibida()
+        doc['build_id'] = _brand.build_id()
+    except Exception as e:
+        doc['versao_exibida'] = 'erro: %r' % (e,)
 
     # --- dialogo de marca: botao default, botao comum, campo, groupbox
     dlg = QDialog(win)
@@ -126,7 +148,27 @@ def monta():
                 sum(i['folga_no_item'] for i in itens) / float(len(itens)), 1),
         }
 
-    espera(400)
+    espera(800)
+
+    # GRAB DO QT, e nao captura de tela: a foto pelo lado do Qt independe de
+    # quem esta na frente. Aprendido no #016 (o CopyFromScreen fotografou a
+    # janela de outro app) e reaprendido aqui - a captura de tela desta sessao
+    # pegou um terminal por cima do produto.
+    def grab(widget, nome):
+        try:
+            if widget is None:
+                return None
+            widget.grab().save(os.path.join(OUT, nome))
+            return nome
+        except Exception as e:
+            return 'erro: %r' % (e,)
+
+    doc['grabs'] = {
+        'home': grab(win.findChild(QWidget, 'ImanHome'), 'vitrine-home.png'),
+        'sobre': grab(_vivos.get('sobre'), 'vitrine-sobre.png'),
+        'janela': grab(win, 'vitrine-janela.png'),
+    }
+
     if not os.path.isdir(OUT):
         os.makedirs(OUT)
     with open(os.path.join(OUT, 'descoberta.json'), 'w', encoding='utf-8') as fh:
