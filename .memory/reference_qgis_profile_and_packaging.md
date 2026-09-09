@@ -36,6 +36,23 @@
 - **Instalador full:** embute o instalador oficial do QGIS LTR como dependência — usar só parâmetros
   silenciosos **testados** para a versão alvo.
 - Uninstall limpo; perfil isolado não removido à toa; nunca mexer na instalação do QGIS.
+- **O Inno FUNDE, não substitui — e por isso `[InstallDelete]` existe (`DB-22`, fatia #021).**
+  Instalar sobre uma instalação anterior copia por cima e **deixa o que sobrou**: a árvore fica
+  misturada de dois builds, e "reinstalar" funde de novo — laço fechado, porque a mensagem de
+  guarda manda justamente reinstalar. O conserto é declarar a limpeza:
+  `[InstallDelete] Type: filesandordirs; Name: "{app}\qgis"` — o Inno processa essa seção **antes**
+  da `[Files]`, então a cópia pousa em terreno limpo e o ciclo se recupera sozinho até de uma
+  árvore em que alguém *acrescentou* arquivos (o merge nunca removeria).
+  **`{app}\qgis`, NUNCA `{app}`:** limpar a raiz apagaria o `unins000.exe` **em uso**.
+
+## Teste de aceite e build: exigências OPOSTAS, e como elas convivem
+
+- `tools\branding-acceptance\Invoke-Aceite.ps1` exige o **produto instalado** e sobe
+  `%LOCALAPPDATA%\Programs\IMAN Terra\qgis\bin\qgis-ltr.bat` — **recusa** raiz sob `%ProgramFiles%`.
+- `installer\New-ArvoreQgis.ps1` exige que **nenhum** QGIS 3.44.13 esteja instalado na máquina.
+- Até a `#020` isso era um **laço** (o harness pedia o QGIS de sistema que o build proibia). Desde a
+  `#021` as duas convivem, porque **nenhuma delas depende mais de um QGIS de sistema**. Não
+  "conserte" o aceite reinstalando o QGIS: isso reabre o laço e desarma o build.
 
 ## QGIS RELOCADO — cópia privada fora de Program Files (via A1)
 

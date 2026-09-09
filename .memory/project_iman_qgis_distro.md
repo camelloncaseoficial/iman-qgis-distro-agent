@@ -55,5 +55,16 @@ monetização — o REURB é a capacidade-core do mercado das ~35 prefeituras (S
 ## STOP-AND-FLAGs
 
 - ~~Nome de produto pendente~~ → **RESOLVIDO: `IMAN Terra`** (2026-07-05). Marca em fonte única.
-- **QGIS LTR instalado** é pré-requisito de runtime para testar/empacotar (VM/máquina Windows limpa).
+- ~~**QGIS LTR instalado** é pré-requisito de runtime~~ → **MORTO desde a via A1 (#019)**: o QGIS vive
+  dentro do produto (`{app}\qgis`). Desde a `#021` nem o **teste de aceite** precisa de QGIS de
+  sistema — ele sobe a árvore do produto.
+- ~~**`IMAN.cdr` pendente**~~ → **CHEGOU 2026-09-09**, ingerido na `#021`. Prevaleceu, como a regra
+  mandava, e **confirmou** a paleta: 8 das 18 cores da arte são token exato de `brand.py`; as outras
+  10 são emblema/degradê, nunca foram token de UI. Nenhum `COLOR_*` mudou.
 - **Bundle do REURB** = decisão de moat adiada para fatia futura.
+- **A arte oficial diz `v1.0 · LTR`** no rodapé do splash, e o produto está em `0.3.0`. Versão que
+  não existe, cravada na arte — fora do alcance do `A09`. Decisão do sponsor.
+- **A arte oficial diz `VERSÃO INSTITUCIONAL · CAUCAIA LTR`** — nomeia um município no splash de um
+  produto distribuído para além dele. Decisão de escopo de produto.
+- **Build canônico do `0.3.0` ainda não existe.** Exige a branch `develop`, e o `P0.6` proíbe
+  mergear. Sai depois do merge da `#021`; quem compilar **commita o `BUILD_INFO`** (`D-IMAN-032`).
