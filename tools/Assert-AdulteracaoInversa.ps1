@@ -73,9 +73,14 @@ $Reversoes = @(
        De='padding-left: 10px; padding-right: 10px;';
        Para='padding: 6px 10px;' },
 
+    # D5 - REANCORADO no #022. A reversao antiga apontava para a linha
+    # `re.sub(r'QGIS(\s*)$', ...)`, que era ELA PROPRIA o defeito: a ancora de
+    # FIM DE STRING nao casava quando o QGIS pendurava " [<perfil>]" depois de
+    # "QGIS". Reverter agora e DEVOLVER essa ancora - e o A05 reescrito tem de
+    # acender por causa dela.
     @{ Id='D5';  Assercao='A05'; Arquivo=$PLUGIN;
-       De='        return re.sub(r''QGIS(\s*)$'', brand.PRODUCT_NAME + r''\1'', titulo)';
-       Para='        return brand.WINDOW_TITLE  # REVERTIDO' },
+       De='        m = ImanBrandPlugin._RE_SUFIXO_DO_QGIS.search(titulo)';
+       Para='        return re.sub(r''QGIS(\s*)$'', brand.PRODUCT_NAME + r''\1'', titulo)  # REVERTIDO (ancora de fim de string)' },
 
     # Acoplamento ESPERADO: o A07 assere a politica INTEIRA, e o estado E4
     # ("criou um projeto -> canvas") e justamente o que o D6 conserta. Os dois
