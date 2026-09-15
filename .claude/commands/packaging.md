@@ -9,7 +9,7 @@ Execute o comando `/packaging` definido em `<available_commands>` de `.claude/pr
 
 ## Contexto fixo IMAN QGIS Distro
 
-Instalador Windows via **Inno Setup** que instala a camada IMAN (app/perfil/notices), cria atalhos com ícone próprio, detecta/orienta sobre o QGIS LTR e desinstala limpo — sem sobrescrever dados do usuário. Saída: `Instituto-IMAN-*-Setup-<versão>-<commit>.exe` (build de branch acrescenta `-nao-canonico`), sempre ao lado do `BUILD_INFO.txt` dele (DB-25).
+Instalador Windows via **Inno Setup** que instala a camada IMAN (app/perfil/notices), cria atalhos com ícone próprio, detecta/orienta sobre o QGIS LTR e desinstala limpo, sem sobrescrever dados do usuário. Saída: `Instituto-IMAN-*-Setup-<versão>-<commit>.exe` (build de branch acrescenta `-nao-canonico`), sempre ao lado do `BUILD_INFO.txt` dele (DB-25).
 
 ---
 
