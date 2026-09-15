@@ -2,8 +2,22 @@
 =============================================================================
  IMAN Terra - build reprodutivel do instalador (Inno Setup)
 
- Compila installer\iman-terra.iss e emite installer\dist\BUILD_INFO.txt
+ Compila installer\iman-terra.iss e emite, AO LADO do .exe, um BUILD_INFO.txt
  amarrando  artefato <-> commit <-> versao <-> SHA-256.
+
+ ONDE O ARTEFATO SAI (DB-25, fatia #029): o nome carrega a identidade.
+   canonico (develop)
+     installer\canonico\<versao>-<commit>\
+       Instituto-IMAN-IMAN-Terra-Setup-<versao>-<commit>.exe
+       BUILD_INFO.txt                          (entra no git)
+     installer\canonico\VIGENTE.txt            (qual e o candidato; entra no git)
+   de branch
+     installer\dist\nao-canonico\<versao>-<commit>-<branch>\
+       Instituto-IMAN-IMAN-Terra-Setup-<versao>-<commit>-nao-canonico.exe
+       BUILD_INFO.txt                          (fora do git)
+   Build de branch nao calcula caminho sob installer\canonico\, e um canonico
+   nunca sobrescreve outro: se a pasta da identidade ja existe, RECUSA.
+   Guarda que prova isso com builds reais: tools\test-build-preserva-canonico.ps1
 
  POR QUE ESTE SCRIPT EXISTE
  --------------------------
@@ -22,7 +36,8 @@
  ----------------
    0  sucesso
    2  ambiente (fora de repo git, git ausente, ISCC nao encontrado, .iss ausente)
-   3  guarda de integridade (arvore suja / branch errada / versao divergente)
+   3  guarda de integridade (arvore suja / branch errada / versao divergente /
+      canonico com esta identidade ja existe)
    4  falha do compilador Inno Setup
    5  payload do QGIS (ausente, download falhou ou SHA-256 nao confere)
    6  guarda de integridade (o launcher nao recusa arvore do QGIS truncada)
@@ -90,7 +105,11 @@ $InstallerDir = Split-Path -Parent $MyInvocation.MyCommand.Definition
 $RepoRoot     = Split-Path -Parent $InstallerDir
 $IssPath      = Join-Path $InstallerDir 'iman-terra.iss'
 $DistDir      = Join-Path $InstallerDir 'dist'
-$BuildInfo    = Join-Path $DistDir 'BUILD_INFO.txt'
+# DB-25: o destino exato (pasta, nome do .exe, BUILD_INFO.txt) depende da
+# identidade do build e so e calculado depois de ler branch, commit e versao.
+$NaoCanonicoDir = Join-Path $DistDir 'nao-canonico'
+$CanonicoDir    = Join-Path $InstallerDir 'canonico'
+$VigentePath    = Join-Path $CanonicoDir 'VIGENTE.txt'
 
 Write-Host ""
 Write-Host "  IMAN Terra - build do instalador" -ForegroundColor White
@@ -148,14 +167,18 @@ try {
 
     # --- guarda 3: arvore limpa ---------------------------------------------
     #
-    # BUILD_INFO.txt e a UNICA excecao: ele e a saida deste proprio script e e
-    # versionado. Sem esta excecao, o build 2 sempre falharia por causa do build
-    # 1 - a guarda se auto-sabotaria.
+    # SEM EXCECAO desde a #029 (DB-25). Ate ali o installer/dist/BUILD_INFO.txt
+    # era isento: todo build o reescrevia, ele ficava sujo sem bloquear nada e
+    # viajava no proximo commit de laudo de qualquer fatia (foi assim em
+    # 72595c0). Hoje o registro de build de branch vive fora do git
+    # (installer\dist\nao-canonico\) e nao suja nada. O de build canonico
+    # (installer\canonico\<id>\BUILD_INFO.txt e VIGENTE.txt) SUJA de proposito:
+    # enquanto quem compilou nao o commitar na develop (P0.6), nenhum outro
+    # build roda. E assim que o registro nao se perde nem pega carona.
 
-    # --untracked-files=all e obrigatorio: sem ele o git COLAPSA um diretorio
-    # nao-rastreado numa unica linha ("installer/dist/"), a excecao abaixo nunca
-    # casa com o caminho do arquivo, e o primeiro build passaria a bloquear o
-    # segundo para sempre.
+    # --untracked-files=all: sem ele o git COLAPSA um diretorio nao-rastreado
+    # numa unica linha ("installer/canonico/0.3.0-abc1234/") e a recusa nao
+    # nomearia o arquivo.
     $statusResult = Invoke-Native 'git' @('status', '--porcelain', '--untracked-files=all')
     if ($statusResult.ExitCode -ne 0) {
         Fail 2 "git status falhou" @()
@@ -164,11 +187,6 @@ try {
     $dirty = @()
     foreach ($line in $statusResult.Lines) {
         if ([string]::IsNullOrWhiteSpace($line)) { continue }
-        # Formato porcelain v1: XY<espaco>caminho  (caminho pode vir entre aspas)
-        $path = $line.Substring(2).Trim().Trim('"')
-        # Renomeio vem como "origem -> destino"; interessa o destino.
-        if ($path -match '\s->\s(.+)$') { $path = $Matches[1].Trim().Trim('"') }
-        if ($path -eq 'installer/dist/BUILD_INFO.txt') { continue }
         $dirty += $line
     }
 
@@ -186,7 +204,10 @@ try {
                 "Um instalador compilado de arvore suja nao corresponde a NENHUM commit:",
                 "nao ha como saber depois o que exatamente foi testado na VM.",
                 "",
-                "Commite, descarte ou guarde (git stash -u) antes de compilar."
+                "Commite, descarte ou guarde (git stash -u) antes de compilar.",
+                "",
+                "Se o pendente e o registro de um build CANONICO (installer/canonico/),",
+                "quem compilou o commita na develop (P0.6) antes de qualquer outro build."
             )
         )
     }
@@ -234,10 +255,77 @@ if (-not $baseNameMatch.Success) {
     Fail 2 "OutputBaseFilename nao encontrado no .iss" @("Arquivo: $IssPath")
 }
 $OutputBaseName = $baseNameMatch.Groups[1].Value.Replace('{#ProductVersion}', $ProductVersion)
-$ArtifactName   = "$OutputBaseName.exe"
-$ArtifactPath   = Join-Path $DistDir $ArtifactName
 
 Write-Ok "ProductVersion $ProductVersion / QGIS embarcado $QgisBaseline"
+
+# --- identidade e destino do artefato (DB-25, fatia #029) --------------------
+#
+# O DEFEITO. Ate a #029 o nome era fixo por versao e o BUILD_INFO.txt era um
+# arquivo so, em installer\dist\. Todo build de 0.3.0, canonico ou de branch,
+# escrevia no MESMO caminho: o registro canonico foi sobrescrito em 4 de 4, e 3
+# dos 4 .exe canonicos de 0.3.0 foram destruidos por build de branch. So
+# sobreviveu o de 0.2.0, porque a VERSAO mudou: o nome era a unica protecao.
+#
+# O DESENHO. O nome carrega versao e commit curto, e canonico e branch diferem
+# no nome E na raiz:
+#   canonico : installer\canonico\<versao>-<commit>\<base>-<commit>.exe
+#   branch   : installer\dist\nao-canonico\<versao>-<commit>-<branch>\<base>-<commit>-nao-canonico.exe
+# Cada pasta carrega o .exe e o BUILD_INFO.txt DELE: o registro viaja com o
+# artefato. A base do nome continua vindo do OutputBaseFilename do .iss (fonte
+# unica, BL-4); a identidade entra pela linha de comando do ISCC (/O e /F), e
+# nada do que vai DENTRO do .exe muda.
+
+$EhCanonico = ($Branch -eq 'develop')
+$IdBuild    = "$ProductVersion-$CommitShort"
+
+if ($EhCanonico) {
+    $ArtifactBase = "$OutputBaseName-$CommitShort"
+    $ArtifactDir  = Join-Path $CanonicoDir $IdBuild
+} else {
+    # A branch vira segmento de pasta: '/' e tudo fora de [A-Za-z0-9._-] vira
+    # '-'. Duas branches no mesmo commit nao dividem pasta.
+    $BranchSlug   = ($Branch -replace '[^A-Za-z0-9._-]+', '-').Trim('-')
+    $ArtifactBase = "$OutputBaseName-$CommitShort-nao-canonico"
+    $ArtifactDir  = Join-Path $NaoCanonicoDir "$IdBuild-$BranchSlug"
+}
+$ArtifactName = "$ArtifactBase.exe"
+$ArtifactPath = Join-Path $ArtifactDir $ArtifactName
+$BuildInfo    = Join-Path $ArtifactDir 'BUILD_INFO.txt'
+
+# Por construcao um build de branch nao calcula caminho sob installer\canonico\.
+# Se um dia calcular (um slug que ninguem previu, uma refatoracao), a recusa e
+# aqui, antes de qualquer escrita.
+$canonicoRaiz = [IO.Path]::GetFullPath($CanonicoDir).TrimEnd('\') + '\'
+if ((-not $EhCanonico) -and
+    [IO.Path]::GetFullPath($ArtifactDir).StartsWith($canonicoRaiz, [StringComparison]::OrdinalIgnoreCase)) {
+    Fail 3 "build de branch calculou destino dentro de installer\canonico\" @(
+        "Branch  : $Branch",
+        "Destino : $ArtifactDir",
+        "",
+        "installer\canonico\ e de build canonico e de nenhum outro (DB-25)."
+    )
+}
+
+# Um canonico NUNCA sobrescreve outro. Recompilar o mesmo commit da outro
+# SHA-256 (D-IMAN-032): sobrescrever apagaria o artefato que ja foi entregue,
+# testado ou gravado. Recusa cedo, antes de estagiar 541 MB.
+if ($EhCanonico -and (Test-Path -LiteralPath $ArtifactDir)) {
+    $conteudo = @(Get-ChildItem -LiteralPath $ArtifactDir -Force -ErrorAction SilentlyContinue |
+                  ForEach-Object { "  $($_.Name)" })
+    Fail 3 "ja existe um build canonico com esta identidade ($IdBuild)" (
+        @("Pasta   : $ArtifactDir", "Conteudo:") + $conteudo +
+        @(
+            "",
+            "Recompilar o mesmo commit produz OUTRO SHA-256 (D-IMAN-032). Sobrescrever",
+            "destruiria o canonico que ja existe, e foi assim que o DB-25 nasceu.",
+            "",
+            "Se a pasta e sobra de um build INTERROMPIDO (sem BUILD_INFO.txt), confira",
+            "e remova a mao. Se e um canonico de verdade, ele fica: nao ha rebuild."
+        )
+    )
+}
+
+Write-Ok "identidade $IdBuild -> $ArtifactName"
 
 # --- guarda 4: o launcher espelha a mesma versao de QGIS? --------------------
 #
@@ -619,7 +707,10 @@ if (-not (Test-Path -LiteralPath $TemaTest)) {
     )
 }
 
-& $PsExe -NoProfile -ExecutionPolicy Bypass -File $TemaTest
+# A saida passa por Tee-Object: continua na tela, e o PLACAR que a propria
+# guarda declara ("N de M asse rcoes passaram") e lido dela logo abaixo. Ate a
+# #029 o OK deste passo dizia "5 de 5" num literal, com 6 rodando desde o #027.
+& $PsExe -NoProfile -ExecutionPolicy Bypass -File $TemaTest | Tee-Object -Variable TemaSaida | Out-Host
 $TemaExit = $LASTEXITCODE
 
 if ($TemaExit -ne 0) {
@@ -633,7 +724,24 @@ if ($TemaExit -ne 0) {
     )
 }
 
-Write-Ok "o tema esta como o sponsor arbitrou (5 de 5 asse rcoes)"
+# C.3: o numero vem da guarda. Exit 0 sem placar completo e recusa, e nao OK:
+# um OK sem numero medido e exatamente o literal que a #029 tirou daqui.
+$TemaTexto  = if (Get-Variable -Name TemaSaida -ErrorAction SilentlyContinue) { @($TemaSaida) -join "`n" } else { '' }
+$TemaPlacar = [regex]::Match($TemaTexto, '(\d+) de (\d+) asse rcoes passaram')
+if ((-not $TemaPlacar.Success) -or
+    ($TemaPlacar.Groups[1].Value -ne $TemaPlacar.Groups[2].Value) -or
+    ([int]$TemaPlacar.Groups[2].Value -lt 1)) {
+    Fail 7 "a guarda estatica do tema saiu 0 sem declarar placar completo" @(
+        "Teste : tools\test-tema-qss.ps1   (exit $TemaExit)",
+        "Esperada na saida acima uma linha 'N de N asse rcoes passaram'.",
+        "",
+        "Sem ela o build nao sabe quantas asse rcoes rodaram, e voltaria a",
+        "anunciar um numero que ninguem mediu."
+    )
+}
+
+Write-Ok ("o tema esta como o sponsor arbitrou ({0} de {1} asse rcoes, placar da guarda)" -f
+          $TemaPlacar.Groups[1].Value, $TemaPlacar.Groups[2].Value)
 
 # --- BUILD_ID.txt: a identidade que VIAJA DENTRO do produto (DB-24) ----------
 #
@@ -853,24 +961,43 @@ Write-Ok "Inno Setup $IsccVersao  ($Iscc)"
 
 Write-Step "Compilando"
 
-if (-not (Test-Path -LiteralPath $DistDir)) {
-    New-Item -ItemType Directory -Path $DistDir | Out-Null
+# O QUE UM BUILD PODE REMOVER, e so isso (DB-25, R2).
+#
+# A intencao de antes continua: uma falha nao pode deixar um artefato ANTIGO no
+# lugar, passando por novo. Com nome fixo, porem, "o alvo" removido era o
+# canonico da mesma versao, e o ISCC que falhava em seguida nao devolvia nada.
+#
+# Agora o alvo e a PASTA DESTA IDENTIDADE, e so ela:
+#   - canonico: a pasta nao existe (a recusa la em cima garante, e e conferida
+#     de novo aqui); esta execucao a cria, e se o ISCC falhar e ela que sai;
+#   - branch  : a pasta e a do build anterior da MESMA versao, commit e branch.
+#     Ela sai antes de compilar, e se o ISCC falhar nao fica nada com o nome
+#     desta identidade.
+# Nenhum outro caminho e removido: nem canonico, nem outra branch, nem o legado
+# solto em installer\dist\.
+if ($EhCanonico) {
+    if (Test-Path -LiteralPath $ArtifactDir) {
+        Fail 3 "a pasta do canonico $IdBuild apareceu durante o build" @(
+            "Pasta: $ArtifactDir",
+            "Nada foi removido. Confira quem a criou antes de compilar de novo."
+        )
+    }
+} elseif (Test-Path -LiteralPath $ArtifactDir) {
+    Remove-Item -LiteralPath $ArtifactDir -Recurse -Force
 }
+New-Item -ItemType Directory -Path $ArtifactDir -Force | Out-Null
 
-# Idempotencia: remove o alvo antes de compilar para que uma falha nao deixe um
-# artefato ANTIGO no lugar, passando por novo.
-if (Test-Path -LiteralPath $ArtifactPath) {
-    Remove-Item -LiteralPath $ArtifactPath -Force
-}
-
-& $Iscc "/Q" $IssPath
+& $Iscc "/Q" "/O$ArtifactDir" "/F$ArtifactBase" $IssPath
 $isccExit = $LASTEXITCODE
 
 if ($isccExit -ne 0 -or -not (Test-Path -LiteralPath $ArtifactPath)) {
+    # So a pasta que ESTA execucao criou (ou, em branch, esvaziou e recriou).
+    Remove-Item -LiteralPath $ArtifactDir -Recurse -Force -ErrorAction SilentlyContinue
     Fail 4 "o Inno Setup falhou (exit $isccExit)" @(
         "Artefato esperado: $ArtifactPath",
+        "Removida so a pasta desta identidade; nenhum outro artefato foi tocado.",
         "Rode sem /Q para ver o log completo:",
-        "  & '$Iscc' '$IssPath'"
+        "  & '$Iscc' '/O$ArtifactDir' '/F$ArtifactBase' '$IssPath'"
     )
 }
 
@@ -968,31 +1095,62 @@ $lines = @(
 
 Set-Content -LiteralPath $BuildInfo -Value $lines -Encoding UTF8
 
+# --- VIGENTE.txt: qual e o candidato (DB-25, R3) ------------------------------
+#
+# "Qual e o candidato vigente?" responde-se aqui, num lugar so. So um canonico
+# que TERMINOU escreve este arquivo; build de branch nem calcula o caminho. Os
+# canonicos anteriores continuam em installer\canonico\<id>\ com o registro
+# deles: este arquivo troca de ponteiro, nao apaga ninguem.
+if ($EhCanonico) {
+    $vigenteLinhas = @(
+        "# IMAN Terra - candidato a release VIGENTE. Gerado por installer\build.ps1.",
+        "# Reescrito por todo build CANONICO (develop) que termina, e por nenhum outro.",
+        "# O registro completo vive em 'registro', ao lado do .exe; os canonicos",
+        "# anteriores continuam nas pastas deles em installer/canonico/.",
+        "identidade=$IdBuild",
+        "versao=$ProductVersion",
+        "commit=$CommitFull",
+        "artefato=$ArtifactName",
+        "sha256=$Sha256",
+        "registro=installer/canonico/$IdBuild/BUILD_INFO.txt"
+    )
+    Set-Content -LiteralPath $VigentePath -Value $vigenteLinhas -Encoding Ascii
+}
+
+# O guarda tools\test-build-preserva-canonico.ps1 le as linhas "Artefato :" e
+# "Info :" abaixo para achar o que este build publicou. Mudar o formato delas
+# e mudar o contrato daquela guarda.
 Write-Host ""
 Write-Host "  BUILD OK" -ForegroundColor Green
 Write-Host "  Artefato : $ArtifactPath"
 Write-Host "  Versao   : $ProductVersion   Commit: $CommitShort   Branch: $Branch"
 Write-Host "  SHA-256  : $Sha256" -ForegroundColor White
 Write-Host "  Info     : $BuildInfo"
-if ($canonico -eq 'NAO') {
+if ($EhCanonico) {
+    Write-Host "  Vigente  : $VigentePath"
+    Write-Host ""
+    Write-Host "  CANONICO: quem compilou commita na develop (P0.6):" -ForegroundColor Yellow
+    Write-Host "         installer/canonico/$IdBuild/BUILD_INFO.txt" -ForegroundColor Yellow
+    Write-Host "         installer/canonico/VIGENTE.txt" -ForegroundColor Yellow
+    Write-Host "         Ate la a arvore fica suja, e nenhum outro build roda." -ForegroundColor Yellow
+} else {
     Write-Host ""
     Write-Host "  AVISO: build NAO-CANONICO (branch '$Branch', esperado 'develop')." -ForegroundColor Yellow
     Write-Host "         Serve para teste; o artefato de release sai de develop." -ForegroundColor Yellow
 }
 
-# Artefatos de versoes anteriores continuam em dist/ (o script so remove o alvo).
-# Sao a origem classica do erro de levar o .exe ERRADO para a VM - o BUILD_INFO.txt
-# descreve apenas o artefato acima.
-$outros = @(Get-ChildItem -LiteralPath $DistDir -Filter '*.exe' -File -ErrorAction SilentlyContinue |
-            Where-Object { $_.Name -ne $ArtifactName })
-if ($outros.Count -gt 0) {
+# Legado do layout de antes da #029: instaladores soltos na raiz de
+# installer\dist\, com nome sem commit e sem registro ao lado. Sao a origem
+# classica do erro de levar o .exe ERRADO para a VM. Este script nao os remove.
+$legado = @(Get-ChildItem -LiteralPath $DistDir -Filter '*.exe' -File -ErrorAction SilentlyContinue)
+if ($legado.Count -gt 0) {
     Write-Host ""
-    Write-Host "  ATENCAO: ha outro(s) instalador(es) antigo(s) em installer\dist\:" -ForegroundColor Yellow
-    foreach ($o in $outros) {
+    Write-Host "  ATENCAO: instalador(es) do layout ANTIGO soltos em installer\dist\:" -ForegroundColor Yellow
+    foreach ($o in $legado) {
         Write-Host ("         {0}   ({1:yyyy-MM-dd})" -f $o.Name, $o.LastWriteTime) -ForegroundColor Yellow
     }
-    Write-Host "         O BUILD_INFO.txt descreve APENAS $ArtifactName." -ForegroundColor Yellow
-    Write-Host "         Leve para a VM o arquivo cujo SHA-256 bate com o BUILD_INFO." -ForegroundColor Yellow
+    Write-Host "         Nome sem commit e sem BUILD_INFO.txt ao lado: nenhum registro deste" -ForegroundColor Yellow
+    Write-Host "         build os descreve. Leve para a VM a PASTA do artefato acima." -ForegroundColor Yellow
 }
 Write-Host ""
 
