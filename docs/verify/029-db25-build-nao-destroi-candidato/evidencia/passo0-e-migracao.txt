@@ -1,0 +1,37 @@
+# #029 - Passo 0 e migracao do 327d9ee. Medido nesta bancada em 2026-09-15.
+# Get-FileHash -Algorithm SHA256, calculado na maquina (E.5), nunca transcrito.
+
+PASSO 0.1 - original, antes de qualquer build
+  installer\dist\Instituto-IMAN-IMAN-Terra-Setup-0.3.0.exe
+  SHA-256 38DA4709FB121C89C6A52FD96A107C5502316FBDD1BFEC07CE8B2809F68B73E7
+  bytes   512808129   mtime 2026-09-09T19:32:20.8862716-03:00
+  BUILD_INFO.txt da working tree == blob de af2eef5 (git hash-object 7ad4079a7132dd8612bf1bcd3da2660b202a3ad8)
+
+PASSO 0.2 - copia fora do repo
+  D:\_iman-terra-candidatos-protegidos\0.3.0-327d9ee\Instituto-IMAN-IMAN-Terra-Setup-0.3.0.exe
+  SHA-256 38DA4709FB121C89C6A52FD96A107C5502316FBDD1BFEC07CE8B2809F68B73E7   bytes 512808129
+  D:\_iman-terra-candidatos-protegidos\0.3.0-327d9ee\BUILD_INFO.txt
+  git hash-object --no-filters ec64cea96bc88d285dc2bf3e3fcd30eb691d35de (== original)
+  SHA-256 27F5CB493BC3B78F5920ECD545E3DFCED33AB305B427D9090C04590E1CD3DCC2
+
+PRE-CONDICAO DE EXTRACAO (antes de qualquer build)
+  QGIS* em Program Files / (x86)           : 0 diretorios
+  entradas QGIS na ARP (HKLM64, HKLM32, HKCU): 0
+  WindowsInstaller ProductState({740D7A65-CBA3-1014-A0B5-B03A9B7608F5}) : -1 (nao instalado)
+  processos qgis-ltr-bin/qgis-bin           : 0   msiexec: 0
+  todos os builds de teste: -ReusarArvore -SemRede, arvore conferida visivel antes de cada um
+
+RECONFERENCIA antes da migracao: original e copia, os dois 38DA4709...B73E7
+
+MIGRACAO (R5) - rename no mesmo volume, sem rebuild
+  de   installer\dist\Instituto-IMAN-IMAN-Terra-Setup-0.3.0.exe
+  para installer\canonico\0.3.0-327d9ee\Instituto-IMAN-IMAN-Terra-Setup-0.3.0-327d9ee.exe
+  SHA-256 no destino 38DA4709FB121C89C6A52FD96A107C5502316FBDD1BFEC07CE8B2809F68B73E7
+  bytes 512808129   mtime 2026-09-09T19:32:20.8862716-03:00 (inalterado)   origem ainda existe: False
+  registro: git mv installer/dist/BUILD_INFO.txt -> installer/canonico/0.3.0-327d9ee/BUILD_INFO.txt
+  campos af2eef5 x migrado, todos iguais: SHA-256, Tamanho, ProductVersion, Commit, Commit (curto),
+  Branch, Build canonico, Payload SHA-256, Data/hora do build
+
+LEGADO QUE FICOU EM installer\dist\ (nao tocado)
+  55775881AA70EB599E235C2AD9DD47097D0F508CDDAFDA4B7B853E43F607B1DF   2733046  Setup-0.1.0.exe
+  A32476BEF697B22960BDE9676B94EF59AC1895D3B4659BAEE8832509BEDD4502   3117372  Setup-0.2.0.exe (canonico 845d09e, confere)

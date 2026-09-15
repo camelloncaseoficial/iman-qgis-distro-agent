@@ -1,0 +1,190 @@
+﻿{
+    "Guarda":  "tools/test-build-preserva-canonico.ps1",
+    "Ref":  "733e129",
+    "Commit":  "733e1294f86a05c907174054fd4e4e4285039e5d",
+    "Trabalho":  "D:\\_iman-terra-guarda-db25\\20260915-141207-733e129",
+    "Logs":  "D:\\_iman-terra-guarda-db25\\20260915-141207-733e129\\logs",
+    "Semente":  {
+                    "RelExe":  "installer\\dist\\Instituto-IMAN-IMAN-Terra-Setup-0.3.0.exe",
+                    "RelReg":  "installer\\dist\\BUILD_INFO.txt",
+                    "ExeSha":  "EC035335FF4D097883FC0C35BD929F637843E43A96948C6345480F2B07257F91",
+                    "RegSha":  "74F7199E818D15DB81ED4D1449A6FF11492919272F5B8D2430BB0AB0B44A6073",
+                    "Versao":  "0.3.0",
+                    "CofreExe":  "D:\\_iman-terra-guarda-db25\\20260915-141207-733e129\\cofre\\canonico.exe",
+                    "CofreReg":  "D:\\_iman-terra-guarda-db25\\20260915-141207-733e129\\cofre\\BUILD_INFO.txt",
+                    "Commit":  "4aa4438b68c4b091a0c589116074052add9842a1"
+                },
+    "Resultados":  [
+                       {
+                           "Estado":  "4",
+                           "Veredito":  "PASS",
+                           "Descricao":  "nao ha canonico: o primeiro build do repo passa sem falso positivo",
+                           "Assercoes":  [
+                                             {
+                                                 "Nome":  "o primeiro build do repo termina (exit 0)",
+                                                 "Antes":  "sem canonico",
+                                                 "Depois":  "exit 0",
+                                                 "Ok":  true
+                                             },
+                                             {
+                                                 "Nome":  "o build publica Artefato e Info, e os dois existem",
+                                                 "Antes":  "-",
+                                                 "Depois":  "D:\\_iman-terra-guarda-db25\\20260915-141207-733e129\\e4-semente\\installer\\dist\\Instituto-IMAN-IMAN-Terra-Setup-0.3.0.exe | D:\\_iman-terra-guarda-db25\\20260915-141207-733e129\\e4-semente\\installer\\dist\\BUILD_INFO.txt",
+                                                 "Ok":  true
+                                             },
+                                             {
+                                                 "Nome":  "o registro descreve o artefato ao lado (SHA-256 declarado == calculado)",
+                                                 "Antes":  "EC035335FF4D097883FC0C35BD929F637843E43A96948C6345480F2B07257F91",
+                                                 "Depois":  "EC035335FF4D097883FC0C35BD929F637843E43A96948C6345480F2B07257F91",
+                                                 "Ok":  true
+                                             },
+                                             {
+                                                 "Nome":  "tamanho declarado == tamanho no disco",
+                                                 "Antes":  "512808040",
+                                                 "Depois":  "512808040",
+                                                 "Ok":  true
+                                             },
+                                             {
+                                                 "Nome":  "o registro diz \u0027Build canonico: SIM\u0027",
+                                                 "Antes":  "SIM",
+                                                 "Depois":  "SIM",
+                                                 "Ok":  true
+                                             }
+                                         ],
+                           "Builds":  [
+                                          {
+                                              "Rotulo":  "e4-primeiro-build-canonico",
+                                              "Exit":  0,
+                                              "Segundos":  1848.6,
+                                              "Log":  "D:\\_iman-terra-guarda-db25\\20260915-141207-733e129\\logs\\e4-primeiro-build-canonico.log",
+                                              "Artefato":  "D:\\_iman-terra-guarda-db25\\20260915-141207-733e129\\e4-semente\\installer\\dist\\Instituto-IMAN-IMAN-Terra-Setup-0.3.0.exe",
+                                              "Info":  "D:\\_iman-terra-guarda-db25\\20260915-141207-733e129\\e4-semente\\installer\\dist\\BUILD_INFO.txt"
+                                          }
+                                      ]
+                       },
+                       {
+                           "Estado":  "1",
+                           "Veredito":  "FAIL",
+                           "Descricao":  "ha canonico; build de branch com sucesso",
+                           "Assercoes":  [
+                                             {
+                                                 "Nome":  "SHA-256 do .exe canonico inalterado",
+                                                 "Antes":  "EC035335FF4D097883FC0C35BD929F637843E43A96948C6345480F2B07257F91",
+                                                 "Depois":  "C9B5D0FB3B365DF8E2C38113E114E4B947308162C487B1DEBFDD577BC955B3B3",
+                                                 "Ok":  false
+                                             },
+                                             {
+                                                 "Nome":  "SHA-256 dos bytes do registro canonico inalterado",
+                                                 "Antes":  "74F7199E818D15DB81ED4D1449A6FF11492919272F5B8D2430BB0AB0B44A6073",
+                                                 "Depois":  "7337568EDA8F3A2699295CAABF272EF4AF4104206B7CEB6746ED1483D2944260",
+                                                 "Ok":  false
+                                             },
+                                             {
+                                                 "Nome":  "R1: o artefato de branch sai em OUTRO caminho",
+                                                 "Antes":  "D:\\_iman-terra-guarda-db25\\20260915-141207-733e129\\e1-branch-sucesso\\installer\\dist\\Instituto-IMAN-IMAN-Terra-Setup-0.3.0.exe",
+                                                 "Depois":  "D:\\_iman-terra-guarda-db25\\20260915-141207-733e129\\e1-branch-sucesso\\installer\\dist\\Instituto-IMAN-IMAN-Terra-Setup-0.3.0.exe",
+                                                 "Ok":  false
+                                             },
+                                             {
+                                                 "Nome":  "R1: canonico e branch se distinguem pelo NOME",
+                                                 "Antes":  "Instituto-IMAN-IMAN-Terra-Setup-0.3.0.exe",
+                                                 "Depois":  "Instituto-IMAN-IMAN-Terra-Setup-0.3.0.exe",
+                                                 "Ok":  false
+                                             },
+                                             {
+                                                 "Nome":  "R1: o nome do artefato de branch carrega versao e commit curto",
+                                                 "Antes":  "versao 0.3.0, commit 4aa4438",
+                                                 "Depois":  "Instituto-IMAN-IMAN-Terra-Setup-0.3.0.exe",
+                                                 "Ok":  false
+                                             }
+                                         ],
+                           "Builds":  [
+                                          {
+                                              "Rotulo":  "e1-build-de-branch",
+                                              "Exit":  0,
+                                              "Segundos":  1249.4,
+                                              "Log":  "D:\\_iman-terra-guarda-db25\\20260915-141207-733e129\\logs\\e1-build-de-branch.log",
+                                              "Artefato":  "D:\\_iman-terra-guarda-db25\\20260915-141207-733e129\\e1-branch-sucesso\\installer\\dist\\Instituto-IMAN-IMAN-Terra-Setup-0.3.0.exe",
+                                              "Info":  "D:\\_iman-terra-guarda-db25\\20260915-141207-733e129\\e1-branch-sucesso\\installer\\dist\\BUILD_INFO.txt"
+                                          }
+                                      ]
+                       },
+                       {
+                           "Estado":  "2",
+                           "Veredito":  "FAIL",
+                           "Descricao":  "ha canonico; build de branch que falha no ISCC",
+                           "Assercoes":  [
+                                             {
+                                                 "Nome":  "SHA-256 do .exe canonico inalterado",
+                                                 "Antes":  "EC035335FF4D097883FC0C35BD929F637843E43A96948C6345480F2B07257F91",
+                                                 "Depois":  "\u003causente\u003e",
+                                                 "Ok":  false
+                                             },
+                                             {
+                                                 "Nome":  "SHA-256 dos bytes do registro canonico inalterado",
+                                                 "Antes":  "74F7199E818D15DB81ED4D1449A6FF11492919272F5B8D2430BB0AB0B44A6073",
+                                                 "Depois":  "74F7199E818D15DB81ED4D1449A6FF11492919272F5B8D2430BB0AB0B44A6073",
+                                                 "Ok":  true
+                                             }
+                                         ],
+                           "Builds":  [
+                                          {
+                                              "Rotulo":  "e2-build-de-branch-iscc-falha",
+                                              "Exit":  4,
+                                              "Segundos":  11.9,
+                                              "Log":  "D:\\_iman-terra-guarda-db25\\20260915-141207-733e129\\logs\\e2-build-de-branch-iscc-falha.log",
+                                              "Artefato":  null,
+                                              "Info":  null
+                                          }
+                                      ]
+                       },
+                       {
+                           "Estado":  "3",
+                           "Veredito":  "FAIL",
+                           "Descricao":  "ha canonico; segundo canonico da mesma versao",
+                           "Assercoes":  [
+                                             {
+                                                 "Nome":  "SHA-256 do .exe canonico inalterado",
+                                                 "Antes":  "EC035335FF4D097883FC0C35BD929F637843E43A96948C6345480F2B07257F91",
+                                                 "Depois":  "C004167C9E3EFB01A5CB6B2781FDD2B9ADF0C912190584EDE35D3F58C9A8CACD",
+                                                 "Ok":  false
+                                             },
+                                             {
+                                                 "Nome":  "SHA-256 dos bytes do registro canonico inalterado",
+                                                 "Antes":  "74F7199E818D15DB81ED4D1449A6FF11492919272F5B8D2430BB0AB0B44A6073",
+                                                 "Depois":  "4B21E59C21759F3D814B660EDD33FCF561677ADB5A08956824A2A0298BD34FB3",
+                                                 "Ok":  false
+                                             },
+                                             {
+                                                 "Nome":  "R4: o registro do segundo canonico descreve o .exe dele",
+                                                 "Antes":  "C004167C9E3EFB01A5CB6B2781FDD2B9ADF0C912190584EDE35D3F58C9A8CACD",
+                                                 "Depois":  "C004167C9E3EFB01A5CB6B2781FDD2B9ADF0C912190584EDE35D3F58C9A8CACD",
+                                                 "Ok":  true
+                                             },
+                                             {
+                                                 "Nome":  "R4: o segundo diz \u0027Build canonico: SIM\u0027",
+                                                 "Antes":  "SIM",
+                                                 "Depois":  "SIM",
+                                                 "Ok":  true
+                                             },
+                                             {
+                                                 "Nome":  "R4: os dois canonicos coexistem (caminhos distintos, os dois no disco)",
+                                                 "Antes":  "D:\\_iman-terra-guarda-db25\\20260915-141207-733e129\\e3-segundo-canonico\\installer\\dist\\Instituto-IMAN-IMAN-Terra-Setup-0.3.0.exe",
+                                                 "Depois":  "D:\\_iman-terra-guarda-db25\\20260915-141207-733e129\\e3-segundo-canonico\\installer\\dist\\Instituto-IMAN-IMAN-Terra-Setup-0.3.0.exe",
+                                                 "Ok":  false
+                                             }
+                                         ],
+                           "Builds":  [
+                                          {
+                                              "Rotulo":  "e3-segundo-build-canonico",
+                                              "Exit":  0,
+                                              "Segundos":  714.9,
+                                              "Log":  "D:\\_iman-terra-guarda-db25\\20260915-141207-733e129\\logs\\e3-segundo-build-canonico.log",
+                                              "Artefato":  "D:\\_iman-terra-guarda-db25\\20260915-141207-733e129\\e3-segundo-canonico\\installer\\dist\\Instituto-IMAN-IMAN-Terra-Setup-0.3.0.exe",
+                                              "Info":  "D:\\_iman-terra-guarda-db25\\20260915-141207-733e129\\e3-segundo-canonico\\installer\\dist\\BUILD_INFO.txt"
+                                          }
+                                      ]
+                       }
+                   ],
+    "Gerado":  "2026-09-15 15:16:26 -03:00"
+}
