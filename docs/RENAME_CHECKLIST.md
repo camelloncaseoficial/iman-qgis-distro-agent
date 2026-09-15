@@ -54,7 +54,10 @@ futuro ser **find-replace guiado**, não caça a strings. Referenciado por `/bra
 - [ ] `app/assets/splash-iman-terra.svg` / `splash-iman-terra.png` → renomear **e** atualizar
       `docs/design-system.md` e `app/assets/README.md` (o dock/instalador usam as **cópias** `resources/splash.png`
       e `wizard-*.png`, cujos nomes não embutem o produto — não precisam mudar).
-- [ ] `installer/iman-terra.iss` — `OutputBaseFilename=Instituto-IMAN-IMAN-Terra-Setup-...` (nome do `.exe` de saída).
+- [ ] `installer/iman-terra.iss`: `OutputBaseFilename=Instituto-IMAN-IMAN-Terra-Setup-...` é a **base** do nome do
+      `.exe`; o `installer/build.ps1` acrescenta `-<commit>` e, em build de branch, `-nao-canonico` (DB-25, #029).
+      Os registros já commitados em `installer/canonico/*/BUILD_INFO.txt` guardam o nome com que o artefato
+      saiu: são procedência, e não se renomeiam.
 
 ## C. Slugs internos (OPCIONAL — invisíveis ao usuário; mudar só se quiser coerência)
 

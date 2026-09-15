@@ -44,7 +44,7 @@ On every new conversation, ALWAYS read before acting:
 - `app/demo/` — projeto demo de boas-vindas (`.qgz`).
 - `app/assets/` — logo, ícones, `.ico`, splash-preview (fonte única de marca).
 - `app/notices/` — `LICENSE`, `THIRD_PARTY_NOTICES.md`, `SOURCE_CODE.md`.
-- `installer/` — `*.iss` (Inno Setup) + saída `dist/`.
+- `installer/` — `*.iss` (Inno Setup) + saída por identidade: `canonico/<versão>-<commit>/` (registro rastreado + `VIGENTE.txt`) e `dist/nao-canonico/` (build de branch, fora do git).
 - `docs/` — arquitetura, branding/licença, design system, guias de build/instalação.
 - `packaging/` — [Opção 2, futuro] patches de fork, docs de build.
 

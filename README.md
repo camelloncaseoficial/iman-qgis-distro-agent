@@ -47,7 +47,7 @@ app/
 ├── demo/welcome.qgz                 # projeto demo (CRS 4674 + basemap OSM)
 ├── assets/                          # identidade oficial: símbolo/splash SVG/.ico/wizard (ver assets/README.md)
 └── notices/                         # LICENSE, THIRD_PARTY_NOTICES.md, SOURCE_CODE.md
-installer/iman-terra.iss             # Inno Setup (saída: installer/dist/*.exe)
+installer/iman-terra.iss             # Inno Setup (saída por identidade: installer/canonico/ e installer/dist/nao-canonico/)
 installer/build.ps1                  # build reprodutível + BUILD_INFO.txt (procedência)
 tools/bl7/                           # helpers da verificação em VM limpa (PowerShell 5.1 puro)
 docs/verify/bl7-clean-vm/            # CHECKLIST.md + RESULT.md do BL-7
@@ -62,8 +62,11 @@ não empacota o QGIS; o launcher orienta se o QGIS estiver ausente.
 - **Rodar sem instalar:** dê duplo clique em `app/launcher/IMAN-Terra.bat` (cria o perfil isolado em
   `%APPDATA%\InstitutoIMAN\IMAN Terra\profiles\` no 1º uso e abre o QGIS com o branding).
 - **Compilar o instalador:** `.\installer\build.ps1` (não chame o `ISCC.exe` na mão).
-  O script **recusa** compilar de árvore suja ou de branch fora de `develop`, e emite
-  `installer/dist/BUILD_INFO.txt` amarrando **artefato ↔ commit ↔ versão ↔ SHA-256**.
+  O script **recusa** compilar de árvore suja ou de branch fora de `develop`, e grava, **ao lado do
+  `.exe`**, o `BUILD_INFO.txt` que amarra **artefato ↔ commit ↔ versão ↔ SHA-256**. O nome carrega a
+  identidade (`...-Setup-<versão>-<commit>.exe`): o canônico sai em `installer/canonico/<versão>-<commit>/`
+  (registro rastreado; o candidato vigente está em `installer/canonico/VIGENTE.txt`), o de branch em
+  `installer/dist/nao-canonico/`, e nenhum build sobrescreve um canônico (DB-25, #029).
   Sem isso, um `.exe` numa VM é um binário sem procedência e a evidência do BL-7 não vale.
   Para compilar deliberadamente de uma branch de trabalho:
   `.\installer\build.ps1 -ExpectedBranch <branch>` — o artefato sai marcado como **não-canônico**.

@@ -26,7 +26,7 @@ iman-qgis-distro-agent/
 │   ├── demo/                # welcome.qgz
 │   ├── assets/              # símbolo/logo/.ico/splash oficial (fonte única de marca; ver assets/README.md)
 │   └── notices/             # LICENSE, THIRD_PARTY_NOTICES.md, SOURCE_CODE.md
-├── installer/               # *.iss (Inno Setup) + dist/ + payload/ (MSI do QGIS, fora do git)
+├── installer/               # *.iss (Inno Setup) + canonico/ (candidato: .exe + BUILD_INFO rastreado + VIGENTE.txt) + dist/ + payload/ (MSI do QGIS, fora do git)
 ├── docs/                    # esta doc, branding/licença, design system, guias
 └── packaging/               # [Opção 2, futuro] patches de fork, docs de build
 ```

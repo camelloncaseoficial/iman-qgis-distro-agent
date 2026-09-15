@@ -27,7 +27,7 @@
 
  USO
    powershell -NoProfile -ExecutionPolicy Bypass -File .\tools\test-reinstalacao.ps1 `
-       -Instalador .\installer\dist\Instituto-IMAN-IMAN-Terra-Setup-0.3.0.exe
+       -Instalador .\installer\canonico\0.3.0-327d9ee\Instituto-IMAN-IMAN-Terra-Setup-0.3.0-327d9ee.exe
 
  ASCII-only de proposito: PS 5.1 le .ps1 sem BOM como ANSI.
 =============================================================================
