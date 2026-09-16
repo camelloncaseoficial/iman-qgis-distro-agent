@@ -47,10 +47,39 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\Invoke-Aceite.ps1 -ReusarP
 
 # descoberta: despeja os nomes de objeto do QGIS (nao e o aceite)
 powershell -NoProfile -ExecutionPolicy Bypass -File .\Invoke-Aceite.ps1 -Sonda discover.py
+
+# DB-26 (#030) - sobre PERFIL VELHO, o modo que fecha a cegueira
+#   ANTES : perfil de uma versao anterior, como ele esta hoje na maquina de quem instalou
+powershell -NoProfile -ExecutionPolicy Bypass -File .\Invoke-Aceite.ps1 -PerfilVelhoDe ba58d14
+#   DEPOIS: o mesmo perfil, reconciliado pela rotina DO PRODUTO antes de o QGIS subir
+powershell -NoProfile -ExecutionPolicy Bypass -File .\Invoke-Aceite.ps1 -PerfilVelhoDe ba58d14 -Reconciliar
 ```
 
-Saída em `%LOCALAPPDATA%\InstitutoIMAN\_aceite017\saida\`: `aceite.json`, `aceite-segunda.json` e
-`shots\`.
+Saída em `%LOCALAPPDATA%\InstitutoIMAN\_aceite017\saida\`: `aceite.json`, `aceite-segunda.json`,
+`origem-do-perfil.txt` e `shots\`.
+
+## O modo `-PerfilVelhoDe` - por que ele existe (`DB-26`)
+
+O `V.4` manda **reconstruir o perfil do zero** a cada rodada, e por um bom motivo: perfil
+reaproveitado carrega estado da rodada anterior e faz o aceite medir a bancada em vez do build.
+
+Só que o efeito colateral era **total**. O aceite **sempre** exercitava o `profile-template` novo -
+logo, nunca poderia ver que o produto instalado **não entregava esse template a quem já tinha
+perfil**. A cegueira que deixou o `DB-26` passar por três fatias estava **aqui, por construção**:
+a distância entre "o teste passa" e "o usuário vê" era exatamente uma linha do launcher que o
+harness nunca exercitava.
+
+| flag | o que faz |
+|---|---|
+| `-PerfilVelhoDe <commit>` | semeia o perfil a partir do `profile-template` **daquele commit**, por **cópia crua** - que é como o launcher da época o criava (`xcopy /E /I /Y`). É o perfil de quem instalou antes |
+| `-Reconciliar` | roda **a rotina do produto** (`app/launcher/Sync-Perfil.ps1`) sobre ele, antes de o QGIS subir. Não é cópia da lógica: é o mesmo arquivo que o launcher chama na máquina do usuário (`C.1`) |
+
+A rodada **aborta** se a reconciliação falhar: o aceite não roda sobre perfil meio aplicado - seria
+medir um estado que o próprio produto se recusa a abrir.
+
+De onde cada rodada partiu fica gravado em `saida\origem-do-perfil.txt`, junto com o relato da
+reconciliação. Sem isso, dois `aceite.json` - um de perfil novo, outro de perfil velho reconciliado
+- sairiam indistinguíveis, e comparar os dois é justamente a prova.
 
 ## Arquivos
 
@@ -59,6 +88,7 @@ Saída em `%LOCALAPPDATA%\InstitutoIMAN\_aceite017\saida\`: `aceite.json`, `acei
 | `Invoke-Aceite.ps1` | orquestrador: monta o perfil novo, **semeia um recente real**, sobe o QGIS **do produto** com `--code`, confere a procedência do processo, espera a saída, encerra |
 | `acceptance_probe.py` | as asserções `A01…A12` + `M-D11`, rodando dentro do QGIS |
 | `discover.py` | passada de descoberta — nomes de objeto, docks, status bar, menus |
+| `vitrine.py` | arruma a UI para **uma** tomada de evidência (título, menus, menu aberto, dock, diálogo), sempre maximizada - o enquadramento do antes e do depois tem de ser o mesmo |
 
 ## As três regras que este teste segue
 

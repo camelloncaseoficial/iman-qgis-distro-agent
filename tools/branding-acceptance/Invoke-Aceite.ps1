@@ -73,7 +73,32 @@ param(
 
     # 'primeira' (suite completa) ou 'segunda' (so o pouso, no perfil ja usado).
     [ValidateSet('primeira','segunda')]
-    [string]$Fase = 'primeira'
+    [string]$Fase = 'primeira',
+
+    # ---------------------------------------------------------------------
+    # DB-26 (#030) - O MODO QUE RODA SOBRE PERFIL VELHO.
+    #
+    # POR QUE ELE EXISTE, e por que a falta dele custou tres fatias.
+    #
+    # O V.4 manda reconstruir o perfil do zero a cada rodada, e por um bom
+    # motivo: perfil reaproveitado carrega estado da rodada anterior e faz o
+    # aceite medir a bancada. So que o efeito colateral era total - o aceite
+    # SEMPRE exercitava o template novo, e portanto NUNCA podia ver que o
+    # produto instalado nao entregava esse template a quem ja tinha perfil.
+    # A cegueira do DB-26 estava aqui, por construcao.
+    #
+    # -PerfilVelhoDe <commit> semeia o perfil a partir do profile-template
+    # DAQUELE commit, por copia crua - que e como o launcher da epoca o
+    # criava (`xcopy /E /I /Y`). E o perfil de quem instalou antes.
+    #
+    # -Reconciliar roda a ROTINA DO PRODUTO (app\launcher\Sync-Perfil.ps1) em
+    # cima dele, antes de o QGIS subir. Nao e copia da logica: e o mesmo
+    # arquivo que o launcher chama na maquina do usuario.
+    #
+    # Rodar os dois lados com a MESMA sonda e o mesmo enquadramento e o que
+    # transforma "o conserto funciona" em evidencia.
+    [string]$PerfilVelhoDe = '',
+    [switch]$Reconciliar
 )
 
 $ErrorActionPreference = 'Stop'
@@ -170,12 +195,59 @@ if ($ReusarPerfil) {
         Remove-Item -LiteralPath $perfilDir -Recurse -Force
     }
     New-Item -ItemType Directory -Path $perfilDir -Force | Out-Null
-    Copy-Item -Path (Join-Path $template '*') -Destination $perfilDir -Recurse -Force
-    # __pycache__ do repo nao pode viajar para o perfil de teste
+    $origem = $template
+    if ($PerfilVelhoDe) {
+        # Template REAL da historia do git, materializado em disco. O .tar vai
+        # para arquivo antes de ser aberto: `git archive | tar -x` em PowerShell
+        # corrompe o fluxo (o pipe do PS carrega texto, nao bytes).
+        $velhoDir = Join-Path $Base ('template-' + $PerfilVelhoDe)
+        if (Test-Path -LiteralPath $velhoDir) { Remove-Item -LiteralPath $velhoDir -Recurse -Force }
+        New-Item -ItemType Directory -Path $velhoDir -Force | Out-Null
+        $tarTmp = Join-Path ([IO.Path]::GetTempPath()) ("aceite030-" + [guid]::NewGuid().ToString('N') + ".tar")
+        Push-Location $raizRepo
+        try {
+            & git archive --format=tar -o $tarTmp $PerfilVelhoDe ("app/profile-template/{0}" -f $Perfil)
+            if ($LASTEXITCODE -ne 0) { throw "git archive $PerfilVelhoDe falhou - o commit existe?" }
+        } finally { Pop-Location }
+        try {
+            & tar -xf $tarTmp -C $velhoDir
+            if ($LASTEXITCODE -ne 0) { throw "tar -xf falhou para $PerfilVelhoDe" }
+        } finally { Remove-Item -LiteralPath $tarTmp -Force -ErrorAction SilentlyContinue }
+        $origem = Join-Path $velhoDir ("app\profile-template\{0}" -f $Perfil)
+        if (-not (Test-Path -LiteralPath $origem)) { throw "o commit $PerfilVelhoDe nao tem $Perfil em app/profile-template" }
+        Escreve "  PERFIL VELHO: semeado do profile-template de $PerfilVelhoDe (copia crua, como o launcher da epoca fazia)" 'Yellow'
+    }
+    Copy-Item -Path (Join-Path $origem '*') -Destination $perfilDir -Recurse -Force
+    # __pycache__ e .gitkeep do repo nao viajam para o perfil de teste (o .iss
+    # tambem os exclui do pacote).
     Get-ChildItem -LiteralPath $perfilDir -Recurse -Directory -Filter '__pycache__' -ErrorAction SilentlyContinue |
         ForEach-Object { Remove-Item -LiteralPath $_.FullName -Recurse -Force -ErrorAction SilentlyContinue }
+    Get-ChildItem -LiteralPath $perfilDir -Recurse -File -Force -ErrorAction SilentlyContinue |
+        Where-Object { $_.Name -eq '.gitkeep' } | Remove-Item -Force -ErrorAction SilentlyContinue
     $nArq = @(Get-ChildItem -LiteralPath $perfilDir -Recurse -File).Count
     Escreve "  perfil  : $perfilDir  ($nArq arquivos, RECONSTRUIDO do zero)"
+}
+
+# ------------------- 3.0.1 RECONCILIACAO PELA ROTINA DO PRODUTO (DB-26)
+if ($Reconciliar) {
+    $sync = Join-Path $raizRepo 'app\launcher\Sync-Perfil.ps1'
+    $decl = Join-Path $raizRepo 'app\profile-template\PERFIL-DO-PRODUTO.json'
+    foreach ($p in @($sync, $decl)) {
+        if (-not (Test-Path -LiteralPath $p)) { throw "-Reconciliar pedido, mas falta $p" }
+    }
+    Escreve ''
+    Escreve '  reconciliando o perfil pela rotina DO PRODUTO (app\launcher\Sync-Perfil.ps1)...' 'Cyan'
+    $relato = & powershell -NoProfile -NonInteractive -ExecutionPolicy Bypass -File $sync `
+                  -Template $template -Declaracao $decl -Perfil $perfilDir -Detalhe 2>&1 | Out-String
+    $rcSync = $LASTEXITCODE
+    foreach ($l in ($relato -split "`r?`n")) { if ($l.Trim()) { Escreve ("    " + $l) } }
+    if ($rcSync -ne 0) {
+        throw ("a reconciliacao falhou (exit $rcSync). O aceite NAO roda sobre perfil meio aplicado - " +
+               "seria medir um estado que o produto se recusa a abrir.")
+    }
+    $script:RelatoReconciliacao = $relato
+    $nArq = @(Get-ChildItem -LiteralPath $perfilDir -Recurse -File -Force).Count
+    Escreve "  perfil  : $nArq arquivos depois da reconciliacao" 'Cyan'
 }
 if ($nArq -le 0) { throw 'Perfil saiu vazio. Abortado.' }
 
@@ -254,6 +326,19 @@ if ((Test-Path -LiteralPath $saida) -and (-not $ReusarPerfil)) {
 }
 New-Item -ItemType Directory -Path $saida -Force | Out-Null
 New-Item -ItemType Directory -Path (Join-Path $saida 'shots') -Force | Out-Null
+
+# DB-26: de que perfil esta rodada partiu fica GRAVADO ao lado do resultado.
+# Sem isso, dois `aceite.json` de perfil novo e de perfil velho reconciliado
+# sairiam indistinguiveis - e comparar os dois e justamente a prova.
+Set-Content -LiteralPath (Join-Path $saida 'origem-do-perfil.txt') -Encoding UTF8 -Value @(
+    ("quando        : " + (Get-Date).ToUniversalTime().ToString('o')),
+    ("perfil        : " + $perfilDir),
+    ("semeado de    : " + $(if ($PerfilVelhoDe) { "profile-template de $PerfilVelhoDe (copia crua)" } else { 'profile-template ATUAL do repo' })),
+    ("reconciliado  : " + [bool]$Reconciliar),
+    '',
+    '--- relato da reconciliacao (vazio quando nao houve) ---',
+    $script:RelatoReconciliacao
+)
 
 # ------------------------------------------------------------- 5. ambiente
 $sondaPath = Join-Path $raizScript $Sonda
