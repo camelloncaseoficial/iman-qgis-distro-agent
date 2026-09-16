@@ -95,10 +95,66 @@ naquela versão — não se infere compatibilidade.
    **Não** é o plugin REURB (bundle do REURB = fatia futura, D-IMAN-025).
 3. **Startup script** — ajusta o título da janela ("<Produto> — powered by QGIS"), abre painel
    inicial, carrega demo. Leve; customização maior mora no plugin.
-4. **Launcher** — detecta o QGIS LTR instalado, cria o perfil isolado no primeiro run, abre com o
-   perfil/startup/demo. Se o QGIS não existe, orienta a instalar.
+4. **Launcher** - confere o manifesto de integridade da árvore privada do QGIS, **reconcilia o
+   perfil isolado com o template desta versão** (ver abaixo) e abre com o perfil/startup. Desde a
+   via A1 não há detecção de QGIS: ele vive dentro do produto, em `{app}\qgis`.
 5. **Instalador Inno Setup** — empacota `app/*`, cria atalhos com `.ico` de marca, inclui notices;
    uninstall limpo. Ver `docs/design-system.md` para os tokens de marca.
+
+### Reconciliação do perfil - uma atualização chega a quem já instalou (`DB-26`, fatia #030)
+
+> **O defeito que isto conserta.** Até a `#029` o launcher semeava o perfil no **primeiro** uso e
+> nunca mais o reconciliava (`if not exist ...QGIS3.ini ( xcopy ... )`). Tema, plugin de marca,
+> splash e chaves do `QGIS3.ini`: **quem já tinha perfil não recebia nada de uma versão nova.** Três
+> fatias instaladas e nenhuma visível. E um perfil semeado antes de `4dfeb93` (2026-07-12) abria com
+> CRS padrão `EPSG:4674` **para sempre** - num produto de REURB isso não é tema velho, é **medição
+> nova no CRS errado**. O aceite nunca pegou: ele reconstrói o perfil do zero a cada rodada, então
+> sempre exercitava o template novo.
+
+**Onde roda, e por quê.** No **launcher**, antes de o QGIS ler o perfil
+(`app/launcher/Sync-Perfil.ps1`, chamado por `IMAN-Terra.bat`). No `--code` do `iman_startup.py`
+seria tarde: nessa hora o QGIS já importou o código velho do `iman_brand`. No instalador seria
+frágil: o perfil nasce na **primeira abertura**, não na instalação, e manteríamos duas rotinas que
+precisam concordar - a que roda menos é a que apodrece. **Semear e reconciliar são a mesma rotina.**
+
+**A fronteira** (arbitrada pelo sponsor em 2026-09-15) mora em **um lugar só**,
+`app/profile-template/PERFIL-DO-PRODUTO.json`:
+
+| classe | o quê | regra |
+|---|---|---|
+| **arquivo do produto** | `python/plugins/iman_brand/**`, `themes/IMAN Terra/**`, `QGIS/splash.png` | **espelha o template.** Obsoleto sai; sobra dentro de pasta de plugin do produto sai (é o `DB-22` dentro do perfil) |
+| **chave do produto** | toda chave que o `QGIS3.ini` do template declara | **3-way** contra a base registrada no perfil |
+| **do usuário** | todo o resto - `qgis.db`, `bookmarks.xml`, `previewImages/`, plugins que ele instalou e as chaves deles | **nunca tocado, byte a byte** |
+
+**O 3-way das chaves**, contra a base que o perfil guarda em `<perfil>/.iman-terra/base.json`:
+
+| situação | resultado |
+|---|---|
+| o produto mudou o valor entre a base e o template atual | **o produto vence** (mesmo se o usuário também mexeu) |
+| o produto **não** mudou | **a do usuário fica** |
+| o template **acrescenta** a chave | **ela chega** - é assim que o `iman_plugin=true` do `DA-3` vai chegar a quem já instalou |
+| o template **deixa de declarar** a chave, e o usuário não a mexeu desde a base | **sai** |
+| perfil **sem base registrada** | aplica as chaves do produto **uma vez** e registra a base |
+
+**A base é por CONTEÚDO, nunca por número de versão:** o template mudou várias vezes dentro da mesma
+`0.3.0` (`#022`, `#027`). Um "se a versão mudou, reaplica" daria verde sem ter reaplicado nada.
+
+**Duas consequências declaradas:** (1) **o produto nunca muda `iman_brand=true` depois da primeira
+vez** - quem desligar o plugin de marca fica com ele desligado; (2) **downgrade**: o template
+instalado é sempre a verdade, não existe noção de "mais novo", então instalar uma versão anterior por
+cima faz o template anterior vencer.
+
+**Fail-loud (`C.3`).** Reconciliação que falha **recusa abrir**, pela mesma razão da guarda de
+integridade: abrir sem reconciliar pode ser abrir no CRS antigo, e o QGIS não reclama disso - ele só
+desenha. A base é escrita **por último**, então uma rodada que morre no meio nunca deixa o perfil
+passando por atualizado; fica um `INCOMPLETO.txt` e a abertura seguinte refaz o plano inteiro.
+
+**Produto já aberto.** Se há o que aplicar e já existe uma janela deste produto, o launcher **recusa
+abrir a segunda** e pede para fechar a primeira: o QGIS reescreve o `QGIS3.ini` ao sair e apagaria o
+que acabamos de aplicar. Quando **não** há o que aplicar, a segunda janela abre normalmente.
+
+**Guarda:** `tools/test-reconciliacao-perfil.ps1` - 11 estados, exercitando o **launcher real**
+(`IMAN_TERRA_RECONCILE_ONLY=1`), com perfis velhos vindos de **templates reais da história do git**.
 
 ## Opção 2 — fork/build do QGIS (futuro, só após Opção 1 validada)
 
