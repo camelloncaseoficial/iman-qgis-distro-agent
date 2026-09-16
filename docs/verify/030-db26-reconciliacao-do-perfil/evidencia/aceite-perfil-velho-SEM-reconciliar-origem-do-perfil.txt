@@ -1,0 +1,6 @@
+﻿quando        : 2026-09-16T07:15:03.0938206Z
+perfil        : C:\Users\Francisco\AppData\Local\InstitutoIMAN\_aceite017\perfil\profiles\iman-distro
+semeado de    : profile-template de ba58d14 (copia crua)
+reconciliado  : False
+
+--- relato da reconciliacao (vazio quando nao houve) ---

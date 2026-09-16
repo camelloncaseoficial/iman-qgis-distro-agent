@@ -1,0 +1,62 @@
+
+  #030 - reconciliacao do perfil (DB-26)
+  launcher : C:\_imant30-inversa\_launcher-733e129\app\launcher\IMAN-Terra.bat  (launcher de 733e129)
+  template : D:\_projetos\iman-webgeo\iman-qgis-distro-agent\app\profile-template\iman-distro
+  arvore   : D:\_projetos\iman-webgeo\iman-qgis-distro-agent\installer\stage\qgis\QGIS 3.44.13
+  sandbox  : C:\_imant30-inversa
+
+  BL-3/Passo 0: C:\Users\Francisco\AppData\Roaming\QGIS - 0 arquivo(s), MD5 tirado antes da suite
+  BL-3/Passo 0: C:\Users\Francisco\AppData\Roaming\InstitutoIMAN - 26 arquivo(s), MD5 tirado antes da suite
+
+  [FAIL] estado 1 - perfil ausente -> perfil igual ao template, base registrada
+        exit=0  RECONCILIACAO=  
+        11 de 11 arquivos do template com SHA-256 identico no perfil
+        base registrada: False
+  [FAIL] estado 2 - perfil ja igual -> nada escrito (R5)
+        1a:   2a: 
+        12 arquivos no perfil; 6 diferenca(s) de SHA-256 ou mtime entre as duas aberturas
+        custo da abertura sem nada a fazer:  ms na rotina de reconciliacao
+        escreveu: t QGIS/QGISCUSTOMIZATION3.ini (mtime), ~ QGIS/QGIS3.ini, + symbology-style.db-journal, + qgis.db, + bookmarks.xml, + symbology-style.db
+  [FAIL] estado 3 - perfil de template anterior ao #022 -> tema e plugin novos chegam
+        exit=0  RECONCILIACAO=  
+        raios: 5-8px 14 -> 14   2px -> 0 (template tem 20)
+        QMenuBar::item: 6px 12px -> 3px 4px? False
+        _RE_SUFIXO_DO_QGIS em iman_brand.py: 0 -> 0 (template tem 3)
+        arquivos do produto com SHA-256 do template: 4 de 11
+  [FAIL] estado 4 - perfil anterior a 07-07 -> obsoletos saem, CRS corrige
+        exit=0  RECONCILIACAO=  
+        QGIS/iman-theme.qss     : presente -> True
+        resources/logo.png      : presente -> True
+        defaultProjectCrs       : EPSG:4674 -> EPSG:4674
+        layerDefaultCrs         : -> EPSG:4674
+        [UI] Customization/enabled (secao que nem existia): -> 
+  [PASS] estado 5 - chave do usuario que o produto nao mudou -> a do usuario fica
+        exit=0  RECONCILIACAO=  
+        [qgis] showTips: template=false  usuario=true  depois=true
+  [FAIL] estado 6 - usuario e produto mudaram a mesma chave -> o produto vence
+        exit=0  RECONCILIACAO=  
+        defaultProjectCrs: base=EPSG:31984  usuario=EPSG:4326  template=EPSG:31985  depois=EPSG:4326
+  [PASS] estado 7 - plugin do usuario e a chave dele -> intactos byte a byte
+        exit=0  RECONCILIACAO=  
+        3 arquivos do plugin do usuario, 0 diferenca(s) de SHA-256/mtime
+        [PythonPlugins] plugin_do_usuario=true   iman_brand=true
+        QGIS/bookmarks.xml: SHA-256 igual? True
+  [FAIL] estado 8 - chave nova do template -> chega ao perfil velho
+        exit=0  RECONCILIACAO=  
+        [PythonPlugins] iman_teste_db26: ausente -> 
+  [FAIL] estado 9 - falha no meio -> fail-loud, e o perfil nao passa por atualizado
+        exit=0  RECONCILIACAO=
+        DETALHE: 
+        base.json escrita apesar da falha? False   INCOMPLETO.txt deixado? False
+        abertura seguinte, com o lock solto: exit=0  -> perfil completo e base registrada? False
+  [ABORTADO] estado 11 - downgrade
+        E.1: o perfil semeado JA sai igual ao esperado em: o perfil esta com o tema NOVO - a rodada nao provaria nada
+
+  [PASS] BL-3 (R8) + Passo 0: 26 arquivo(s) intocaveis, 0 diferenca(s) de MD5
+  arvore de origem: 0 .pyc nasceram durante a suite e foram removidos (0 sobraram)
+
+  2 de 9 estados exercitados passaram.
+  1 estado(s) ABORTADOS por E.1 - baseline invalido.
+  JSON: D:\_projetos\iman-webgeo\iman-qgis-distro-agent\docs\verify\030-db26-reconciliacao-do-perfil\evidencia\guarda-733e129.json
+
+[exit 2 em 46 s]
