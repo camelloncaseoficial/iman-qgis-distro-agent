@@ -1,0 +1,21 @@
+
+  IMAN Terra - build do instalador
+  repo: D:\_scratch\claude\D---projetos-iman-webgeo-iman-qgis-distro-agent\649f12b6-5879-4c90-8da1-6e74669d045d\scratchpad\smoke-recusa3
+
+==> Verificando o repositorio
+    OK  branch 'develop', arvore limpa
+==> Lendo a fonte unica de versao (iman-terra.iss)
+    OK  ProductVersion 0.3.0 / QGIS embarcado 3.44.13
+
+  BUILD RECUSADO: ja existe um build canonico com esta identidade (0.3.0-18d2534)
+
+    Pasta   : D:\_scratch\claude\D---projetos-iman-webgeo-iman-qgis-distro-agent\649f12b6-5879-4c90-8da1-6e74669d045d\scratchpad\smoke-recusa3\installer\canonico\0.3.0-18d2534
+    Conteudo:
+      Instituto-IMAN-IMAN-Terra-Setup-0.3.0-18d2534.exe
+    
+    Recompilar o mesmo commit produz OUTRO SHA-256 (D-IMAN-032). Sobrescrever
+    destruiria o canonico que ja existe, e foi assim que o DB-25 nasceu.
+    
+    Se a pasta e sobra de um build INTERROMPIDO (sem BUILD_INFO.txt), confira
+    e remova a mao. Se e um canonico de verdade, ele fica: nao ha rebuild.
+

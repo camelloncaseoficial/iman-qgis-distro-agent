@@ -29,7 +29,12 @@
 
 ## Instalador (Inno Setup)
 
-- Script `.iss` em `installer/`; saída em `installer/dist/` (ex.: `Instituto-IMAN-<Produto>-Setup-<versão>.exe`).
+- Script `.iss` em `installer/`. **Saída por identidade desde a #029 (DB-25)**: o build canônico
+  (develop) grava em `installer/canonico/<versão>-<commit>/` o `Instituto-IMAN-<Produto>-Setup-<versão>-<commit>.exe`
+  e o `BUILD_INFO.txt` (rastreado), e reescreve `installer/canonico/VIGENTE.txt`; o build de branch grava
+  em `installer/dist/nao-canonico/<versão>-<commit>-<branch>/` com sufixo `-nao-canonico`, fora do git.
+  Canônico **recusa** sobrescrever canônico da mesma identidade. Até a #028 o nome era fixo por versão e
+  todo build de branch destruía o canônico da mesma versão.
 - Empacotar `app/*` (launcher, startup, profile-template, demo, assets, notices).
 - Atalhos (menu iniciar + opção desktop) com `.ico` de marca; incluir `LICENSE`, `THIRD_PARTY_NOTICES.md`, `README.md`.
 - **Instalador leve:** exige QGIS LTR já instalado (orienta se ausente).

@@ -1,0 +1,10 @@
+# IMAN Terra - candidato a release VIGENTE. Gerado por installer\build.ps1.
+# Reescrito por todo build CANONICO (develop) que termina, e por nenhum outro.
+# O registro completo vive em 'registro', ao lado do .exe; os canonicos
+# anteriores continuam nas pastas deles em installer/canonico/.
+identidade=0.3.0-327d9ee
+versao=0.3.0
+commit=327d9ee2585da067296eeae0dacbcbbd37dbfca3
+artefato=Instituto-IMAN-IMAN-Terra-Setup-0.3.0-327d9ee.exe
+sha256=38DA4709FB121C89C6A52FD96A107C5502316FBDD1BFEC07CE8B2809F68B73E7
+registro=installer/canonico/0.3.0-327d9ee/BUILD_INFO.txt

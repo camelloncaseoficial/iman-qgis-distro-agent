@@ -63,8 +63,9 @@ Fatos não óbvios do ambiente onde a distro é montada/verificada. Complementa
 - O ISCC 7 imprime **`Non-commercial use only`** em todo build. STOP-AND-FLAG de licenciamento
   aberto com o sponsor — não é decisão da crew.
 - Build: **não chamar o ISCC na mão.** Usar `installer\build.ps1`, que localiza o ISCC,
-  recusa árvore suja/branch errada e emite `installer/dist/BUILD_INFO.txt` amarrando
-  artefato ↔ commit ↔ versão ↔ SHA-256.
+  recusa árvore suja/branch errada e grava, ao lado de cada `.exe`, o `BUILD_INFO.txt` que amarra
+  artefato ↔ commit ↔ versão ↔ SHA-256 (canônico em `installer/canonico/<versão>-<commit>/`, branch em
+  `installer/dist/nao-canonico/`; desde a #029, DB-25).
 
 ## PowerShell
 

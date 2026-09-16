@@ -1,9 +1,9 @@
-﻿IMAN Terra - BUILD_INFO
+IMAN Terra - BUILD_INFO
 =======================================================================
 Este arquivo amarra o instalador ao commit que o gerou. Sem ele, um .exe
 numa VM e apenas um binario sem procedencia.
 
-Artefato              : Instituto-IMAN-IMAN-Terra-Setup-0.3.0.exe
+Artefato              : Instituto-IMAN-IMAN-Terra-Setup-0.3.0-327d9ee.exe
 SHA-256               : 38DA4709FB121C89C6A52FD96A107C5502316FBDD1BFEC07CE8B2809F68B73E7
 Tamanho (bytes)       : 512808129
 
@@ -60,5 +60,17 @@ pergunta, tambem necessaria: 'o arquivo que chegou na VM e exatamente este
 que eu gerei?' - contra download truncado, trocado ou corrompido.
 
 COMO CONFERIR NA VM (PowerShell 5.1):
-  Get-FileHash .\Instituto-IMAN-IMAN-Terra-Setup-0.3.0.exe -Algorithm SHA256
+  Get-FileHash .\Instituto-IMAN-IMAN-Terra-Setup-0.3.0-327d9ee.exe -Algorithm SHA256
+-----------------------------------------------------------------------
+
+-----------------------------------------------------------------------
+MIGRACAO PARA O ESQUEMA DE IDENTIDADE (DB-25, fatia #029)
+Este registro nasceu em af2eef5 como installer/dist/BUILD_INFO.txt, ao lado
+de Instituto-IMAN-IMAN-Terra-Setup-0.3.0.exe. Na #029 o artefato foi
+RENOMEADO, sem rebuild, para Instituto-IMAN-IMAN-Terra-Setup-0.3.0-327d9ee.exe
+e movido para installer/canonico/0.3.0-327d9ee/ junto com este registro.
+Renomear nao reescreve bytes: o SHA-256 acima foi recalculado no destino
+em 2026-09-15 14:15:32 -03:00 e confere (38DA4709FB121C89C6A52FD96A107C5502316FBDD1BFEC07CE8B2809F68B73E7).
+Linhas alteradas: 'Artefato' e a de 'COMO CONFERIR NA VM'. SHA-256,
+tamanho, commit, branch e 'Build canonico' sao os de af2eef5.
 -----------------------------------------------------------------------

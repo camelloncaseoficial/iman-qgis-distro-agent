@@ -24,11 +24,16 @@ resources_rc.py
 installer/payload/
 
 # Instalador / build (artefatos gerados)
-# O .exe NAO entra no repo; o BUILD_INFO.txt ENTRA — ele é a procedência do
-# artefato (commit + versão + SHA-256) e sem ele o BL-7 não é auditável.
-# Precisa ser "dist/*" e não "dist/": git não reabre um diretório já excluído.
-installer/dist/*
-!installer/dist/BUILD_INFO.txt
+# Nenhum .exe entra no repo. Desde a #029 (DB-25) o registro depende de quem
+# compilou:
+#   - build de BRANCH: installer/dist/nao-canonico/<id>/ (o .exe e o
+#     BUILD_INFO.txt dele), tudo fora do git;
+#   - build CANONICO : installer/canonico/<versao>-<commit>/BUILD_INFO.txt e
+#     installer/canonico/VIGENTE.txt ENTRAM. Sao a procedencia do candidato a
+#     release (commit + versao + SHA-256), e sem eles o BL-7 nao e auditavel.
+#     O .exe ao lado fica fora (regra explicita abaixo, alem do *.exe global).
+installer/dist/
+installer/canonico/**/*.exe
 installer/Output/
 *.exe
 /dist/

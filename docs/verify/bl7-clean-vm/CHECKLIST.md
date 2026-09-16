@@ -83,7 +83,7 @@ navegador dentro da VM**.
 > provável que antes — por isso a conferência abaixo deixou de ser formalidade.
 
 ```powershell
-Get-FileHash .\Instituto-IMAN-IMAN-Terra-Setup-<versao>.exe -Algorithm SHA256
+Get-FileHash .\Instituto-IMAN-IMAN-Terra-Setup-<versao>-<commit>.exe -Algorithm SHA256
 ```
 
 - [ ] O SHA-256 bate com o do `BUILD_INFO.txt` → **se não bater, PARE.**
@@ -518,7 +518,7 @@ ainda.
 >
 > ```powershell
 > New-Item -ItemType Directory -Force C:\bl7 | Out-Null
-> Start-Process .\Instituto-IMAN-IMAN-Terra-Setup-<versao>.exe -ArgumentList '/LOG=C:\bl7\m2a-setup.log' -Verb RunAs
+> Start-Process .\Instituto-IMAN-IMAN-Terra-Setup-<versao>-<commit>.exe -ArgumentList '/LOG=C:\bl7\m2a-setup.log' -Verb RunAs
 > ```
 >
 > O UAC aparece normalmente — clique **Sim** — e daí em diante o wizard é o mesmo, com os mesmos

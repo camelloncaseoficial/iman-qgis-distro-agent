@@ -126,7 +126,7 @@ $manifesto = Join-Path $Produto 'qgis-manifest.txt'
 if (-not (Test-Path -LiteralPath $exe)) {
     throw ("qgis-ltr-bin.exe nao encontrado em $Qgis.`n" +
            "  O aceite roda contra a arvore do PRODUTO INSTALADO. Instale o IMAN Terra`n" +
-           "  (installer\dist\*.exe) ou passe -Produto <raiz do produto>.")
+           "  (installer\canonico\<versao>-<commit>\*.exe) ou passe -Produto <raiz do produto>.")
 }
 if (-not (Test-Path -LiteralPath $bat)) {
     throw "qgis-ltr.bat nao encontrado em $Qgis\bin. A arvore do produto esta incompleta."

@@ -80,6 +80,12 @@ function Reprova { param([int]$Linha, [string]$Texto, [string]$Arquivo = '')
     [void]$falhas.Add([pscustomobject]@{ Arquivo = $Arquivo; Linha = $Linha; Texto = $Texto })
 }
 
+# O PLACAR E CONTADO, nao escrito (#029). Cada asse rcao se registra aqui ao
+# terminar; o veredito diz quantas RODARAM e quantas passaram. O build.ps1 le
+# esse placar da saida - ate a #029 ele dizia "5 de 5" num literal, com 6
+# asse rcoes rodando desde o #027, e este arquivo dizia "6 de 6" noutro.
+$rodadas = New-Object System.Collections.ArrayList
+
 # ---- 1. border-radius: exatamente 12, todos 2px -----------------------------
 # `border-radius` NAO casa com `border-top-left-radius` (a substring difere),
 # entao as duas contagens sao independentes de verdade.
@@ -99,6 +105,7 @@ foreach ($r in $foraDoRaio) {
 }
 Escreve ("  [1] border-radius : {0} declaracoes, {1} fora de {2}px" -f $raios.Count, $foraDoRaio.Count, $RAIO_ESPERADO) `
         $(if ($raios.Count -eq $RAIOS_ESPERADOS -and $foraDoRaio.Count -eq 0) { 'Green' } else { 'Red' })
+[void]$rodadas.Add(1)
 
 # ---- 2. QMenuBar::item padding exatamente 3px 4px ---------------------------
 $menubar = $null
@@ -116,6 +123,7 @@ if ($null -eq $menubar) {
 }
 Escreve ("  [2] QMenuBar::item : padding '{0}'" -f $(if ($menubar) { $menubar.Valor } else { '<ausente>' })) `
         $(if ($menubar -and $menubar.Valor -eq $MENUBAR_PADDING) { 'Green' } else { 'Red' })
+[void]$rodadas.Add(2)
 
 # ---- 3. QStatusBar SEM padding (regressao do D2) ----------------------------
 # O QGIS FIXA a largura do campo de coordenadas (min == max). Num widget de
@@ -136,6 +144,7 @@ foreach ($s in $statusComPadding) {
 }
 Escreve ("  [3] QStatusBar     : {0} declaracao(oes) de padding" -f $statusComPadding.Count) `
         $(if ($statusComPadding.Count -eq 0) { 'Green' } else { 'Red' })
+[void]$rodadas.Add(3)
 
 # ---- 4. QDockWidget::title SEM padding vertical (regressao do D4) -----------
 # A altura da faixa de titulo o Qt calcula a partir da FONTE; padding vertical
@@ -161,6 +170,7 @@ foreach ($d in $dockVertical) {
 }
 Escreve ("  [4] QDockWidget::title : {0} declaracao(oes) de padding vertical" -f $dockVertical.Count) `
         $(if ($dockVertical.Count -eq 0) { 'Green' } else { 'Red' })
+[void]$rodadas.Add(4)
 
 # ---- 5. cantos especificos da aba (extensao declarada do #022) --------------
 $cantos = New-Object System.Collections.ArrayList
@@ -176,6 +186,7 @@ if ($cantos.Count -ne $CANTOS_ESPERADOS) {
 foreach ($c in $foraDoCanto) {
     Reprova $c.Linha "[5] border-*-radius: $($c.Valor)px  (esperado ${RAIO_ESPERADO}px)"
 }
+[void]$rodadas.Add(5)
 Escreve ("  [5] cantos da aba  : {0} declaracoes, {1} fora de {2}px" -f $cantos.Count, $foraDoCanto.Count, $RAIO_ESPERADO) `
         $(if ($cantos.Count -eq $CANTOS_ESPERADOS -and $foraDoCanto.Count -eq 0) { 'Green' } else { 'Red' })
 
@@ -211,14 +222,20 @@ foreach ($p in $pyRaios) {
 }
 Escreve ("  [6] raio inline em Python : {0} ocorrencia(s)" -f $pyRaios.Count) `
         $(if ($pyRaios.Count -eq 0) { 'Green' } else { 'Red' })
+[void]$rodadas.Add(6)
 
 # ------------------------------------------------------------------ veredito
+# Toda reprovacao comeca por "[n]": uma asse rcao passou se rodou e nenhuma
+# reprovacao carrega o numero dela.
+$idsReprovados = @($falhas | ForEach-Object { if ($_.Texto -match '^\[(\d+)\]') { [int]$Matches[1] } } | Sort-Object -Unique)
+$passaram = @($rodadas | Where-Object { $idsReprovados -notcontains $_ }).Count
 Write-Host ''
 if ($falhas.Count -eq 0) {
-    Escreve '  6 de 6 asse rcoes passaram. O tema esta como o sponsor arbitrou, e num lugar so.' 'Green'
+    Escreve ("  {0} de {1} asse rcoes passaram. O tema esta como o sponsor arbitrou, e num lugar so." -f $passaram, $rodadas.Count) 'Green'
     Write-Host ''
     exit 0
 }
+Escreve ("  {0} de {1} asse rcoes passaram." -f $passaram, $rodadas.Count) 'Red'
 Escreve "  GUARDA REPROVOU - $($falhas.Count) problema(s):" 'Red'
 foreach ($f in $falhas) {
     if ($f.Linha -gt 0) {

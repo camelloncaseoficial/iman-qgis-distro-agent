@@ -1,0 +1,175 @@
+GUARDA_SHA256=899DBF106F005D1E241AF88F0567A3ED56881061AC326AD49D9164D27D32982B  ref=733e129  inicio=2026-09-15T14:12:07.2782634-03:00
+
+  #029 - guarda do DB-25: um build nao destroi o candidato a release
+  ref      : 733e129 = 733e1294f86a05c907174054fd4e4e4285039e5d
+  QGIS     : 3.44.13
+  trabalho : D:\_iman-terra-guarda-db25\20260915-141207-733e129
+  copiando a arvore do QGIS para esta rodada (14:12:07)...
+  arvore   : D:\_iman-terra-guarda-db25\20260915-141207-733e129\arvore (37337 arquivos = manifesto)
+
+  -- estado 4: sem canonico nenhum (primeiro build do repo) --
+
+    build [e4-primeiro-build-canonico] 14:12:23: build.ps1 -ReusarArvore -SemRede
+    build [e4-primeiro-build-canonico]: exit 0 em 1848,6 s
+      Artefato publicado: D:\_iman-terra-guarda-db25\20260915-141207-733e129\e4-semente\installer\dist\Instituto-IMAN-IMAN-Terra-Setup-0.3.0.exe
+      Info publicado    : D:\_iman-terra-guarda-db25\20260915-141207-733e129\e4-semente\installer\dist\BUILD_INFO.txt
+      |   6 de 6 asse rcoes passaram. O tema esta como o sponsor arbitrou, e num lugar so.
+      |     OK  o tema esta como o sponsor arbitrou (5 de 5 asse rcoes)
+      | ==> Gravando a identidade do build (BUILD_ID.txt)
+      |     OK  BUILD_ID.txt: 0.3.0 / 4fc993d / develop (canonico: sim)
+      | ==> Localizando o compilador do Inno Setup
+      |     OK  Inno Setup 7.1.0  (C:\Program Files\Inno Setup 7\ISCC.exe)
+      | ==> Compilando
+      |     OK  Instituto-IMAN-IMAN-Terra-Setup-0.3.0.exe (489.05 MB)
+      | ==> Gravando BUILD_INFO.txt
+      |   BUILD OK
+      |   Artefato : D:\_iman-terra-guarda-db25\20260915-141207-733e129\e4-semente\installer\dist\Instituto-IMAN-IMAN-Terra-Setup-0.3.0.exe
+      |   Versao   : 0.3.0   Commit: 4fc993d   Branch: develop
+      |   SHA-256  : EC035335FF4D097883FC0C35BD929F637843E43A96948C6345480F2B07257F91
+      |   Info     : D:\_iman-terra-guarda-db25\20260915-141207-733e129\e4-semente\installer\dist\BUILD_INFO.txt
+
+  [PASS] estado 4 - nao ha canonico: o primeiro build do repo passa sem falso positivo
+         ok   o primeiro build do repo termina (exit 0)
+              antes : sem canonico
+              depois: exit 0
+         ok   o build publica Artefato e Info, e os dois existem
+              antes : -
+              depois: D:\_iman-terra-guarda-db25\20260915-141207-733e129\e4-semente\installer\dist\Instituto-IMAN-IMAN-Terra-Setup-0.3.0.exe | D:\_iman-terra-guarda-db25\20260915-141207-733e129\e4-semente\installer\dist\BUILD_INFO.txt
+         ok   o registro descreve o artefato ao lado (SHA-256 declarado == calculado)
+              antes : EC035335FF4D097883FC0C35BD929F637843E43A96948C6345480F2B07257F91
+              depois: EC035335FF4D097883FC0C35BD929F637843E43A96948C6345480F2B07257F91
+         ok   tamanho declarado == tamanho no disco
+              antes : 512808040
+              depois: 512808040
+         ok   o registro diz 'Build canonico: SIM'
+              antes : SIM
+              depois: SIM
+
+  semente : installer\dist\Instituto-IMAN-IMAN-Terra-Setup-0.3.0.exe
+            SHA-256 EC035335FF4D097883FC0C35BD929F637843E43A96948C6345480F2B07257F91
+  registro: installer\dist\BUILD_INFO.txt   (SHA-256 dos bytes 74F7199E818D15DB81ED4D1449A6FF11492919272F5B8D2430BB0AB0B44A6073)
+  commit  : 4aa4438b68c4b091a0c589116074052add9842a1   (registro commitado, P0.6 simulada)
+
+  -- estado 1: ha canonico; build de branch com sucesso --
+    E.1 ok: o canonico de referencia confere antes da rodada
+            exe EC035335FF4D097883FC0C35BD929F637843E43A96948C6345480F2B07257F91 == cofre == declarado no registro
+            reg 74F7199E818D15DB81ED4D1449A6FF11492919272F5B8D2430BB0AB0B44A6073 == cofre
+
+    build [e1-build-de-branch] 14:43:22: build.ps1 -ExpectedBranch guarda/db25-branch -ReusarArvore -SemRede
+    build [e1-build-de-branch]: exit 0 em 1249,4 s
+      Artefato publicado: D:\_iman-terra-guarda-db25\20260915-141207-733e129\e1-branch-sucesso\installer\dist\Instituto-IMAN-IMAN-Terra-Setup-0.3.0.exe
+      Info publicado    : D:\_iman-terra-guarda-db25\20260915-141207-733e129\e1-branch-sucesso\installer\dist\BUILD_INFO.txt
+      | ==> Gravando a identidade do build (BUILD_ID.txt)
+      |     OK  BUILD_ID.txt: 0.3.0 / 4aa4438 / guarda/db25-branch (canonico: nao)
+      | ==> Localizando o compilador do Inno Setup
+      |     OK  Inno Setup 7.1.0  (C:\Program Files\Inno Setup 7\ISCC.exe)
+      | ==> Compilando
+      |     OK  Instituto-IMAN-IMAN-Terra-Setup-0.3.0.exe (489.05 MB)
+      | ==> Gravando BUILD_INFO.txt
+      |   BUILD OK
+      |   Artefato : D:\_iman-terra-guarda-db25\20260915-141207-733e129\e1-branch-sucesso\installer\dist\Instituto-IMAN-IMAN-Terra-Setup-0.3.0.exe
+      |   Versao   : 0.3.0   Commit: 4aa4438   Branch: guarda/db25-branch
+      |   SHA-256  : C9B5D0FB3B365DF8E2C38113E114E4B947308162C487B1DEBFDD577BC955B3B3
+      |   Info     : D:\_iman-terra-guarda-db25\20260915-141207-733e129\e1-branch-sucesso\installer\dist\BUILD_INFO.txt
+      |   AVISO: build NAO-CANONICO (branch 'guarda/db25-branch', esperado 'develop').
+      |          Serve para teste; o artefato de release sai de develop.
+
+  [FAIL] estado 1 - ha canonico; build de branch com sucesso
+         FAIL SHA-256 do .exe canonico inalterado
+              antes : EC035335FF4D097883FC0C35BD929F637843E43A96948C6345480F2B07257F91
+              depois: C9B5D0FB3B365DF8E2C38113E114E4B947308162C487B1DEBFDD577BC955B3B3
+         FAIL SHA-256 dos bytes do registro canonico inalterado
+              antes : 74F7199E818D15DB81ED4D1449A6FF11492919272F5B8D2430BB0AB0B44A6073
+              depois: 7337568EDA8F3A2699295CAABF272EF4AF4104206B7CEB6746ED1483D2944260
+         FAIL R1: o artefato de branch sai em OUTRO caminho
+              antes : D:\_iman-terra-guarda-db25\20260915-141207-733e129\e1-branch-sucesso\installer\dist\Instituto-IMAN-IMAN-Terra-Setup-0.3.0.exe
+              depois: D:\_iman-terra-guarda-db25\20260915-141207-733e129\e1-branch-sucesso\installer\dist\Instituto-IMAN-IMAN-Terra-Setup-0.3.0.exe
+         FAIL R1: canonico e branch se distinguem pelo NOME
+              antes : Instituto-IMAN-IMAN-Terra-Setup-0.3.0.exe
+              depois: Instituto-IMAN-IMAN-Terra-Setup-0.3.0.exe
+         FAIL R1: o nome do artefato de branch carrega versao e commit curto
+              antes : versao 0.3.0, commit 4aa4438
+              depois: Instituto-IMAN-IMAN-Terra-Setup-0.3.0.exe
+
+  -- estado 2: ha canonico; build de branch que falha no ISCC --
+    E.1 ok: o canonico de referencia confere antes da rodada
+            exe EC035335FF4D097883FC0C35BD929F637843E43A96948C6345480F2B07257F91 == cofre == declarado no registro
+            reg 74F7199E818D15DB81ED4D1449A6FF11492919272F5B8D2430BB0AB0B44A6073 == cofre
+
+    build [e2-build-de-branch-iscc-falha] 15:04:14: build.ps1 -ExpectedBranch guarda/db25-falha -ReusarArvore -SemRede -IsccPath D:\_iman-terra-guarda-db25\20260915-141207-733e129\iscc-que-falha.cmd
+    build [e2-build-de-branch-iscc-falha]: exit 4 em 11,9 s
+      Artefato publicado: 
+      Info publicado    : 
+      |   [4] QDockWidget::title : 0 declaracao(oes) de padding vertical
+      |   [5] cantos da aba  : 2 declaracoes, 0 fora de 2px
+      |   [6] raio inline em Python : 0 ocorrencia(s)
+      |   6 de 6 asse rcoes passaram. O tema esta como o sponsor arbitrou, e num lugar so.
+      |     OK  o tema esta como o sponsor arbitrou (5 de 5 asse rcoes)
+      | ==> Gravando a identidade do build (BUILD_ID.txt)
+      |     OK  BUILD_ID.txt: 0.3.0 / 4aa4438 / guarda/db25-falha (canonico: nao)
+      | ==> Localizando o compilador do Inno Setup
+      |     OK  Inno Setup 7.1.0  (D:\_iman-terra-guarda-db25\20260915-141207-733e129\iscc-que-falha.cmd)
+      | ==> Compilando
+      |   BUILD RECUSADO: o Inno Setup falhou (exit 1)
+      |     Artefato esperado: D:\_iman-terra-guarda-db25\20260915-141207-733e129\e2-branch-falha-iscc\installer\dist\Instituto-IMAN-IMAN-Terra-Setup-0.3.0.exe
+      |     Rode sem /Q para ver o log completo:
+      |       & 'D:\_iman-terra-guarda-db25\20260915-141207-733e129\iscc-que-falha.cmd' 'D:\_iman-terra-guarda-db25\20260915-141207-733e129\e2-branch-falha-iscc\installer\iman-terra.iss'
+    inducao confirmada: marcador presente, build exit 4
+
+  [FAIL] estado 2 - ha canonico; build de branch que falha no ISCC
+         FAIL SHA-256 do .exe canonico inalterado
+              antes : EC035335FF4D097883FC0C35BD929F637843E43A96948C6345480F2B07257F91
+              depois: <ausente>
+         ok   SHA-256 dos bytes do registro canonico inalterado
+              antes : 74F7199E818D15DB81ED4D1449A6FF11492919272F5B8D2430BB0AB0B44A6073
+              depois: 74F7199E818D15DB81ED4D1449A6FF11492919272F5B8D2430BB0AB0B44A6073
+
+  -- estado 3: ha canonico; segundo canonico da mesma versao --
+    E.1 ok: o canonico de referencia confere antes da rodada
+            exe EC035335FF4D097883FC0C35BD929F637843E43A96948C6345480F2B07257F91 == cofre == declarado no registro
+            reg 74F7199E818D15DB81ED4D1449A6FF11492919272F5B8D2430BB0AB0B44A6073 == cofre
+
+    build [e3-segundo-build-canonico] 15:04:28: build.ps1 -ReusarArvore -SemRede
+    build [e3-segundo-build-canonico]: exit 0 em 714,9 s
+      Artefato publicado: D:\_iman-terra-guarda-db25\20260915-141207-733e129\e3-segundo-canonico\installer\dist\Instituto-IMAN-IMAN-Terra-Setup-0.3.0.exe
+      Info publicado    : D:\_iman-terra-guarda-db25\20260915-141207-733e129\e3-segundo-canonico\installer\dist\BUILD_INFO.txt
+      |   6 de 6 asse rcoes passaram. O tema esta como o sponsor arbitrou, e num lugar so.
+      |     OK  o tema esta como o sponsor arbitrou (5 de 5 asse rcoes)
+      | ==> Gravando a identidade do build (BUILD_ID.txt)
+      |     OK  BUILD_ID.txt: 0.3.0 / ce82ce7 / develop (canonico: sim)
+      | ==> Localizando o compilador do Inno Setup
+      |     OK  Inno Setup 7.1.0  (C:\Program Files\Inno Setup 7\ISCC.exe)
+      | ==> Compilando
+      |     OK  Instituto-IMAN-IMAN-Terra-Setup-0.3.0.exe (489.05 MB)
+      | ==> Gravando BUILD_INFO.txt
+      |   BUILD OK
+      |   Artefato : D:\_iman-terra-guarda-db25\20260915-141207-733e129\e3-segundo-canonico\installer\dist\Instituto-IMAN-IMAN-Terra-Setup-0.3.0.exe
+      |   Versao   : 0.3.0   Commit: ce82ce7   Branch: develop
+      |   SHA-256  : C004167C9E3EFB01A5CB6B2781FDD2B9ADF0C912190584EDE35D3F58C9A8CACD
+      |   Info     : D:\_iman-terra-guarda-db25\20260915-141207-733e129\e3-segundo-canonico\installer\dist\BUILD_INFO.txt
+
+  [FAIL] estado 3 - ha canonico; segundo canonico da mesma versao
+         FAIL SHA-256 do .exe canonico inalterado
+              antes : EC035335FF4D097883FC0C35BD929F637843E43A96948C6345480F2B07257F91
+              depois: C004167C9E3EFB01A5CB6B2781FDD2B9ADF0C912190584EDE35D3F58C9A8CACD
+         FAIL SHA-256 dos bytes do registro canonico inalterado
+              antes : 74F7199E818D15DB81ED4D1449A6FF11492919272F5B8D2430BB0AB0B44A6073
+              depois: 4B21E59C21759F3D814B660EDD33FCF561677ADB5A08956824A2A0298BD34FB3
+         ok   R4: o registro do segundo canonico descreve o .exe dele
+              antes : C004167C9E3EFB01A5CB6B2781FDD2B9ADF0C912190584EDE35D3F58C9A8CACD
+              depois: C004167C9E3EFB01A5CB6B2781FDD2B9ADF0C912190584EDE35D3F58C9A8CACD
+         ok   R4: o segundo diz 'Build canonico: SIM'
+              antes : SIM
+              depois: SIM
+         FAIL R4: os dois canonicos coexistem (caminhos distintos, os dois no disco)
+              antes : D:\_iman-terra-guarda-db25\20260915-141207-733e129\e3-segundo-canonico\installer\dist\Instituto-IMAN-IMAN-Terra-Setup-0.3.0.exe
+              depois: D:\_iman-terra-guarda-db25\20260915-141207-733e129\e3-segundo-canonico\installer\dist\Instituto-IMAN-IMAN-Terra-Setup-0.3.0.exe
+
+  MATRIZ - build.ps1 de 733e1294f86a05c907174054fd4e4e4285039e5d
+    estado 4         PASS      nao ha canonico: o primeiro build do repo passa sem falso positivo
+    estado 1         FAIL      ha canonico; build de branch com sucesso
+    estado 2         FAIL      ha canonico; build de branch que falha no ISCC
+    estado 3         FAIL      ha canonico; segundo canonico da mesma versao
+  logs: D:\_iman-terra-guarda-db25\20260915-141207-733e129\logs
+
+EXIT=1  fim=2026-09-15T15:16:26.6451811-03:00
