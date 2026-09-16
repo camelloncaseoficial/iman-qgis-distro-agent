@@ -1,8 +1,25 @@
-78F2DF3E70B39D2EB65445D13D6A483536CCA3879EF46528F524B696EACA5A3C  app\launcher\IMAN-Terra.bat  19573 bytes
-C1A6D48951FA428B8368B8DDF3E2B3C370A298227D7541676841216ED917859C  app\launcher\Sync-Perfil.ps1  29017 bytes
-88EE0EF46831AE5A1F09E66E81E723A96DB104D9CC2F271EE42338AFB3245B76  app\profile-template\PERFIL-DO-PRODUTO.json  4900 bytes
-24A0240EF93F6D4B96592E8FC6A6F1CE2D2DA7892114E81EFB86A59E932DC64D  tools\test-reconciliacao-perfil.ps1  53500 bytes
+PROCEDENCIA DO QUE RODOU NESTA SUITE
 
-git HEAD        : f0d773b92340749472e7ad645fa54ed361775ef0
-git status      :  M .memory/reference_qgis_profile_and_packaging.md |  M README.md |  M app/launcher/IMAN-Terra.bat |  M app/startup/iman_startup.py |  M docs/distro-architecture.md |  M docs/verify/bl7-clean-vm/CHECKLIST.md |  M tools/Capture-Vitrine.ps1 |  M tools/branding-acceptance/Invoke-Aceite.ps1 |  M tools/branding-acceptance/README.md | ?? app/launcher/Sync-Perfil.ps1 | ?? app/profile-template/PERFIL-DO-PRODUTO.json | ?? docs/verify/030-db26-reconciliacao-do-perfil/ | ?? tools/test-reconciliacao-perfil.ps1
-quando (UTC)    : 2026-09-16T07:09:58.8538431Z
+Duas colunas de proposito. O SHA-256 descreve os BYTES EM DISCO nesta bancada,
+que e o que foi executado. O blob do git descreve o CONTEUDO COMMITADO, que e
+o mesmo em qualquer clone: como o repo usa core.autocrlf, um .ps1 pode chegar
+ao disco com CRLF e ao git com LF, e so o blob e reproduzivel fora daqui.
+
+app\launcher\IMAN-Terra.bat
+    SHA-256 em disco : 78F2DF3E70B39D2EB65445D13D6A483536CCA3879EF46528F524B696EACA5A3C  (19573 bytes)
+    blob do git      : 9f14b62dd53f20e6faaf4c4534c347ea4abc1db2
+app\launcher\Sync-Perfil.ps1
+    SHA-256 em disco : 0313A3998AAD518CF6535DE83F94205D53D60ECED25A4C0AE75545BCFC516E11  (29639 bytes)
+    blob do git      : 574de6444e6784b7f930edea154359caf492a156
+app\profile-template\PERFIL-DO-PRODUTO.json
+    SHA-256 em disco : 5C5EA99DF1AE60A725B575EA6725348F2254F89B3171EBCF2F609E1BC30B6DF7  (5020 bytes)
+    blob do git      : 888eb8d41f23340573b7e3f847db4278375c00df
+tools\test-reconciliacao-perfil.ps1
+    SHA-256 em disco : F665318B0CD92BA998BB3FBD948A047C23AB2BD992C9D7FCD815D31D5F6A7C47  (54501 bytes)
+    blob do git      : 74e1d0ab50d319f3092d751d5bb280aa8b763356
+
+branch          : feat/030-db26-atualizacao-chega-a-quem-ja-instalou
+git HEAD        : a2435317d6dc80c30a5539ba4bd212b73e59e7e8
+base            : 733e1294f86a05c907174054fd4e4e4285039e5d
+arvore de trabalho: LIMPA
+quando (UTC)    : 2026-09-16T07:22:46.0343021Z

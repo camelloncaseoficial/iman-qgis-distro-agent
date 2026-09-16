@@ -1,5 +1,5 @@
 ﻿{
-    "QuandoUtc":  "2026-09-16T07:11:14.7178531Z",
+    "QuandoUtc":  "2026-09-16T07:23:59.5138646Z",
     "Launcher":  "D:\\_projetos\\iman-webgeo\\iman-qgis-distro-agent\\app\\launcher\\IMAN-Terra.bat",
     "Rotulo":  "arvore de trabalho",
     "Ref":  "",
@@ -30,7 +30,7 @@
                                        "base registrada: True",
                                        "  template_digest=05DE72FB4FED54B2  chaves=8"
                                    ],
-                        "Cru":  "RECONCILIACAO=SEMEADO\r\nPLANO=arq+11 arq~0 arq-0 chave+0 chave~0 chave-0 pasta+2 splash+1 base+1\r\nMS=720\r\n"
+                        "Cru":  "RECONCILIACAO=SEMEADO\r\nPLANO=arq+11 arq~0 arq-0 chave+0 chave~0 chave-0 pasta+2 splash+1 base+1\r\nMS=743\r\n"
                     },
                     {
                         "Id":  2,
@@ -39,9 +39,9 @@
                         "Provas":  [
                                        "1a: SEMEADO  2a: NADA_A_FAZER",
                                        "13 arquivos no perfil; 0 diferenca(s) de SHA-256 ou mtime entre as duas aberturas",
-                                       "custo da abertura sem nada a fazer: 231 ms na rotina de reconciliacao"
+                                       "custo da abertura sem nada a fazer: 239 ms na rotina de reconciliacao"
                                    ],
-                        "Cru":  "RECONCILIACAO=NADA_A_FAZER\r\nPLANO=arq+0 arq~0 arq-0 chave+0 chave~0 chave-0 pasta+0 splash+0 base+0\r\nMS=231\r\n"
+                        "Cru":  "RECONCILIACAO=NADA_A_FAZER\r\nPLANO=arq+0 arq~0 arq-0 chave+0 chave~0 chave-0 pasta+0 splash+0 base+0\r\nMS=239\r\n"
                     },
                     {
                         "Id":  3,
@@ -54,7 +54,7 @@
                                        "_RE_SUFIXO_DO_QGIS em iman_brand.py: 0 -\u003e 3 (template tem 3)",
                                        "arquivos do produto com SHA-256 do template: 11 de 11"
                                    ],
-                        "Cru":  "RECONCILIACAO=APLICADA\r\nPLANO=arq+0 arq~7 arq-0 chave+0 chave~0 chave-0 pasta+0 splash+1 base+1\r\nMS=876\r\n"
+                        "Cru":  "RECONCILIACAO=APLICADA\r\nPLANO=arq+0 arq~7 arq-0 chave+0 chave~0 chave-0 pasta+0 splash+1 base+1\r\nMS=798\r\n"
                     },
                     {
                         "Id":  4,
@@ -68,7 +68,7 @@
                                        "layerDefaultCrs         : -\u003e EPSG:31984",
                                        "[UI] Customization/enabled (secao que nem existia): -\u003e true"
                                    ],
-                        "Cru":  "RECONCILIACAO=APLICADA\r\nPLANO=arq+5 arq~3 arq-2 chave+1 chave~2 chave-0 pasta+0 splash+1 base+1\r\nMS=781\r\n"
+                        "Cru":  "RECONCILIACAO=APLICADA\r\nPLANO=arq+5 arq~3 arq-2 chave+1 chave~2 chave-0 pasta+0 splash+1 base+1\r\nMS=659\r\n"
                     },
                     {
                         "Id":  5,
@@ -78,7 +78,7 @@
                                        "exit=0  RECONCILIACAO=NADA_A_FAZER  arq+0 arq~0 arq-0 chave+0 chave~0 chave-0 pasta+0 splash+0 base+0",
                                        "[qgis] showTips: template=false  usuario=true  depois=true"
                                    ],
-                        "Cru":  "RECONCILIACAO=NADA_A_FAZER\r\nPLANO=arq+0 arq~0 arq-0 chave+0 chave~0 chave-0 pasta+0 splash+0 base+0\r\nMS=300\r\n"
+                        "Cru":  "RECONCILIACAO=NADA_A_FAZER\r\nPLANO=arq+0 arq~0 arq-0 chave+0 chave~0 chave-0 pasta+0 splash+0 base+0\r\nMS=362\r\n"
                     },
                     {
                         "Id":  6,
@@ -88,7 +88,7 @@
                                        "exit=0  RECONCILIACAO=APLICADA  arq+0 arq~0 arq-0 chave+0 chave~1 chave-0 pasta+0 splash+1 base+1",
                                        "defaultProjectCrs: base=EPSG:31984  usuario=EPSG:4326  template=EPSG:31985  depois=EPSG:31985"
                                    ],
-                        "Cru":  "RECONCILIACAO=APLICADA\r\nPLANO=arq+0 arq~0 arq-0 chave+0 chave~1 chave-0 pasta+0 splash+1 base+1\r\nMS=881\r\n"
+                        "Cru":  "RECONCILIACAO=APLICADA\r\nPLANO=arq+0 arq~0 arq-0 chave+0 chave~1 chave-0 pasta+0 splash+1 base+1\r\nMS=770\r\n"
                     },
                     {
                         "Id":  7,
@@ -100,7 +100,7 @@
                                        "[PythonPlugins] plugin_do_usuario=true   iman_brand=true",
                                        "QGIS/bookmarks.xml: SHA-256 igual? True"
                                    ],
-                        "Cru":  "RECONCILIACAO=NADA_A_FAZER\r\nPLANO=arq+0 arq~0 arq-0 chave+0 chave~0 chave-0 pasta+0 splash+0 base+0\r\nMS=358\r\n"
+                        "Cru":  "RECONCILIACAO=NADA_A_FAZER\r\nPLANO=arq+0 arq~0 arq-0 chave+0 chave~0 chave-0 pasta+0 splash+0 base+0\r\nMS=320\r\n"
                     },
                     {
                         "Id":  8,
@@ -110,7 +110,7 @@
                                        "exit=0  RECONCILIACAO=APLICADA  arq+0 arq~0 arq-0 chave+1 chave~0 chave-0 pasta+0 splash+1 base+1",
                                        "[PythonPlugins] iman_teste_db26: ausente -\u003e true"
                                    ],
-                        "Cru":  "RECONCILIACAO=APLICADA\r\nPLANO=arq+0 arq~0 arq-0 chave+1 chave~0 chave-0 pasta+0 splash+1 base+1\r\nMS=888\r\n"
+                        "Cru":  "RECONCILIACAO=APLICADA\r\nPLANO=arq+0 arq~0 arq-0 chave+1 chave~0 chave-0 pasta+0 splash+1 base+1\r\nMS=816\r\n"
                     },
                     {
                         "Id":  9,
@@ -122,19 +122,19 @@
                                        "base.json escrita apesar da falha? False   INCOMPLETO.txt deixado? True",
                                        "abertura seguinte, com o lock solto: exit=0 APLICADA -\u003e perfil completo e base registrada? True"
                                    ],
-                        "Cru":  "RECONCILIACAO=FALHOU\r\nPLANO=arq+0 arq~7 arq-0 chave+0 chave~0 chave-0 pasta+0 splash+1 base+1\r\nMS=633\r\nDETALHE=ao aplicar: El proceso no puede obtener acceso al archivo \u0027C:\\_imant30-guarda\\e09\\appdata\\InstitutoIMAN\\IMAN Terra\\profiles\\iman-distro\\themes\\IMAN Terra\\style.qss\u0027 porque est� siendo utilizado en otro proceso.\r\n\n--- abertura seguinte ---\nRECONCILIACAO=APLICADA\r\nPLANO=arq+0 arq~1 arq-0 chave+0 chave~0 chave-0 pasta+0 splash+1 base+1\r\nMS=593\r\n"
+                        "Cru":  "RECONCILIACAO=FALHOU\r\nPLANO=arq+0 arq~7 arq-0 chave+0 chave~0 chave-0 pasta+0 splash+1 base+1\r\nMS=726\r\nDETALHE=ao aplicar: El proceso no puede obtener acceso al archivo \u0027C:\\_imant30-guarda\\e09\\appdata\\InstitutoIMAN\\IMAN Terra\\profiles\\iman-distro\\themes\\IMAN Terra\\style.qss\u0027 porque est� siendo utilizado en otro proceso.\r\n\n--- abertura seguinte ---\nRECONCILIACAO=APLICADA\r\nPLANO=arq+0 arq~1 arq-0 chave+0 chave~0 chave-0 pasta+0 splash+1 base+1\r\nMS=732\r\n"
                     },
                     {
                         "Id":  10,
                         "Titulo":  "QGIS ja aberto -\u003e recusa quando ha o que aplicar; abre quando nao ha",
                         "Veredito":  "PASS",
                         "Provas":  [
-                                       "instancia viva: PID 29372 em C:\\_IMANT~3\\e10\\v2\\app\\qgis\\bin\\qgis-ltr-bin.exe",
+                                       "instancia viva: PID 10012 em C:\\_IMANT~2\\e10\\v2\\app\\qgis\\bin\\qgis-ltr-bin.exe",
                                        "(a) ha o que aplicar : exit=2  RECONCILIACAO=INSTANCIA_VIVA",
                                        "    a chave nova NAO foi escrita embaixo da instancia viva: antes= depois=",
                                        "(b) nada a aplicar   : exit=0  RECONCILIACAO=NADA_A_FAZER"
                                    ],
-                        "Cru":  "RECONCILIACAO=INSTANCIA_VIVA\r\nPLANO=arq+0 arq~0 arq-0 chave+1 chave~0 chave-0 pasta+0 splash+1 base+1\r\nMS=726\r\nDETALHE=ha 1 janela(s) deste produto abertas: C:\\_IMANT~3\\e10\\v2\\app\\qgis\\bin\\qgis-ltr-bin.exe\r\n\n--- sem nada a aplicar ---\nRECONCILIACAO=NADA_A_FAZER\r\nPLANO=arq+0 arq~0 arq-0 chave+0 chave~0 chave-0 pasta+0 splash+0 base+0\r\nMS=344\r\n"
+                        "Cru":  "RECONCILIACAO=INSTANCIA_VIVA\r\nPLANO=arq+0 arq~0 arq-0 chave+1 chave~0 chave-0 pasta+0 splash+1 base+1\r\nMS=831\r\nDETALHE=ha 1 janela(s) deste produto abertas: C:\\_IMANT~2\\e10\\v2\\app\\qgis\\bin\\qgis-ltr-bin.exe\r\n\n--- sem nada a aplicar ---\nRECONCILIACAO=NADA_A_FAZER\r\nPLANO=arq+0 arq~0 arq-0 chave+0 chave~0 chave-0 pasta+0 splash+0 base+0\r\nMS=301\r\n"
                     },
                     {
                         "Id":  11,
@@ -145,7 +145,7 @@
                                        "style.qss: SHA-256 volta ao do template anterior? True",
                                        "defaultProjectCrs: EPSG:31984 -\u003e EPSG:4674"
                                    ],
-                        "Cru":  "RECONCILIACAO=APLICADA\r\nPLANO=arq+0 arq~1 arq-0 chave+0 chave~1 chave-0 pasta+0 splash+1 base+1\r\nMS=968\r\n"
+                        "Cru":  "RECONCILIACAO=APLICADA\r\nPLANO=arq+0 arq~1 arq-0 chave+0 chave~1 chave-0 pasta+0 splash+1 base+1\r\nMS=861\r\n"
                     }
                 ]
 }

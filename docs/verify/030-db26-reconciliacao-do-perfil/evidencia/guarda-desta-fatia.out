@@ -16,7 +16,7 @@
   [PASS] estado 2 - perfil ja igual -> nada escrito (R5)
         1a: SEMEADO  2a: NADA_A_FAZER
         13 arquivos no perfil; 0 diferenca(s) de SHA-256 ou mtime entre as duas aberturas
-        custo da abertura sem nada a fazer: 231 ms na rotina de reconciliacao
+        custo da abertura sem nada a fazer: 239 ms na rotina de reconciliacao
   [PASS] estado 3 - perfil de template anterior ao #022 -> tema e plugin novos chegam
         exit=0  RECONCILIACAO=APLICADA  arq+0 arq~7 arq-0 chave+0 chave~0 chave-0 pasta+0 splash+1 base+1
         raios: 5-8px 14 -> 0   2px -> 20 (template tem 20)
@@ -51,7 +51,7 @@
         abertura seguinte, com o lock solto: exit=0 APLICADA -> perfil completo e base registrada? True
         subindo o QGIS de verdade a partir desta arvore...
   [PASS] estado 10 - QGIS ja aberto -> recusa quando ha o que aplicar; abre quando nao ha
-        instancia viva: PID 29372 em C:\_IMANT~3\e10\v2\app\qgis\bin\qgis-ltr-bin.exe
+        instancia viva: PID 10012 em C:\_IMANT~2\e10\v2\app\qgis\bin\qgis-ltr-bin.exe
         (a) ha o que aplicar : exit=2  RECONCILIACAO=INSTANCIA_VIVA
             a chave nova NAO foi escrita embaixo da instancia viva: antes= depois=
         (b) nada a aplicar   : exit=0  RECONCILIACAO=NADA_A_FAZER
@@ -67,4 +67,4 @@
   JSON: D:\_projetos\iman-webgeo\iman-qgis-distro-agent\docs\verify\030-db26-reconciliacao-do-perfil\evidencia\guarda-desta-fatia.json
   O perfil de quem ja instalou recebe a versao nova, e o que e do usuario fica.
 
-[exit 0 em 76 s]
+[exit 0 em 74 s]

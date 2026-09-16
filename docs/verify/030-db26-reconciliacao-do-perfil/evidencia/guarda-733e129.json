@@ -1,5 +1,5 @@
 ﻿{
-    "QuandoUtc":  "2026-09-16T07:12:00.8605454Z",
+    "QuandoUtc":  "2026-09-16T07:24:45.2013847Z",
     "Launcher":  "C:\\_imant30-inversa\\_launcher-733e129\\app\\launcher\\IMAN-Terra.bat",
     "Rotulo":  "launcher de 733e129",
     "Ref":  "733e129",
@@ -26,7 +26,8 @@
                         "Veredito":  "FAIL",
                         "Provas":  [
                                        "exit=0  RECONCILIACAO=  ",
-                                       "11 de 11 arquivos do template com SHA-256 identico no perfil",
+                                       "10 de 11 arquivos do template com SHA-256 identico no perfil",
+                                       "divergentes: QGIS/QGIS3.ini (hash)",
                                        "base registrada: False"
                                    ],
                         "Cru":  "  [IMAN Terra] Preparando o perfil isolado (primeiro uso)...\r\n"
@@ -37,9 +38,9 @@
                         "Veredito":  "FAIL",
                         "Provas":  [
                                        "1a:   2a: ",
-                                       "12 arquivos no perfil; 6 diferenca(s) de SHA-256 ou mtime entre as duas aberturas",
+                                       "12 arquivos no perfil; 1 diferenca(s) de SHA-256 ou mtime entre as duas aberturas",
                                        "custo da abertura sem nada a fazer:  ms na rotina de reconciliacao",
-                                       "escreveu: t QGIS/QGISCUSTOMIZATION3.ini (mtime), ~ QGIS/QGIS3.ini, + symbology-style.db-journal, + qgis.db, + bookmarks.xml, + symbology-style.db"
+                                       "escreveu: t QGIS/QGISCUSTOMIZATION3.ini (mtime)"
                                    ],
                         "Cru":  ""
                     },

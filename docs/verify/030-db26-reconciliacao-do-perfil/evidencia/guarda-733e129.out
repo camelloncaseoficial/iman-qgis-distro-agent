@@ -10,13 +10,14 @@
 
   [FAIL] estado 1 - perfil ausente -> perfil igual ao template, base registrada
         exit=0  RECONCILIACAO=  
-        11 de 11 arquivos do template com SHA-256 identico no perfil
+        10 de 11 arquivos do template com SHA-256 identico no perfil
+        divergentes: QGIS/QGIS3.ini (hash)
         base registrada: False
   [FAIL] estado 2 - perfil ja igual -> nada escrito (R5)
         1a:   2a: 
-        12 arquivos no perfil; 6 diferenca(s) de SHA-256 ou mtime entre as duas aberturas
+        12 arquivos no perfil; 1 diferenca(s) de SHA-256 ou mtime entre as duas aberturas
         custo da abertura sem nada a fazer:  ms na rotina de reconciliacao
-        escreveu: t QGIS/QGISCUSTOMIZATION3.ini (mtime), ~ QGIS/QGIS3.ini, + symbology-style.db-journal, + qgis.db, + bookmarks.xml, + symbology-style.db
+        escreveu: t QGIS/QGISCUSTOMIZATION3.ini (mtime)
   [FAIL] estado 3 - perfil de template anterior ao #022 -> tema e plugin novos chegam
         exit=0  RECONCILIACAO=  
         raios: 5-8px 14 -> 14   2px -> 0 (template tem 20)

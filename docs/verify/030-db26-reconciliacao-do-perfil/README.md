@@ -383,7 +383,7 @@ O briefing pede: *"se for no launcher, meçam o custo na abertura em que não h�
 
 | | **medido** |
 |---|---|
-| rotina de reconciliação, abertura sem nada a fazer | **231 ms** (estado 2; 235 e 236 ms em rodadas anteriores) |
+| rotina de reconciliação, abertura sem nada a fazer | **239 ms** (estado 2 da rodada final; 231, 235 e 236 ms em rodadas anteriores desta sessão) |
 | o que ela faz nesses 231 ms | lê a declaração, lista o template, calcula **SHA-256 de 11 arquivos** do template **e dos 11 correspondentes no perfil**, compara o digest com a base, lê as chaves dos dois `.ini` e conclui `NADA_A_FAZER` |
 | o que ela **não** faz | nenhuma escrita: 13 arquivos no perfil, **0 diferenças de SHA-256 ou mtime** |
 | custo somado à abertura | esses 231 ms **mais** o arranque de um `powershell.exe -NoProfile` |
