@@ -1,0 +1,120 @@
+{
+  "_leia":
+  [
+    "IMAN Terra - A SUPERFICIE DO PRODUTO DENTRO DO PERFIL (DB-26, fatia #030).",
+    "",
+    "Este e O LUGAR onde se declara o que, dentro do perfil isolado, e DO PRODUTO.",
+    "Tudo que nao estiver descrito aqui e DO USUARIO e nunca e tocado (R4).",
+    "app/launcher/Sync-Perfil.ps1 le este arquivo; tools/test-reconciliacao-perfil.ps1",
+    "le o MESMO arquivo. Nao ha segunda copia desta lista em lugar nenhum.",
+    "",
+    "QUEM ACRESCENTA COISA AO PERFIL MEXE AQUI. O DA-3, quando embarcar o plugin",
+    "REURB, acrescenta a pasta dele em 'arvores_do_produto' e a chave dele no",
+    "QGIS3.ini do template - e so.",
+    "",
+    "POR QUE AS CHAVES NAO ESTAO LISTADAS AQUI, e sim derivadas do template:",
+    "o valor de cada chave do produto ja vive no QGIS3.ini do template, porque e",
+    "ele que e escrito no perfil. Repetir a lista de nomes aqui criaria DOIS",
+    "lugares dizendo a mesma coisa, que e exatamente o que o R9 proibe - e o dia",
+    "em que os dois divergissem, a chave nova deixaria de chegar em silencio.",
+    "Entao a regra e uma so, e esta escrita em 'chaves_do_produto': chave do",
+    "produto e TODA chave que o template declara. Acrescentar a chave ao template",
+    "e acrescenta-la ao produto, num movimento so.",
+    "",
+    "ASCII-only de proposito: o PowerShell 5.1 le arquivo sem BOM como ANSI.",
+    "Caminhos com '/' e relativos a raiz do perfil."
+  ],
+
+  "perfil": "iman-distro",
+
+  "arvores_do_produto":
+  [
+    "python/plugins/iman_brand",
+    "themes/IMAN Terra"
+  ],
+  "_arvores":
+  [
+    "Pastas 100% do produto: ESPELHADAS. O que o template tem entra, o que sobrar",
+    "de uma versao anterior SAI (R2). Copiar por cima nao remove - essa e a classe",
+    "do DB-22, so que dentro do perfil.",
+    "Foi assim que 'resources/logo.png' (obsoleto desde 8cc4d5e, 2026-07-07) passou",
+    "a sair sozinho: ele esta dentro de uma arvore espelhada."
+  ],
+
+  "arquivos_do_produto":
+  [
+    "QGIS/splash.png"
+  ],
+  "_arquivos":
+  [
+    "Arquivos avulsos do produto que moram em pasta COMPARTILHADA com o usuario.",
+    "QGIS/ nao pode ser espelhada: e la que vivem o QGIS3.ini e todo o resto que o",
+    "QGIS grava. Entao o splash.png e nomeado um a um."
+  ],
+
+  "pastas_do_produto":
+  [
+    "processing",
+    "project_templates"
+  ],
+  "_pastas":
+  [
+    "Existem vazias no template (o .iss exclui o .gitkeep). So se garante que",
+    "existam; o conteudo e do usuario."
+  ],
+
+  "obsoletos":
+  [
+    "QGIS/iman-theme.qss",
+    "python/plugins/iman_brand/resources/logo.png"
+  ],
+  "_obsoletos":
+  [
+    "Arquivos que o produto JA POS no perfil e nao poe mais. Saem de perfil velho.",
+    "  QGIS/iman-theme.qss      - nasceu em 536ad70 (2026-07-05), morreu em",
+    "                             f0055f8 (2026-09-07), quando o QSS de marca",
+    "                             virou themes/IMAN Terra/style.qss.",
+    "  .../resources/logo.png   - nasceu em 33fdd13 (2026-07-05), morreu em",
+    "                             8cc4d5e (2026-07-07). Ja cairia pelo espelho da",
+    "                             arvore; esta nomeado aqui porque a lista tambem e",
+    "                             o registro do que o produto ja deixou para tras.",
+    "Quem remover arquivo do template acrescenta o caminho velho a esta lista."
+  ],
+
+  "ini_do_produto": "QGIS/QGIS3.ini",
+  "chaves_do_produto": "toda chave declarada por ini_do_produto no template",
+  "_chaves":
+  [
+    "Reconciliadas em 3-WAY contra a base registrada no proprio perfil:",
+    "  o produto mudou o valor entre a base e o template atual  -> o produto vence",
+    "  o produto NAO mudou                                      -> o do usuario fica",
+    "  o template ACRESCENTA a chave                            -> ela chega",
+    "  o template DEIXA DE declarar a chave, e o usuario nao a  -> sai",
+    "    mexeu desde a base                                        ",
+    "Chave que o template nao declara e do usuario, sempre - inclusive a",
+    "[PythonPlugins] de um plugin que ele instalou.",
+    "",
+    "CONSEQUENCIA DECLARADA: o produto nunca muda iman_brand=true depois da",
+    "primeira vez. Quem desligar o plugin de marca fica com ele desligado."
+  ],
+
+  "ignorar":
+  [
+    "__pycache__",
+    "*.pyc",
+    ".gitkeep"
+  ],
+  "_ignorar":
+  [
+    "__pycache__ e *.pyc: bytecode que o PROPRIO Python grava dentro da pasta do",
+    "plugin ao importar. Nao e sobra de versao anterior: e artefato de execucao, e",
+    "nasce de novo a cada abertura. Espelhar sobre ele faria a SEGUNDA abertura",
+    "escrever no perfil, quebrando o R5 sem nada em troca.",
+    "",
+    ".gitkeep: existe no repo para o git carregar pasta vazia, e o .iss ja o exclui",
+    "do pacote. O template do repo e o instalado tem de dar o MESMO plano - se este",
+    "nao estivesse aqui, dariam planos diferentes e a guarda mediria outra coisa."
+  ],
+
+  "registro_da_base": ".iman-terra"
+}
