@@ -89,17 +89,23 @@ def _aplica_tema_ui():
 
 
 def _read_qss(brand):
-    # O QSS de marca É o style.qss do tema (fonte única). O caminho antigo
-    # (<perfil>/QGIS/iman-theme.qss) fica como fallback para perfis criados
-    # antes da fatia #018.
-    for qss_path in (os.path.join(_caminho_do_tema(), "style.qss"),
-                     os.path.join(_profile_dir(), "QGIS", "iman-theme.qss")):
-        if os.path.exists(qss_path):
-            try:
-                with open(qss_path, "r", encoding="utf-8") as fh:
-                    return fh.read()
-            except Exception:
-                pass
+    # O QSS de marca É o style.qss do tema (fonte única).
+    #
+    # O FALLBACK PARA <perfil>/QGIS/iman-theme.qss SAIU na fatia #030 (DB-26).
+    # Ele existia para perfis criados antes da #018, quando o QSS morava ali.
+    # Com a reconciliação do perfil, esse arquivo é OBSOLETO declarado em
+    # `profile-template/PERFIL-DO-PRODUTO.json`: a rotina do launcher o REMOVE
+    # de qualquer perfil, e ela roda antes de o QGIS ler o perfil. O caminho
+    # não podia mais ser alcançado - e um fallback que não pode disparar não
+    # protege ninguém; só sugere que aquele arquivo ainda é uma fonte válida
+    # de tema, que é exatamente o que deixou de ser.
+    qss_path = os.path.join(_caminho_do_tema(), "style.qss")
+    if os.path.exists(qss_path):
+        try:
+            with open(qss_path, "r", encoding="utf-8") as fh:
+                return fh.read()
+        except Exception:
+            pass
     if brand is not None:
         # Fallback mínimo derivado das constantes (caso o .qss não venha no perfil).
         # Cores vêm da fonte única brand.py (paleta oficial travada, BL-4).
