@@ -8,7 +8,11 @@ REM  <APP_HOME>\qgis. Nao ha deteccao, nao ha ambiguidade de "qual QGIS abrir",
 REM  nao ha dependencia de registro, ARP ou PATH.
 REM
 REM  - Confere o MANIFESTO DE INTEGRIDADE da arvore ANTES de subir (ver abaixo).
-REM  - Cria o perfil ISOLADO no primeiro run (nunca toca o perfil do usuario - BL-3).
+REM  - RECONCILIA o perfil ISOLADO com o template desta versao, antes de o QGIS
+REM    ler o perfil (DB-26, fatia #030). Ate a #029 o perfil era semeado no
+REM    primeiro uso e nunca mais reconciliado: quem ja tinha perfil nao recebia
+REM    tema, plugin, splash nem chave nenhuma de uma versao nova.
+REM    Nunca toca o perfil do usuario fora do nosso (BL-3).
 REM  - Abre o QGIS com o perfil iman-distro + startup.
 REM  Marca (nome/perfil): fonte unica em docs/design-system.md e brand.py (BL-4).
 REM  ASCII-only de proposito (compatibilidade de codepage do cmd.exe).
@@ -33,6 +37,8 @@ set "APP_HOME=%CD%"
 popd >nul
 
 set "TEMPLATE=%APP_HOME%\profile-template\%PROFILE_NAME%"
+set "DECLARACAO=%APP_HOME%\profile-template\PERFIL-DO-PRODUTO.json"
+set "SYNC=%APP_HOME%\launcher\Sync-Perfil.ps1"
 set "STARTUP=%APP_HOME%\startup\iman_startup.py"
 set "DEMO=%APP_HOME%\demo\welcome.qgz"
 
@@ -46,6 +52,7 @@ REM numa arvore intacta. Um launcher que depende do PATH do usuario e um
 REM launcher que quebra na maquina de quem tem ferramentas instaladas.
 set "WFIND=%SystemRoot%\System32\find.exe"
 set "WCERTUTIL=%SystemRoot%\System32\certutil.exe"
+set "WPOWERSHELL=%SystemRoot%\System32\WindowsPowerShell\v1.0\powershell.exe"
 
 set "QGIS_ROOT=%APP_HOME%\qgis"
 set "QGIS_BAT=%QGIS_ROOT%\bin\qgis-ltr.bat"
@@ -94,22 +101,73 @@ if "%IMAN_TERRA_CHECK_ONLY%"=="1" (
   exit /b 0
 )
 
-REM -- Primeiro run: copia o template para o perfil isolado --------------------
-if not exist "%PROFILE_DIR%\QGIS\QGIS3.ini" (
-  echo   [%PRODUCT_NAME%] Preparando o perfil isolado ^(primeiro uso^)...
-  if not exist "%PROFILE_DIR%" mkdir "%PROFILE_DIR%"
-  xcopy /E /I /Y /Q "%TEMPLATE%" "%PROFILE_DIR%" >nul
+REM ===========================================================================
+REM  RECONCILIACAO DO PERFIL (DB-26, fatia #030)
+REM
+REM  O QUE ESTAVA AQUI ATE A #029, e por que saiu:
+REM
+REM      if not exist "%%PROFILE_DIR%%\QGIS\QGIS3.ini" ( xcopy ... )
+REM
+REM  Duas linhas que semeavam o perfil no PRIMEIRO uso e nunca mais o
+REM  reconciliavam. Tema, plugin de marca, splash e chaves do QGIS3.ini: quem ja
+REM  tinha perfil nao recebia NADA de uma versao nova. O aceite nunca pegou isso
+REM  porque ele reconstroi o perfil do zero a cada rodada - sempre exercitava o
+REM  template novo. A distancia entre "o teste passa" e "o usuario ve" era
+REM  exatamente aquela linha.
+REM
+REM  O QUE ENTROU: Sync-Perfil.ps1, que SEMEIA E RECONCILIA na mesma rotina.
+REM  Ela roda AQUI, antes de o QGIS ler o perfil - no --code do iman_startup.py
+REM  seria tarde, porque o QGIS ja teria importado o codigo velho do iman_brand.
+REM  A fronteira do que e do produto e do que e do usuario mora em
+REM  profile-template\PERFIL-DO-PRODUTO.json, e so la.
+REM
+REM  O splashpath tambem passou para la. Ele era reescrito a CADA execucao, e
+REM  isso sozinho fazia toda segunda abertura escrever no perfil - com ele aqui,
+REM  "a segunda abertura nao escreve nada" seria impossivel de cumprir.
+REM
+REM  POR QUE EM POWERSHELL, e chamado por caminho ABSOLUTO: reconciliar exige
+REM  SHA-256 por arquivo e edicao cirurgica de .ini preservando bytes; em cmd
+REM  puro isso vira um emaranhado que ninguem audita. O caminho absoluto segue a
+REM  mesma regra do %WFIND%/%WCERTUTIL% acima - launcher que depende do PATH do
+REM  usuario e launcher que quebra na maquina de quem tem ferramentas instaladas.
+REM ===========================================================================
+if not exist "%WPOWERSHELL%" (
+  set "RECON_DETALHE=o Windows PowerShell nao foi encontrado em %WPOWERSHELL%"
+  goto :reconciliacao_falhou
+)
+if not exist "%SYNC%" (
+  set "RECON_DETALHE=falta %SYNC% - a instalacao do %PRODUCT_NAME% esta incompleta"
+  goto :reconciliacao_falhou
 )
 
-REM -- Splash NATIVO de marca (mecanismo no-fork do spike #004) ----------------
-REM O QGIS mostra QgsCustomization::splashPath()+"splash.png" no boot. Apontamos
-REM o splashpath (ABSOLUTO, por-instalacao) para a pasta QGIS\ do perfil, que
-REM contem o splash.png re-derivado. Reescrito a cada run (idempotente) para
-REM sobreviver a uma eventual reescrita da customizacao pelo QGIS. So o splash -
-REM nenhuma regra de widget (nao mexe na UI). BL-3: tudo no perfil isolado.
-set "SPLASH_DIR=%PROFILE_DIR:\=/%/QGIS/"
-> "%PROFILE_DIR%\QGIS\QGISCUSTOMIZATION3.ini" echo [Customization]
->> "%PROFILE_DIR%\QGIS\QGISCUSTOMIZATION3.ini" echo splashpath=%SPLASH_DIR%
+set "RECON_OUT=%TEMP%\iman-terra-reconciliacao.txt"
+"%WPOWERSHELL%" -NoProfile -NonInteractive -ExecutionPolicy Bypass -File "%SYNC%" ^
+  -Template "%TEMPLATE%" ^
+  -Declaracao "%DECLARACAO%" ^
+  -Perfil "%PROFILE_DIR%" ^
+  -QgisRoot "%QGIS_ROOT%" > "%RECON_OUT%" 2>&1
+set "RECON_RC=%ERRORLEVEL%"
+
+REM -- Modo diagnostico da guarda ---------------------------------------------
+REM Com IMAN_TERRA_RECONCILE_ONLY=1 o launcher confere a arvore, RECONCILIA o
+REM perfil, imprime o relato cru e sai SEM abrir o QGIS. Mesma razao do
+REM IMAN_TERRA_CHECK_ONLY: o teste da reconciliacao precisa exercitar ESTA
+REM rotina. Teste que reimplementa a reconciliacao valida a copia (C.1).
+REM Ver tools\test-reconciliacao-perfil.ps1.
+if "%IMAN_TERRA_RECONCILE_ONLY%"=="1" (
+  type "%RECON_OUT%"
+  endlocal
+  exit /b %RECON_RC%
+)
+
+if "%RECON_RC%"=="2" goto :produto_ja_aberto
+if not "%RECON_RC%"=="0" goto :reconciliacao_falhou
+
+REM Silencio quando nao havia o que fazer; uma linha quando houve.
+"%WFIND%" /c "RECONCILIACAO=NADA_A_FAZER" "%RECON_OUT%" >nul
+if errorlevel 1 (
+  echo   [%PRODUCT_NAME%] Perfil atualizado para esta versao.
+)
 
 REM -- Abre o QGIS PRIVADO com o perfil IMAN isolado ---------------------------
 REM Chamamos o bin\qgis-ltr.bat DA PROPRIA ARVORE, e nao o .exe direto: e ele
@@ -294,6 +352,82 @@ echo.
 pause
 endlocal
 exit /b 1
+
+REM ===========================================================================
+REM  :reconciliacao_falhou   (DB-26 / R6, C.3 fail-loud)
+REM
+REM  POR QUE RECUSA ABRIR, e nao "avisa e abre assim mesmo".
+REM
+REM  Abrir sem reconciliar pode ser abrir em EPSG:4674. Um perfil semeado antes
+REM  de 4dfeb93 (2026-07-12) tem esse CRS padrao cravado, e o QGIS nao reclama
+REM  de CRS "errado" - ele so desenha. O defeito nao aparece como erro: aparece
+REM  como MEDICAO NOVA NO CRS ERRADO num memorial descritivo. E a mesma classe
+REM  de falha silenciosa da arvore truncada, e a resposta do produto e a mesma.
+REM
+REM  E a reconciliacao que morreu no meio NAO atualiza a base: o perfil nunca
+REM  passa por atualizado, e a proxima abertura refaz o plano inteiro.
+:reconciliacao_falhou
+echo.
+echo   ============================================================
+echo    %PRODUCT_NAME% NAO PODE ABRIR
+echo   ============================================================
+echo.
+echo    Nao foi possivel atualizar o seu perfil para esta versao.
+echo.
+if defined RECON_DETALHE (
+  echo    O que foi encontrado:
+  echo      %RECON_DETALHE%
+) else (
+  echo    Relato da reconciliacao:
+  if exist "%RECON_OUT%" type "%RECON_OUT%"
+)
+echo.
+echo    Por que o produto nao abre assim, em vez de so avisar:
+echo    abrir com o perfil desatualizado pode ser abrir com o CRS
+echo    padrao ANTIGO. O QGIS nao reclama disso - ele so desenha, e
+echo    a medicao sai errada sem aviso nenhum.
+echo.
+echo    O seu perfil NAO foi dado por atualizado: a proxima abertura
+echo    tenta de novo, do zero.
+echo.
+echo    O que fazer: feche o %PRODUCT_NAME%, abra de novo. Se
+echo    continuar, reinstale o %PRODUCT_NAME%.
+echo    Perfil: %PROFILE_DIR%
+echo.
+pause
+endlocal
+exit /b 1
+
+REM ===========================================================================
+REM  :produto_ja_aberto   (DB-26 / R7)
+REM
+REM  Ha o que aplicar E ja existe uma janela deste produto aberta. Reconciliar
+REM  agora seria pior que nao reconciliar: o QGIS REESCREVE o QGIS3.ini ao sair,
+REM  e a instancia que ja esta rodando apagaria as chaves recem-aplicadas -
+REM  ficaria uma base dizendo "aplicado" sobre um .ini que voltou atras. E o
+REM  plugin de marca velho continua carregado na memoria dela de qualquer jeito.
+REM
+REM  Quando NAO ha o que aplicar, a segunda janela abre normalmente: o produto
+REM  nao atrapalha quem so quer duas janelas.
+:produto_ja_aberto
+echo.
+echo   ============================================================
+echo    %PRODUCT_NAME% - feche a janela que ja esta aberta
+echo   ============================================================
+echo.
+echo    Esta versao tem uma atualizacao de perfil para aplicar, e o
+echo    %PRODUCT_NAME% ja esta aberto.
+echo.
+echo    Aplicar agora nao funcionaria: ao fechar, a janela que ja
+echo    esta aberta regravaria a configuracao antiga por cima - e o
+echo    perfil ficaria marcado como atualizado sem estar.
+echo.
+echo    O que fazer: feche o %PRODUCT_NAME% e abra de novo. A
+echo    atualizacao e aplicada na abertura seguinte.
+echo.
+pause
+endlocal
+exit /b 2
 
 REM ===========================================================================
 :caminho_longo
