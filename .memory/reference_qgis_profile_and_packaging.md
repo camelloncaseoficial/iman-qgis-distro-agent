@@ -15,6 +15,50 @@
 - Startup script via `--code <script.py>`; projeto demo via `--project welcome.qgz`;
   `--noversioncheck` para não poluir a primeira abertura.
 
+## Reconciliação do perfil - o launcher SEMEIA **e** RECONCILIA (`DB-26`, fatia #030)
+
+- **O defeito, e por que ninguém via.** Até a `#029` o launcher tinha
+  `if not exist "%PROFILE_DIR%\QGIS\QGIS3.ini" ( xcopy ... )`: o perfil era semeado no **primeiro**
+  uso e nunca mais reconciliado. Quem já tinha perfil **não recebia nada** de uma versão nova -
+  tema, plugin, splash, chaves. O aceite (`Invoke-Aceite.ps1`, `V.4`) **reconstrói o perfil do zero
+  a cada rodada**, então sempre exercitava o template novo: a cegueira era por construção.
+  **Um perfil semeado antes de `4dfeb93` (2026-07-12) abria em `EPSG:4674` para sempre.**
+- **Onde a reconciliação roda, e por quê.** `app/launcher/Sync-Perfil.ps1`, chamado pelo
+  `IMAN-Terra.bat` **antes** de o QGIS ler o perfil. No `--code` do `iman_startup.py` seria tarde (o
+  QGIS já importou o `iman_brand` velho). No instalador seria frágil: o perfil nasce na primeira
+  abertura, não na instalação, e sobrariam duas rotinas que precisam concordar.
+  **Semear e reconciliar são a mesma rotina** - se fossem duas, a que roda menos apodrece.
+- **A fronteira mora num lugar só:** `app/profile-template/PERFIL-DO-PRODUTO.json`. Árvores do
+  produto são **espelhadas** (sobra sai - é o `DB-22` dentro do perfil); chaves do produto são
+  **toda chave que o `QGIS3.ini` do template declara**, e são derivadas dele em vez de repetidas na
+  declaração (duas listas divergiriam, e no dia em que divergissem a chave nova pararia de chegar).
+- **A base do 3-way é POR CONTEÚDO**, em `<perfil>/.iman-terra/base.json`. Número de versão não
+  serve: o template mudou várias vezes dentro da mesma `0.3.0` (`#022`, `#027`).
+- **`base.json` é escrita POR ÚLTIMO.** É isso que impede perfil meio aplicado de passar por
+  atualizado: uma rodada que morre no meio deixa `INCOMPLETO.txt` e a base apontando para o
+  template antigo, e a abertura seguinte refaz o plano inteiro.
+- **`QGISCUSTOMIZATION3.ini` (o `splashpath`) passou do `.bat` para a reconciliação, e agora só é
+  escrito quando difere.** Enquanto ele era reescrito a cada execução, "a segunda abertura não
+  escreve nada no perfil" era impossível de cumprir.
+- **Custo medido** da abertura em que não há nada a fazer: **~235 ms** dentro da rotina (bancada de
+  2026-09-16), contra dezenas de segundos de boot do QGIS.
+
+### Armadilhas medidas ao construir a guarda (2026-09-16)
+
+- **`powershell -File script.ps1 -Estados 3,4`** entrega a **string** `'3,4'` (que vira `@(34)`), e
+  `-Estados 3 4` amarra o `4` no primeiro parâmetro posicional. Parâmetro de lista chamado por
+  `-File` tem de ser `[string]` e ser fatiado dentro do script.
+- **`git archive <ref> <path> | tar -x`** no PowerShell **corrompe o fluxo** (o pipe do PS carrega
+  texto, não bytes) e o tar responde `Unrecognized archive format`. Grave o `.tar` em disco com
+  `git archive --format=tar -o <arq>` e depois `tar -xf`.
+- **`Win32_Process.ExecutablePath` reporta o caminho da JUNCTION**, e não o do alvo - medido. Por
+  isso a guarda pode montar a árvore de 2,2 GB por junction e ainda assim detectar "é o QGIS deste
+  sandbox".
+- **Lock de arquivo para induzir falha:** o Windows checa os dois lados (acesso pedido ⊆ share
+  existente **e** acesso existente ⊆ share pedido). Abrir com acesso `ReadWrite`/share `Read` ainda
+  barra o `Get-FileHash`; **acesso `Read`/share `Read`** deixa ler e barra a escrita - é o único que
+  faz a falha cair **no meio da aplicação** em vez de na montagem do plano.
+
 ## Executáveis do QGIS (detecção **na máquina do usuário**)
 
 > Esta seção descreve o que o **launcher procura no PC de quem instala** — não é descrição da

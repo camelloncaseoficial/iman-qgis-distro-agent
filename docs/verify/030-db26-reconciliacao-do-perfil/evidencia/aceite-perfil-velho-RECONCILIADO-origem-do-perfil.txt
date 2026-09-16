@@ -1,0 +1,17 @@
+﻿quando        : 2026-09-16T07:15:47.0882618Z
+perfil        : C:\Users\Francisco\AppData\Local\InstitutoIMAN\_aceite017\perfil\profiles\iman-distro
+semeado de    : profile-template de ba58d14 (copia crua)
+reconciliado  : True
+
+--- relato da reconciliacao (vazio quando nao houve) ---
+RECONCILIACAO=APLICADA
+PLANO=arq+0 arq~7 arq-0 chave+0 chave~0 chave-0 pasta+0 splash+1 base+1
+MS=380
+  ~ python/plugins/iman_brand/brand.py
+  ~ python/plugins/iman_brand/dashboard.py
+  ~ python/plugins/iman_brand/iman_brand.py
+  ~ python/plugins/iman_brand/resources/splash.png
+  ~ python/plugins/iman_brand/sobre.py
+  ~ QGIS/splash.png
+  ~ themes/IMAN Terra/style.qss
+

@@ -1,0 +1,138 @@
+﻿{
+    "QuandoUtc":  "2026-09-16T07:24:45.2013847Z",
+    "Launcher":  "C:\\_imant30-inversa\\_launcher-733e129\\app\\launcher\\IMAN-Terra.bat",
+    "Rotulo":  "launcher de 733e129",
+    "Ref":  "733e129",
+    "Bl3":  {
+                "Ok":  true,
+                "Arquivos":  26,
+                "Raizes":  [
+                               "C:\\Users\\Francisco\\AppData\\Roaming\\QGIS",
+                               "C:\\Users\\Francisco\\AppData\\Roaming\\InstitutoIMAN"
+                           ],
+                "Mexidos":  [
+
+                            ]
+            },
+    "ArvoreOrigem":  {
+                         "PycRemovidos":  0,
+                         "Caminho":  "D:\\_projetos\\iman-webgeo\\iman-qgis-distro-agent\\installer\\stage\\qgis\\QGIS 3.44.13",
+                         "PycSobrando":  0
+                     },
+    "Estados":  [
+                    {
+                        "Id":  1,
+                        "Titulo":  "perfil ausente -\u003e perfil igual ao template, base registrada",
+                        "Veredito":  "FAIL",
+                        "Provas":  [
+                                       "exit=0  RECONCILIACAO=  ",
+                                       "10 de 11 arquivos do template com SHA-256 identico no perfil",
+                                       "divergentes: QGIS/QGIS3.ini (hash)",
+                                       "base registrada: False"
+                                   ],
+                        "Cru":  "  [IMAN Terra] Preparando o perfil isolado (primeiro uso)...\r\n"
+                    },
+                    {
+                        "Id":  2,
+                        "Titulo":  "perfil ja igual -\u003e nada escrito (R5)",
+                        "Veredito":  "FAIL",
+                        "Provas":  [
+                                       "1a:   2a: ",
+                                       "12 arquivos no perfil; 1 diferenca(s) de SHA-256 ou mtime entre as duas aberturas",
+                                       "custo da abertura sem nada a fazer:  ms na rotina de reconciliacao",
+                                       "escreveu: t QGIS/QGISCUSTOMIZATION3.ini (mtime)"
+                                   ],
+                        "Cru":  ""
+                    },
+                    {
+                        "Id":  3,
+                        "Titulo":  "perfil de template anterior ao #022 -\u003e tema e plugin novos chegam",
+                        "Veredito":  "FAIL",
+                        "Provas":  [
+                                       "exit=0  RECONCILIACAO=  ",
+                                       "raios: 5-8px 14 -\u003e 14   2px -\u003e 0 (template tem 20)",
+                                       "QMenuBar::item: 6px 12px -\u003e 3px 4px? False",
+                                       "_RE_SUFIXO_DO_QGIS em iman_brand.py: 0 -\u003e 0 (template tem 3)",
+                                       "arquivos do produto com SHA-256 do template: 4 de 11"
+                                   ],
+                        "Cru":  ""
+                    },
+                    {
+                        "Id":  4,
+                        "Titulo":  "perfil anterior a 07-07 -\u003e obsoletos saem, CRS corrige",
+                        "Veredito":  "FAIL",
+                        "Provas":  [
+                                       "exit=0  RECONCILIACAO=  ",
+                                       "QGIS/iman-theme.qss     : presente -\u003e True",
+                                       "resources/logo.png      : presente -\u003e True",
+                                       "defaultProjectCrs       : EPSG:4674 -\u003e EPSG:4674",
+                                       "layerDefaultCrs         : -\u003e EPSG:4674",
+                                       "[UI] Customization/enabled (secao que nem existia): -\u003e "
+                                   ],
+                        "Cru":  ""
+                    },
+                    {
+                        "Id":  5,
+                        "Titulo":  "chave do usuario que o produto nao mudou -\u003e a do usuario fica",
+                        "Veredito":  "PASS",
+                        "Provas":  [
+                                       "exit=0  RECONCILIACAO=  ",
+                                       "[qgis] showTips: template=false  usuario=true  depois=true"
+                                   ],
+                        "Cru":  ""
+                    },
+                    {
+                        "Id":  6,
+                        "Titulo":  "usuario e produto mudaram a mesma chave -\u003e o produto vence",
+                        "Veredito":  "FAIL",
+                        "Provas":  [
+                                       "exit=0  RECONCILIACAO=  ",
+                                       "defaultProjectCrs: base=EPSG:31984  usuario=EPSG:4326  template=EPSG:31985  depois=EPSG:4326"
+                                   ],
+                        "Cru":  ""
+                    },
+                    {
+                        "Id":  7,
+                        "Titulo":  "plugin do usuario e a chave dele -\u003e intactos byte a byte",
+                        "Veredito":  "PASS",
+                        "Provas":  [
+                                       "exit=0  RECONCILIACAO=  ",
+                                       "3 arquivos do plugin do usuario, 0 diferenca(s) de SHA-256/mtime",
+                                       "[PythonPlugins] plugin_do_usuario=true   iman_brand=true",
+                                       "QGIS/bookmarks.xml: SHA-256 igual? True"
+                                   ],
+                        "Cru":  ""
+                    },
+                    {
+                        "Id":  8,
+                        "Titulo":  "chave nova do template -\u003e chega ao perfil velho",
+                        "Veredito":  "FAIL",
+                        "Provas":  [
+                                       "exit=0  RECONCILIACAO=  ",
+                                       "[PythonPlugins] iman_teste_db26: ausente -\u003e "
+                                   ],
+                        "Cru":  ""
+                    },
+                    {
+                        "Id":  9,
+                        "Titulo":  "falha no meio -\u003e fail-loud, e o perfil nao passa por atualizado",
+                        "Veredito":  "FAIL",
+                        "Provas":  [
+                                       "exit=0  RECONCILIACAO=",
+                                       "DETALHE: ",
+                                       "base.json escrita apesar da falha? False   INCOMPLETO.txt deixado? False",
+                                       "abertura seguinte, com o lock solto: exit=0  -\u003e perfil completo e base registrada? False"
+                                   ],
+                        "Cru":  "\n--- abertura seguinte ---\n"
+                    },
+                    {
+                        "Id":  11,
+                        "Titulo":  "downgrade",
+                        "Veredito":  "ABORTADO",
+                        "Provas":  [
+                                       "E.1: o perfil semeado JA sai igual ao esperado em: o perfil esta com o tema NOVO - a rodada nao provaria nada"
+                                   ],
+                        "Cru":  ""
+                    }
+                ]
+}

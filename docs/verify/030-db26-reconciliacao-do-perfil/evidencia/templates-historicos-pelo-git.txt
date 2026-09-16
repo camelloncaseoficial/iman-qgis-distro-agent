@@ -1,0 +1,138 @@
+# #030 / DB-26 - o que cada template historico carrega, provado pelo git
+# Gerado em 2026-09-16T06:57:40Z na bancada, a partir do repo.
+
+================================================================
+### ba58d14
+commit ba58d1442f7fdd147662d98c7c71cc3d8fcd4fae
+autor  Francisco Camello
+data   2026-09-07 15:06:13 -0300
+assunto Merge pull request #22 from camelloncaseoficial/feat/020-db6-inventario-licencas
+
+--- arquivos do profile-template ---
+QGIS/QGIS3.ini
+QGIS/splash.png
+processing/.gitkeep
+project_templates/.gitkeep
+python/plugins/iman_brand/__init__.py
+python/plugins/iman_brand/brand.py
+python/plugins/iman_brand/dashboard.py
+python/plugins/iman_brand/iman_brand.py
+python/plugins/iman_brand/metadata.txt
+python/plugins/iman_brand/resources/icon.png
+python/plugins/iman_brand/resources/splash.png
+python/plugins/iman_brand/sobre.py
+themes/IMAN Terra/style.qss
+
+--- QGIS3.ini (sem comentarios) ---
+[locale]
+userLocale=pt_BR
+overrideFlag=true
+[app]
+projections\defaultProjectCrs=EPSG:31984
+projections\newProjectCrsBehavior=usePresetCrs
+projections\layerDefaultCrs=EPSG:31984
+[qgis]
+showTips=false
+[UI]
+Customization\enabled=true
+[PythonPlugins]
+iman_brand=true
+
+--- declaracoes de raio no tema (contagem por valor) ---
+      2 border-radius: 5px
+      4 border-radius: 6px
+      3 border-radius: 7px
+      3 border-radius: 8px
+      1 border-top-left-radius: 8px
+      1 border-top-right-radius: 8px
+--- QMenuBar::item ---
+QMenuBar::item { background: transparent; padding: 6px 12px; border-radius: 6px; }
+
+--- _RE_SUFIXO_DO_QGIS em iman_brand.py ---
+ocorrencias: 0
+
+================================================================
+### 8cc4d5e^
+commit f728e4f924d208f24ba95f0c2bfed373b80593de
+autor  Francisco Alves Camello
+data   2026-07-05 23:14:49 -0300
+assunto feat(theme): tema IMAN imersivo (toolbars, headers, selecao, abas, botoes)
+
+--- arquivos do profile-template ---
+QGIS/QGIS3.ini
+QGIS/iman-theme.qss
+processing/.gitkeep
+project_templates/.gitkeep
+python/plugins/iman_brand/__init__.py
+python/plugins/iman_brand/brand.py
+python/plugins/iman_brand/iman_brand.py
+python/plugins/iman_brand/metadata.txt
+python/plugins/iman_brand/resources/icon.png
+python/plugins/iman_brand/resources/logo.png
+
+--- QGIS3.ini (sem comentarios) ---
+[locale]
+userLocale=pt_BR
+overrideFlag=true
+[app]
+projections\defaultProjectCrs=EPSG:4674
+projections\newProjectCrsBehavior=usePresetCrs
+projections\layerDefaultCrs=EPSG:4674
+[qgis]
+showTips=false
+[PythonPlugins]
+iman_brand=true
+
+--- declaracoes de raio no tema (contagem por valor) ---
+(nao existe themes/IMAN Terra/style.qss neste commit)
+
+--- _RE_SUFIXO_DO_QGIS em iman_brand.py ---
+ocorrencias: 0
+
+================================================================
+### HEAD
+commit f0d773b92340749472e7ad645fa54ed361775ef0
+autor  Francisco Alves Camello Neto
+data   2026-09-15 15:19:04 -0300
+assunto docs(verify): laudo do #029, com a matriz vermelha no build.ps1 de 733e129 e verde no desta fatia
+
+--- arquivos do profile-template ---
+QGIS/QGIS3.ini
+QGIS/splash.png
+processing/.gitkeep
+project_templates/.gitkeep
+python/plugins/iman_brand/__init__.py
+python/plugins/iman_brand/brand.py
+python/plugins/iman_brand/dashboard.py
+python/plugins/iman_brand/iman_brand.py
+python/plugins/iman_brand/metadata.txt
+python/plugins/iman_brand/resources/icon.png
+python/plugins/iman_brand/resources/splash.png
+python/plugins/iman_brand/sobre.py
+themes/IMAN Terra/style.qss
+
+--- QGIS3.ini (sem comentarios) ---
+[locale]
+userLocale=pt_BR
+overrideFlag=true
+[app]
+projections\defaultProjectCrs=EPSG:31984
+projections\newProjectCrsBehavior=usePresetCrs
+projections\layerDefaultCrs=EPSG:31984
+[qgis]
+showTips=false
+[UI]
+Customization\enabled=true
+[PythonPlugins]
+iman_brand=true
+
+--- declaracoes de raio no tema (contagem por valor) ---
+     18 border-radius: 2px
+      1 border-top-left-radius: 2px
+      1 border-top-right-radius: 2px
+--- QMenuBar::item ---
+QMenuBar::item { background: transparent; padding: 3px 4px; border-radius: 2px; }
+
+--- _RE_SUFIXO_DO_QGIS em iman_brand.py ---
+ocorrencias: 3
+

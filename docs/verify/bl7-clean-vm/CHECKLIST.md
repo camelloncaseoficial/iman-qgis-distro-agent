@@ -484,6 +484,16 @@ Deve ter **exatamente um** `[Customization]` e **uma** linha `splashpath=`.
 
 ## 15. Atualizar de uma versão anterior — **espera-se FAIL**
 
+> ## ⚠ ESTE PASSO ESTÁ **STALE** DESDE O `#030` (`DB-26`). NÃO O EXECUTE COMO ESTÁ ESCRITO.
+>
+> O defeito que ele mede foi **consertado**: o launcher passou a reconciliar o perfil a cada
+> abertura. Rodando como está, o resultado esperado agora é **PASS**, e quem seguir a instrução
+> vai registrar um FAIL falso ou marcar "o checklist quebrou".
+>
+> **A dívida está nomeada** (`E.3`) e a reescrita é fatia própria - ela estava **fora de escopo**
+> do `#030`. O procedimento que a reescrita vai citar, com a matriz de estados e os números já
+> medidos, está em **`docs/verify/030-db26-reconciliacao-do-perfil/README.md`, §7**.
+
 > **Leia antes de executar.** Este passo existe para **medir e documentar um defeito conhecido**,
 > não para passar. Se der FAIL, o checklist está funcionando.
 

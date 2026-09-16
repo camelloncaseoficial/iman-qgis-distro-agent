@@ -1,0 +1,22 @@
+
+  #017 - teste de aceite da camada de marca
+
+  produto : C:\Users\Francisco\AppData\Local\Programs\IMAN Terra
+  QGIS    : C:\Users\Francisco\AppData\Local\Programs\IMAN Terra\qgis
+            (arvore PRIVADA do produto - nenhum QGIS de sistema no caminho)
+  manifesto: QGIS 3.44.13, 37337 arquivos
+  PERFIL VELHO: semeado do profile-template de ba58d14 (copia crua, como o launcher da epoca fazia)
+  perfil  : C:\Users\Francisco\AppData\Local\InstitutoIMAN\_aceite017\perfil\profiles\iman-distro  (11 arquivos, RECONSTRUIDO do zero)
+  perfis  : 2 na raiz (o QGIS so pendura ' [<perfil>]' com mais de um)
+  semente : D:\_projetos\iman-webgeo\iman-qgis-distro-agent\app\demo\welcome.qgz  (recente REAL na lista do proprio QGIS)
+  sonda   : D:\_projetos\iman-webgeo\iman-qgis-distro-agent\tools\branding-acceptance\acceptance_probe.py
+  startup : D:\_projetos\iman-webgeo\iman-qgis-distro-agent\app\startup\iman_startup.py  (o de verdade)
+  saida   : C:\Users\Francisco\AppData\Local\InstitutoIMAN\_aceite017\saida
+  fase    : primeira
+
+  > qgis-ltr.bat --profiles-path <perfil> --profile iman-distro --noversioncheck --code <sonda>
+  PID 39380 - executavel: C:\Users\FRANCI~1\AppData\Local\Programs\IMANTE~1\qgis\bin\qgis-ltr-bin.exe
+  aguardando ate 180 s pela saida da sonda...
+
+  sonda concluiu em ~33 s: C:\Users\Francisco\AppData\Local\InstitutoIMAN\_aceite017\saida\aceite.json
+[exit 0]

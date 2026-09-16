@@ -38,12 +38,15 @@ Governada pelo PPSA (arquiteto) via briefings. Nasce de **D-IMAN-025**.
 
 ```text
 app/
-├── launcher/IMAN-Terra.bat          # detecta QGIS LTR, cria perfil isolado no 1º run, abre com startup+demo
+├── launcher/IMAN-Terra.bat          # confere a árvore, RECONCILIA o perfil com o template, abre com startup
+├── launcher/Sync-Perfil.ps1         # reconciliação do perfil (DB-26): semeia, espelha arquivos, 3-way nas chaves
 ├── startup/iman_startup.py          # título da janela + aplica tema; leve
 ├── profile-template/iman-distro/    # perfil QGIS ISOLADO versionado
-│   ├── QGIS/QGIS3.ini               # pt-BR, CRS SIRGAS 2000 (EPSG:4674), autoload do plugin
-│   ├── QGIS/iman-theme.qss          # tema institucional (QSS)
+│   ├── QGIS/QGIS3.ini               # pt-BR, CRS UTM 24S (EPSG:31984), autoload do plugin
+│   ├── QGIS/splash.png              # splash NATIVO de boot (mecanismo no-fork do spike #004)
+│   ├── themes/IMAN Terra/style.qss  # tema institucional (QSS) - fonte única desde o #018
 │   └── python/plugins/iman_brand/   # plugin de marca (menu/toolbar/dock de boas-vindas/Sobre)
+├── profile-template/PERFIL-DO-PRODUTO.json   # a fronteira produto × usuário dentro do perfil (DB-26)
 ├── demo/welcome.qgz                 # projeto demo (CRS 4674 + basemap OSM)
 ├── assets/                          # identidade oficial: símbolo/splash SVG/.ico/wizard (ver assets/README.md)
 └── notices/                         # LICENSE, THIRD_PARTY_NOTICES.md, SOURCE_CODE.md
@@ -59,8 +62,9 @@ docs/verify/bl7-clean-vm/            # CHECKLIST.md + RESULT.md do BL-7
 **Baseline suportada: QGIS LTR 3.44.x** (ver `docs/distro-architecture.md`). O instalador é *leve* —
 não empacota o QGIS; o launcher orienta se o QGIS estiver ausente.
 
-- **Rodar sem instalar:** dê duplo clique em `app/launcher/IMAN-Terra.bat` (cria o perfil isolado em
-  `%APPDATA%\InstitutoIMAN\IMAN Terra\profiles\` no 1º uso e abre o QGIS com o branding).
+- **Rodar sem instalar:** dê duplo clique em `app/launcher/IMAN-Terra.bat`. Ele semeia o perfil isolado
+  em `%APPDATA%\InstitutoIMAN\IMAN Terra\profiles\` no 1º uso e, das próximas vezes, **reconcilia** o que
+  já está lá com o template desta versão - sem tocar no que é do usuário (DB-26).
 - **Compilar o instalador:** `.\installer\build.ps1` (não chame o `ISCC.exe` na mão).
   O script **recusa** compilar de árvore suja ou de branch fora de `develop`, e grava, **ao lado do
   `.exe`**, o `BUILD_INFO.txt` que amarra **artefato ↔ commit ↔ versão ↔ SHA-256**. O nome carrega a

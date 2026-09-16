@@ -20,7 +20,13 @@
 [CmdletBinding()]
 param(
     [Parameter(Mandatory = $true)][string]$Saida,
-    [int]$Assenta = 4
+    [int]$Assenta = 4,
+
+    # DB-26 (#030): a MESMA tomada, com o MESMO enquadramento, sobre um perfil
+    # de versao anterior - antes e depois da reconciliacao. Repassados a
+    # Invoke-Aceite.ps1; ver o cabecalho de la.
+    [string]$PerfilVelhoDe = '',
+    [switch]$Reconciliar
 )
 
 $ErrorActionPreference = 'Stop'
@@ -34,8 +40,10 @@ Get-Process -Name 'qgis-ltr-bin' -ErrorAction SilentlyContinue |
     Stop-Process -Force -ErrorAction SilentlyContinue
 Start-Sleep -Seconds 2
 
-& powershell.exe -NoProfile -ExecutionPolicy Bypass -File $aceite `
-    -Sonda 'vitrine.py' -Manter | Out-Null
+$argsAceite = @('-Sonda', 'vitrine.py', '-Manter')
+if ($PerfilVelhoDe) { $argsAceite += @('-PerfilVelhoDe', $PerfilVelhoDe) }
+if ($Reconciliar)   { $argsAceite += '-Reconciliar' }
+& powershell.exe -NoProfile -ExecutionPolicy Bypass -File $aceite @argsAceite | Out-Null
 
 Start-Sleep -Seconds $Assenta
 
