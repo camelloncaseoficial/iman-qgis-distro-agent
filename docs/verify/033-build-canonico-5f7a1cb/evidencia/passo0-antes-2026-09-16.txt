@@ -1,0 +1,31 @@
+# Passo 0 (antes) - medido em 2026-09-16T20:11:07.3784137Z
+git HEAD: 5f7a1cb7275ce4cfc1abc718f7b2a9619ebf4596  branch: develop
+
+## 1. As duas copias do candidato 327d9ee
+  D:\_projetos\iman-webgeo\iman-qgis-distro-agent\installer\canonico\0.3.0-327d9ee\Instituto-IMAN-IMAN-Terra-Setup-0.3.0-327d9ee.exe
+    SHA-256 38DA4709FB121C89C6A52FD96A107C5502316FBDD1BFEC07CE8B2809F68B73E7  512808129 bytes  -> IGUAL ao esperado
+  D:\_iman-terra-candidatos-protegidos\0.3.0-327d9ee\Instituto-IMAN-IMAN-Terra-Setup-0.3.0.exe
+    SHA-256 38DA4709FB121C89C6A52FD96A107C5502316FBDD1BFEC07CE8B2809F68B73E7  512808129 bytes  -> IGUAL ao esperado
+  registro 327d9ee: existe=True  blob=9b2b29c9298627799696b4cf0b63376fce204c69  rastreado=True
+  registro na copia protegida: blob=ec64cea96bc88d285dc2bf3e3fcd30eb691d35de
+  VIGENTE.txt: identidade=0.3.0-327d9ee | versao=0.3.0 | commit=327d9ee2585da067296eeae0dacbcbbd37dbfca3 | artefato=Instituto-IMAN-IMAN-Terra-Setup-0.3.0-327d9ee.exe | sha256=38DA4709FB121C89C6A52FD96A107C5502316FBDD1BFEC07CE8B2809F68B73E7 | registro=installer/canonico/0.3.0-327d9ee/BUILD_INFO.txt
+RESULTADO CANDIDATO: OK
+
+## 2. Pre-condicao de extracao
+  C:\Program Files\QGIS* : nenhum
+  C:\Program Files (x86)\QGIS* : nenhum
+  ARP HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall: nenhuma
+  ARP HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall: nenhuma
+  ARP HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall: IMAN Terra 0.3.0
+  ProductState({740D7A65-...}) = -1  (desconhecido: nao instalado)
+  processos qgis*/msiexec: nenhum
+
+## 3. Arvore estagiada e manifesto atuais
+  arquivos na arvore: 37318
+  .pyc em apps\grass: 401
+  .pyc na arvore    : 401
+  manifesto: # Gerado em      : 2026-09-09T22:14:34.2111731Z | TOTAL|37337|2387710878 | MAXREL|152
+
+## 4. Produto instalado na bancada
+  BUILD_ID: versao=0.3.0 | commit_curto=327d9ee | build_canonico=sim
+  Sync-Perfil.ps1 instalado: False

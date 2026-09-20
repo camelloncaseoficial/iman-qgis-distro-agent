@@ -1,0 +1,6 @@
+﻿quando        : 2026-09-20T13:55:01.0973445Z
+perfil        : C:\Users\Francisco\AppData\Local\InstitutoIMAN\_aceite017\perfil\profiles\iman-distro
+semeado de    : profile-template ATUAL do repo
+reconciliado  : False
+
+--- relato da reconciliacao (vazio quando nao houve) ---

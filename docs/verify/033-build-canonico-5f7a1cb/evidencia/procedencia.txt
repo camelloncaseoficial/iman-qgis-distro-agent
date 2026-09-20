@@ -1,0 +1,32 @@
+#033 - procedencia, medida em 2026-09-20 nesta bancada (E.5)
+
+git HEAD da develop : fc2a7cc9c41cf11e093ce8d4926f4668adf28f3a
+commit do BUILD_INFO: 5f7a1cb7275ce4cfc1abc718f7b2a9619ebf4596
+
+## O candidato NOVO (0.3.0-5f7a1cb)
+  installer\canonico\0.3.0-5f7a1cb\Instituto-IMAN-IMAN-Terra-Setup-0.3.0-5f7a1cb.exe
+    SHA-256 949A960F36811327A21C250F5889E50E4A3DCD647BCAEF3F5C8DA35D86F2EFF5   512818809 bytes
+    gravado no BUILD_INFO.txt: 949A960F36811327A21C250F5889E50E4A3DCD647BCAEF3F5C8DA35D86F2EFF5   512818809 bytes
+    batem: SIM
+
+## PASSO 0, repetido ao FIM do despacho - os dois canonicos coexistem (R4)
+  installer\canonico\0.3.0-327d9ee\Instituto-IMAN-IMAN-Terra-Setup-0.3.0-327d9ee.exe
+    SHA-256 38DA4709FB121C89C6A52FD96A107C5502316FBDD1BFEC07CE8B2809F68B73E7   512808129 bytes  -> IGUAL ao esperado
+  D:\_iman-terra-candidatos-protegidos\0.3.0-327d9ee\Instituto-IMAN-IMAN-Terra-Setup-0.3.0.exe
+    SHA-256 38DA4709FB121C89C6A52FD96A107C5502316FBDD1BFEC07CE8B2809F68B73E7   512808129 bytes  -> IGUAL ao esperado
+
+  rastreados na develop:
+    installer/canonico/0.3.0-327d9ee/BUILD_INFO.txt
+    installer/canonico/0.3.0-5f7a1cb/BUILD_INFO.txt
+    installer/canonico/VIGENTE.txt
+
+## O produto INSTALADO na bancada, exercitado por este laudo
+  C:\Users\Francisco\AppData\Local\Programs\IMAN Terra
+    BUILD_ID: versao=0.3.0 | commit=5f7a1cb7275ce4cfc1abc718f7b2a9619ebf4596 | commit_curto=5f7a1cb | branch=develop | build_canonico=sim
+
+## Bancada
+  OS   : Microsoft Windows 11 Pro 10.0.26200.0
+  PS   : Windows PowerShell 5.1.26100.9444 (e o que roda os .ps1 do produto e das guardas)
+  Inno : Inno Setup 7.1.0  (C:\Program Files\Inno Setup 7\ISCC.exe)
+  QGIS de sistema: nenhum (condicao normal desde a via A1)
+  processos qgis-ltr-bin/qgis-bin vivos ao fechar o laudo: 0

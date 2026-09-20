@@ -1,0 +1,97 @@
+inicio (UTC): 2026-09-16T20:11:28.4296116Z
+
+  IMAN Terra - build do instalador
+  repo: D:\_projetos\iman-webgeo\iman-qgis-distro-agent
+
+==> Verificando o repositorio
+    OK  branch 'develop', arvore limpa
+==> Lendo a fonte unica de versao (iman-terra.iss)
+    OK  ProductVersion 0.3.0 / QGIS embarcado 3.44.13
+    OK  identidade 0.3.0-5f7a1cb -> Instituto-IMAN-IMAN-Terra-Setup-0.3.0-5f7a1cb.exe
+==> Conferindo a versao do QGIS no launcher
+    OK  launcher e .iss concordam em QGIS 3.44.13
+==> conferindo a versao do produto nas tres fontes (D9)
+    OK  versao do produto 0.3.0 concorda nas tres fontes
+==> Estagiando o payload do QGIS 3.44.13
+    OK  payload ja estagiado e conferido
+    OK  QGIS-OSGeo4W-3.44.13-1.msi (555,23 MB)
+==> Montando a arvore privada do QGIS 3.44.13
+    OK  payload conferido (42E2F1A6047A827454BC991F8E8CAA069961B9CB4B877E1F5568A43D98844EB4)
+    -> limpando a extracao anterior...
+    -> msiexec /a (extrai, NAO instala) - leva alguns minutos
+    OK  extracao concluida em 287,0 s (exit 0)
+    -> removendo residuo do /a: QGIS-OSGeo4W-3.44.13-1.msi (8,57 MB)
+    -> gerando o manifesto de integridade
+    OK  arvore: 37337 arquivos / 2,224 GB
+    OK  manifesto: D:\_projetos\iman-webgeo\iman-qgis-distro-agent\installer\stage\qgis-manifest.txt
+
+
+Raiz          : D:\_projetos\iman-webgeo\iman-qgis-distro-agent\installer\stage\qgis\QGIS 3.44.13
+Manifesto     : D:\_projetos\iman-webgeo\iman-qgis-distro-agent\installer\stage\qgis-manifest.txt
+TotalArquivos : 37337
+TotalBytes    : 2387710878
+ShaDoPayload  : 42E2F1A6047A827454BC991F8E8CAA069961B9CB4B877E1F5568A43D98844EB4
+
+
+
+    OK  arvore: 37337 arquivos / 2,224 GB
+    OK  manifesto de integridade gerado e conferido contra a arvore
+==> Rodando o teste da GUARDA DE INTEGRIDADE do launcher
+
+  #019 - guarda de integridade do launcher
+  arvore    : D:\_projetos\iman-webgeo\iman-qgis-distro-agent\installer\stage\qgis\QGIS 3.44.13
+  manifesto : D:\_projetos\iman-webgeo\iman-qgis-distro-agent\installer\stage\qgis-manifest.txt
+
+  [PASS] T1  arvore integra -> abre
+  [PASS] T2  share\proj AUSENTE -> recusa
+  [PASS] T3  apps\gdal\share\gdal TRUNCADO em 1 arquivo -> recusa
+  [PASS] T4  proj.db ALTERADO (mesmo tamanho) -> recusa pelo SHA-256
+  [PASS] T5  manifesto AUSENTE -> recusa
+  [PASS] T6  caminho longo demais -> diagnostico proprio, nao "corrompida"
+
+  6 de 6 casos passaram.
+  A guarda recusa abrir em toda arvore quebrada, e diz por que.
+    OK  a guarda recusa abrir sobre arvore quebrada (placar completo acima)
+==> Rodando a GUARDA ESTATICA do tema (style.qss)
+
+  #022 - guarda estatica do tema
+  qss : D:\_projetos\iman-webgeo\iman-qgis-distro-agent\app\profile-template\iman-distro\themes\IMAN Terra\style.qss
+
+  [1] border-radius : 18 declaracoes, 0 fora de 2px
+  [2] QMenuBar::item : padding '3px 4px'
+  [3] QStatusBar     : 0 declaracao(oes) de padding
+  [4] QDockWidget::title : 0 declaracao(oes) de padding vertical
+  [5] cantos da aba  : 2 declaracoes, 0 fora de 2px
+  [6] raio inline em Python : 0 ocorrencia(s)
+
+  6 de 6 asse rcoes passaram. O tema esta como o sponsor arbitrou, e num lugar so.
+
+    OK  o tema esta como o sponsor arbitrou (6 de 6 asse rcoes, placar da guarda)
+==> Gravando a identidade do build (BUILD_ID.txt)
+    OK  BUILD_ID.txt: 0.3.0 / 5f7a1cb / develop (canonico: sim)
+==> Localizando o compilador do Inno Setup
+    OK  Inno Setup 7.1.0  (C:\Program Files\Inno Setup 7\ISCC.exe)
+==> Compilando
+    OK  Instituto-IMAN-IMAN-Terra-Setup-0.3.0-5f7a1cb.exe (489.06 MB)
+==> Gravando BUILD_INFO.txt
+
+  BUILD OK
+  Artefato : D:\_projetos\iman-webgeo\iman-qgis-distro-agent\installer\canonico\0.3.0-5f7a1cb\Instituto-IMAN-IMAN-Terra-Setup-0.3.0-5f7a1cb.exe
+  Versao   : 0.3.0   Commit: 5f7a1cb   Branch: develop
+  SHA-256  : 949A960F36811327A21C250F5889E50E4A3DCD647BCAEF3F5C8DA35D86F2EFF5
+  Info     : D:\_projetos\iman-webgeo\iman-qgis-distro-agent\installer\canonico\0.3.0-5f7a1cb\BUILD_INFO.txt
+  Vigente  : D:\_projetos\iman-webgeo\iman-qgis-distro-agent\installer\canonico\VIGENTE.txt
+
+  CANONICO: quem compilou commita na develop (P0.6):
+         installer/canonico/0.3.0-5f7a1cb/BUILD_INFO.txt
+         installer/canonico/VIGENTE.txt
+         Ate la a arvore fica suja, e nenhum outro build roda.
+
+  ATENCAO: instalador(es) do layout ANTIGO soltos em installer\dist\:
+         Instituto-IMAN-IMAN-Terra-Setup-0.1.0.exe   (2026-07-05)
+         Instituto-IMAN-IMAN-Terra-Setup-0.2.0.exe   (2026-07-28)
+         Nome sem commit e sem BUILD_INFO.txt ao lado: nenhum registro deste
+         build os descreve. Leve para a VM a PASTA do artefato acima.
+
+
+exit=0  duracao=2142 s  fim (UTC): 2026-09-16T20:47:10.3550481Z

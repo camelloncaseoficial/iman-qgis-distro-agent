@@ -1,0 +1,35 @@
+#033 - a deriva da arvore, medida em 2026-09-20
+
+MANIFESTO (gerado no build de 16/09, {app}\qgis-manifest.txt)
+  TOTAL                                  : 37337 arquivos / 2387710878 bytes
+
+ARVORE ESTAGIADA (installer\stage - a que o build empacotou)
+  arquivos                               : 37337
+  .pyc                                   : 420  (todos com mtime 2026-06-12: vieram do .msi)
+  bate com o TOTAL do manifesto?         : True
+
+ARVORE INSTALADA ({app}\qgis, depois de o produto ter sido aberto)
+  arquivos                               : 38154
+  .pyc                                   : 1237
+
+DIFERENCA ESTAGIADA x INSTALADA (por caminho relativo)
+  so na estagiada                        : 0
+  so na instalada                        : 817   (destes, .pyc: 817)
+  comuns                                 : 37337
+  comuns com mtime diferente             : 19   (destes, .pyc: 19)
+
+LEITURA
+  A arvore estagiada casa EXATAMENTE com o TOTAL do manifesto: a deriva de
+  37.318 x 37.337 relatada no #030 morreu quando este build remontou a arvore
+  e regenerou o manifesto na mesma execucao.
+
+  A arvore INSTALADA e maior, e isso nao e deriva de copia: os 817 arquivos a
+  mais sao TODOS .pyc, e os 19 arquivos comuns com mtime diferente tambem sao
+  TODOS .pyc - bytecode que o Python do proprio produto grava em __pycache__ ao
+  importar. Nenhum arquivo do manifesto falta, e nenhum arquivo nao-.pyc difere.
+  E por isso que a guarda de integridade do launcher compara a contagem de DIR
+  como PISO, e nao como igualdade (comentario no IMAN-Terra.bat: truncar sempre
+  DIMINUI a contagem; crescer nunca e truncar).
+
+  apps\Python312 instalado: 20111 arquivos contra os 19666 do manifesto - +445
+  .pyc. INTEGRIDADE=OK, como esperado pelo desenho do piso.

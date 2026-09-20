@@ -1,0 +1,14 @@
+# IMAN Terra - identidade do build. Gerado por installer\build.ps1.
+# NAO editar a mao: o produto le este arquivo para dizer de que build ele e.
+# O SHA-256 do instalador NAO esta aqui de proposito - ele so existe depois
+# de compilar, e este arquivo entra na compilacao. Ele vive no BUILD_INFO.txt.
+produto=IMAN Terra
+versao=0.3.0
+commit=5f7a1cb7275ce4cfc1abc718f7b2a9619ebf4596
+commit_curto=5f7a1cb
+data_do_commit=2026-09-16T10:41:12-03:00
+branch=develop
+build_canonico=sim
+qgis_embarcado=3.44.13
+payload_sha256=42E2F1A6047A827454BC991F8E8CAA069961B9CB4B877E1F5568A43D98844EB4
+compilado_em=2026-09-16 17:16:54 -03:00

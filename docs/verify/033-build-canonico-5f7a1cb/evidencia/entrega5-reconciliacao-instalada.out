@@ -1,0 +1,42 @@
+
+  #033 entrega 5 - reconciliacao NO PRODUTO INSTALADO
+  produto  : C:\Users\Francisco\AppData\Local\Programs\IMAN Terra
+  launcher : C:\Users\Francisco\AppData\Local\Programs\IMAN Terra\launcher\IMAN-Terra.bat
+  template : C:\Users\Francisco\AppData\Local\Programs\IMAN Terra\profile-template\iman-distro  (o que o INSTALADOR entregou)
+  sandbox  : C:\_imant33  (%APPDATA% redirecionado)
+
+  BUILD_ID : versao=0.3.0 commit=5f7a1cb canonico=sim
+
+  template instalado: 11 arquivos
+  BL-3: C:\Users\Francisco\AppData\Roaming\QGIS - 0 arquivo(s), MD5 tirado antes
+  BL-3: C:\Users\Francisco\AppData\Roaming\InstitutoIMAN - 27 arquivo(s), MD5 tirado antes
+
+  [PASS] 5a - perfil ausente -> nasce semeado, com a base registrada
+        exit=0  RECONCILIACAO=SEMEADO  arq+11 arq~0 arq-0 chave+0 chave~0 chave-0 pasta+2 splash+1 base+1
+        perfil existia antes da abertura: False
+        11 de 11 arquivos do template INSTALADO com SHA-256 identico no perfil
+        base registrada em .iman-terra\base.json: True
+          template_digest=05DE72FB4FED54B2ED9A9CCE8C4C967DFE844AAF5F428E3551CC9B5EBECEBBC0  chaves=8
+  [PASS] 5b - perfil de ba58d14 (copia crua) -> tema e plugin desta versao chegam
+        exit=0  RECONCILIACAO=APLICADA  arq+0 arq~7 arq-0 chave+0 chave~0 chave-0 pasta+0 splash+1 base+1
+        raios: 5-8px 14 -> 0   2px 0 -> 20  (o template instalado tem 20)
+        QMenuBar::item: 6px 12px -> 3px 4px? True
+        _RE_SUFIXO_DO_QGIS em iman_brand.py: 0 -> 3  (o template instalado tem 3)
+        arquivos do produto com SHA-256 do template INSTALADO: 11 de 11 (antes: 4 de 11)
+        base registrada: True  template_digest=05DE72FB4FED54B2ED9A9CCE8C4C967DFE844AAF5F428E3551CC9B5EBECEBBC0
+  [PASS] BL-3 - o perfil REAL do sponsor nao foi tocado
+        27 arquivo(s) sob %APPDATA%\QGIS e %APPDATA%\InstitutoIMAN, MD5 antes x depois: 0 diferenca(s)
+
+  PLACAR: 3 de 3
+
+--- saida crua: 5a ---
+RECONCILIACAO=SEMEADO
+PLANO=arq+11 arq~0 arq-0 chave+0 chave~0 chave-0 pasta+2 splash+1 base+1
+MS=1020
+
+--- saida crua: 5b ---
+RECONCILIACAO=APLICADA
+PLANO=arq+0 arq~7 arq-0 chave+0 chave~0 chave-0 pasta+0 splash+1 base+1
+MS=764
+
+  json: D:\_projetos\iman-webgeo\iman-qgis-distro-agent\docs\verify\033-build-canonico-5f7a1cb\evidencia\entrega5-reconciliacao-instalada.json

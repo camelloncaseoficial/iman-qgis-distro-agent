@@ -1,0 +1,20 @@
+
+  #017 - teste de aceite da camada de marca
+
+  produto : C:\Users\Francisco\AppData\Local\Programs\IMAN Terra
+  QGIS    : C:\Users\Francisco\AppData\Local\Programs\IMAN Terra\qgis
+            (arvore PRIVADA do produto - nenhum QGIS de sistema no caminho)
+  manifesto: QGIS 3.44.13, 37337 arquivos
+  perfil  : C:\Users\Francisco\AppData\Local\InstitutoIMAN\_aceite017\perfil\profiles\iman-distro  (24 arquivos, REAPROVEITADO da rodada anterior)
+  perfis  : 2 na raiz (o QGIS so pendura ' [<perfil>]' com mais de um)
+  semente : (perfil reaproveitado - a lista de recentes e a que ficou)
+  sonda   : D:\_projetos\iman-webgeo\iman-qgis-distro-agent\tools\branding-acceptance\acceptance_probe.py
+  startup : D:\_projetos\iman-webgeo\iman-qgis-distro-agent\app\startup\iman_startup.py  (o de verdade)
+  saida   : C:\Users\Francisco\AppData\Local\InstitutoIMAN\_aceite017\saida
+  fase    : segunda
+
+  > qgis-ltr.bat --profiles-path <perfil> --profile iman-distro --noversioncheck --code <sonda>
+  PID 1396 - executavel: C:\Users\FRANCI~1\AppData\Local\Programs\IMANTE~1\qgis\bin\qgis-ltr-bin.exe
+  aguardando ate 180 s pela saida da sonda...
+
+  sonda concluiu em ~12 s: C:\Users\Francisco\AppData\Local\InstitutoIMAN\_aceite017\saida\aceite-segunda.json

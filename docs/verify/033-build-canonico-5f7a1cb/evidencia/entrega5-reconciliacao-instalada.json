@@ -1,0 +1,55 @@
+﻿{
+    "quando":  "2026-09-20T10:51:44.7817088-03:00",
+    "produto":  "C:\\Users\\Francisco\\AppData\\Local\\Programs\\IMAN Terra",
+    "build_id":  {
+                     "compilado_em":  "2026-09-16 17:16:54 -03:00",
+                     "branch":  "develop",
+                     "commit_curto":  "5f7a1cb",
+                     "qgis_embarcado":  "3.44.13",
+                     "data_do_commit":  "2026-09-16T10:41:12-03:00",
+                     "produto":  "IMAN Terra",
+                     "versao":  "0.3.0",
+                     "commit":  "5f7a1cb7275ce4cfc1abc718f7b2a9619ebf4596",
+                     "build_canonico":  "sim"
+                 },
+    "sandbox":  "C:\\_imant33",
+    "placar":  "3 de 3",
+    "estados":  [
+                    {
+                        "Id":  "5a",
+                        "Titulo":  "perfil ausente -\u003e nasce semeado, com a base registrada",
+                        "Veredito":  "PASS",
+                        "Provas":  [
+                                       "exit=0  RECONCILIACAO=SEMEADO  arq+11 arq~0 arq-0 chave+0 chave~0 chave-0 pasta+2 splash+1 base+1",
+                                       "perfil existia antes da abertura: False",
+                                       "11 de 11 arquivos do template INSTALADO com SHA-256 identico no perfil",
+                                       "base registrada em .iman-terra\\base.json: True",
+                                       "  template_digest=05DE72FB4FED54B2ED9A9CCE8C4C967DFE844AAF5F428E3551CC9B5EBECEBBC0  chaves=8"
+                                   ],
+                        "Cru":  "RECONCILIACAO=SEMEADO\r\nPLANO=arq+11 arq~0 arq-0 chave+0 chave~0 chave-0 pasta+2 splash+1 base+1\r\nMS=1020\r\n"
+                    },
+                    {
+                        "Id":  "5b",
+                        "Titulo":  "perfil de ba58d14 (copia crua) -\u003e tema e plugin desta versao chegam",
+                        "Veredito":  "PASS",
+                        "Provas":  [
+                                       "exit=0  RECONCILIACAO=APLICADA  arq+0 arq~7 arq-0 chave+0 chave~0 chave-0 pasta+0 splash+1 base+1",
+                                       "raios: 5-8px 14 -\u003e 0   2px 0 -\u003e 20  (o template instalado tem 20)",
+                                       "QMenuBar::item: 6px 12px -\u003e 3px 4px? True",
+                                       "_RE_SUFIXO_DO_QGIS em iman_brand.py: 0 -\u003e 3  (o template instalado tem 3)",
+                                       "arquivos do produto com SHA-256 do template INSTALADO: 11 de 11 (antes: 4 de 11)",
+                                       "base registrada: True  template_digest=05DE72FB4FED54B2ED9A9CCE8C4C967DFE844AAF5F428E3551CC9B5EBECEBBC0"
+                                   ],
+                        "Cru":  "RECONCILIACAO=APLICADA\r\nPLANO=arq+0 arq~7 arq-0 chave+0 chave~0 chave-0 pasta+0 splash+1 base+1\r\nMS=764\r\n"
+                    },
+                    {
+                        "Id":  "BL-3",
+                        "Titulo":  "o perfil REAL do sponsor nao foi tocado",
+                        "Veredito":  "PASS",
+                        "Provas":  [
+                                       "27 arquivo(s) sob %APPDATA%\\QGIS e %APPDATA%\\InstitutoIMAN, MD5 antes x depois: 0 diferenca(s)"
+                                   ],
+                        "Cru":  ""
+                    }
+                ]
+}
