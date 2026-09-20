@@ -2,9 +2,9 @@
 # Reescrito por todo build CANONICO (develop) que termina, e por nenhum outro.
 # O registro completo vive em 'registro', ao lado do .exe; os canonicos
 # anteriores continuam nas pastas deles em installer/canonico/.
-identidade=0.3.0-327d9ee
+identidade=0.3.0-5f7a1cb
 versao=0.3.0
-commit=327d9ee2585da067296eeae0dacbcbbd37dbfca3
-artefato=Instituto-IMAN-IMAN-Terra-Setup-0.3.0-327d9ee.exe
-sha256=38DA4709FB121C89C6A52FD96A107C5502316FBDD1BFEC07CE8B2809F68B73E7
-registro=installer/canonico/0.3.0-327d9ee/BUILD_INFO.txt
+commit=5f7a1cb7275ce4cfc1abc718f7b2a9619ebf4596
+artefato=Instituto-IMAN-IMAN-Terra-Setup-0.3.0-5f7a1cb.exe
+sha256=949A960F36811327A21C250F5889E50E4A3DCD647BCAEF3F5C8DA35D86F2EFF5
+registro=installer/canonico/0.3.0-5f7a1cb/BUILD_INFO.txt
