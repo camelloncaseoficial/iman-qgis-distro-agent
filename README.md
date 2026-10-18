@@ -99,11 +99,12 @@ O **kit** para executá-lo está pronto e é mecânico:
 | Peça | O quê |
 |---|---|
 | `installer/build.ps1` | gera o `.exe` e o `BUILD_INFO.txt` (procedência: commit + versão + SHA-256) |
-| `docs/verify/bl7-clean-vm/CHECKLIST.md` | roteiro numerado de 13 passos, escrito para quem não conhece o código |
+| `docs/verify/bl7-clean-vm/CHECKLIST.md` | roteiro numerado de 21 passos em 4 rodadas, escrito para quem não conhece o código |
 | `docs/verify/bl7-clean-vm/RESULT.md` | modelo do laudo: PASS/FAIL por BL-1..BL-7 + **regra de corte** |
 | `tools/bl7/snapshot-user-profile.ps1` | fotografa o perfil do QGIS do usuário (hash por arquivo) |
 | `tools/bl7/assert-bl3.ps1` | prova que a distro **não tocou** no perfil do usuário |
-| `tools/bl7/collect-evidence.ps1` | coleta Windows/QGIS/resolução/DPI/instalação → esqueleto do RESULT |
+| `tools/bl7/assert-reconciliacao.ps1` | mede a reconciliação do perfil (DB-26) nos três estados, por hash e por chave |
+| `tools/bl7/collect-evidence.ps1` | coleta ambiente, **procedência** (`BUILD_ID.txt`) e QGIS embarcado → esqueleto do RESULT |
 
 Os helpers rodam em **PowerShell 5.1 puro**: sem Python, sem git, sem módulos, sem administrador —
 porque é isso que existe numa VM limpa. **Quem executa a VM é o sponsor**, não a crew.
