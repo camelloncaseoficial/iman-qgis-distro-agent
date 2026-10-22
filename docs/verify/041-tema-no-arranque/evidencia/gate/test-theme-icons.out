@@ -1,0 +1,17 @@
+
+  #041 - guarda do tema de icones
+  tema : D:\_projetos\iman-webgeo\iman-qgis-distro-agent\app\profile-template\iman-distro\themes\IMAN Terra
+  qgis : C:\Users\Francisco\AppData\Local\Programs\IMAN Terra\qgis
+
+  tema padrao: 941 nomes enumerados de :/images/themes/default/
+    icons/mIconNetworkLogger.svg       padrao=True  16px=24 cores  24px=41 cores
+    icons/providerQgis.svg             padrao=True  16px=179 cores  24px=319 cores
+  [A1] PASS
+  [A2] PASS
+  [A3] PASS
+  [A4] PASS  (OK: providerQgis.svg e a derivacao do master)
+  [V1] PASS  adulteracao 'providerQgis.svg vazio' REPROVADA por A2
+  [V2] PASS  adulteracao 'extensao trocada (mActionHelpSponsors.svg, o original e .png)' REPROVADA por A1
+  [V3] PASS  adulteracao 'style.qss cita @theme_path/icons/mActionZoomIn.svg' REPROVADA por A3
+
+  7 de 7 asse rcoes passaram

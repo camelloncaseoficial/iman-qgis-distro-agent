@@ -1,0 +1,34 @@
+
+  #021 - ciclo de reinstalacao (DB-22)
+  instalador: D:\_projetos\iman-webgeo\iman-qgis-distro-agent\installer\dist\nao-canonico\0.3.0-a447168-feat-041-tema-no-arranque\Instituto-IMAN-IMAN-Terra-Setup-0.3.0-a447168-nao-canonico.exe
+  destino   : C:\Users\Francisco\AppData\Local\Programs\IMAN Terra
+
+  0. destino VIRGEM
+    ha instalacao anterior - desinstalando antes de comecar
+    exit 0 | 10,5 s | sobras 0 arquivos / 0,00 MB | por extensao: 
+    destino virgem: True
+
+  1. instalar em destino virgem  (o caminho que JA funcionava - nao pode regredir)
+    exit 0 | 71,5 s | arvore 37337 | manifesto 37337 | dif 0 | INTEGRIDADE OK
+
+  2. abrir e reabrir  (a arvore CRESCE em uso: .pyc de runtime)
+    subiu True | pousou True | titulo 'Projeto sem título - IMAN Terra' | arvore 38154
+    subiu True | pousou True | titulo 'Projeto sem título - IMAN Terra' | arvore 38154
+
+  3. instalar SOBRE a instalacao existente  (o DB-22)
+    exit 0 | 133,8 s | arvore 37337 | manifesto 37337 | dif 0 | INTEGRIDADE OK
+
+  4. arvore DELIBERADAMENTE corrompida -> instalar  (o ciclo se recupera sozinho?)
+    injetados 25 arquivos -> arvore com 37362
+    exit 0 | 162,1 s | arvore 37337 | manifesto 37337 | dif 0 | INTEGRIDADE OK
+    arquivos de sujeira sobreviventes: 0
+
+  5. abrir e reabrir  (para o numero de sobras ser o do CICLO LIMPO)
+    subiu True | pousou True | titulo 'Projeto sem título - IMAN Terra' | arvore 38154
+    subiu True | pousou True | titulo 'Projeto sem título - IMAN Terra' | arvore 38154
+
+  6. desinstalar  (quantas sobras o ciclo LIMPO deixa)
+    exit 0 | 11,3 s | sobras 0 arquivos / 0,00 MB | por extensao: 
+
+  relatorio: D:\_projetos\iman-webgeo\iman-qgis-distro-agent\docs\verify\021-reinstalar-sem-laco\evidencia\reinstalacao.json
+

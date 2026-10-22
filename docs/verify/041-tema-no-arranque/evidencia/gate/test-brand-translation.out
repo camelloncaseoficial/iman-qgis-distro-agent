@@ -1,0 +1,35 @@
+
+  #041 - guarda do tradutor sobreposto
+  fonte : D:\_projetos\iman-webgeo\iman-qgis-distro-agent\app\i18n\iman_terra_pt_BR.json
+  qgis  : C:\Users\Francisco\AppData\Local\Programs\IMAN Terra\qgis
+
+  [T1] PASS  gerado: D:\_scratch\iman-brand-translation-22790be0f37f45d1a17eccff0826027c\qm-fonte\iman_terra_pt_BR.qm
+  20 mensagens, produto 'IMAN Terra'
+    [QgsNativeAlgorithms] IMAN Terra (c++ nativo)
+    [Qgs3DAlgorithms] IMAN Terra (3D)
+    [QgsPdalAlgorithms] IMAN Terra (PDAL)
+    [QgsProcessingFeedback] Versão do motor: %1
+    [QgsProcessingFeedback] Revisão do código do motor: %1
+    [MainWindow] Página do IMAN Terra
+    [QgsOptions] <h1>Projeção padrão para novos projetos</h1> Selecione uma projeção que deve ser usada par...
+    [QgsOptions] %1 é o idioma atualmente ativo em seu IMAN Terra
+    [QgsOptions] Um ou mais drivers foram desativados. Isso só entrará em vigor depois que o IMAN Terra for...
+    [QgsOptions] Necessário reiniciar o IMAN Terra
+    [QgsOptionsBase] <b>Nota:</b> se ativar a sobreposição ou alterar o idioma tem de reiniciar o IMAN Terra
+    [QgsOptionsBase] <html><head/><body><p>Alguns dos algoritmos e processadores de processamento interno do C ...
+    [QgsOptionsBase]  O cache de conexão armazena todos os dados de conexões de autenticação mesmo quando a con...
+    [QgsOptionsBase] Estilo <i>(necessário o reinício do IMAN Terra)</i>
+    [QgsOptionsBase] Os seguintes dispositivos OpenCL foram encontrados neste sistema (alterar o dispositivo pa...
+    [QgsPluginInstaller] Se você não tiver cancelado a ação baixar manualmente, ele pode ter sido causado por um es...
+    [QgsPluginInstaller] Se você não tiver cancelado a ação baixar manualmente, isto provavelmente foi causado por ...
+    [QgsPluginInstaller] O IMAN Terra detectou um complemento obsoleto que mascara sua versão mais recente fornecid...
+    [QgsPluginManager] <h3>Todos os módulos</h3><p>No lado esquerdo pode ver uma lista de todos os módulos dispon...
+    [QgsPluginManager] <h3>Módulos Instalados</h3><p>Aqui só vê módulos <b>instalados no seu IMAN Terra</b>.</p><...
+  [T2] PASS  
+  [T3] PASS  
+  [T4] PASS  
+  [T5] PASS  
+  [V1] PASS  adulteracao: versao-motor nomeando o produto; o gerador tem de RECUSAR
+  [V2] PASS  adulteracao: texto-fonte com um espaco a mais; T2 tem de REPROVAR
+
+  7 de 7 asse rcoes passaram

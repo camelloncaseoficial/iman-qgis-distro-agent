@@ -1,0 +1,173 @@
+
+  #029 - guarda do DB-25: um build nao destroi o candidato a release
+  ref      : HEAD = c7df919cfdd47273fb6411cd940585426bde69d2
+  QGIS     : 3.44.13
+  trabalho : D:\_iman-terra-guarda-db25\20261022-171120-c7df919
+  copiando a arvore do QGIS para esta rodada (17:11:20)...
+  arvore   : D:\_iman-terra-guarda-db25\20261022-171120-c7df919\arvore (37337 arquivos = manifesto)
+
+  -- estado 4: sem canonico nenhum (primeiro build do repo) --
+
+    build [e4-primeiro-build-canonico] 17:11:26: build.ps1 -ReusarArvore -SemRede
+    build [e4-primeiro-build-canonico]: exit 0 em 957,9 s
+      Artefato publicado: D:\_iman-terra-guarda-db25\20261022-171120-c7df919\e4-semente\installer\canonico\0.3.0-20bb40e\Instituto-IMAN-IMAN-Terra-Setup-0.3.0-20bb40e.exe
+      Info publicado    : D:\_iman-terra-guarda-db25\20261022-171120-c7df919\e4-semente\installer\canonico\0.3.0-20bb40e\BUILD_INFO.txt
+      |     OK  Inno Setup 7.1.0  (C:\Program Files\Inno Setup 7\ISCC.exe)
+      | ==> Compilando
+      |     OK  Instituto-IMAN-IMAN-Terra-Setup-0.3.0-20bb40e.exe (489.07 MB)
+      | ==> Gravando BUILD_INFO.txt
+      |   BUILD OK
+      |   Artefato : D:\_iman-terra-guarda-db25\20261022-171120-c7df919\e4-semente\installer\canonico\0.3.0-20bb40e\Instituto-IMAN-IMAN-Terra-Setup-0.3.0-20bb40e.exe
+      |   Versao   : 0.3.0   Commit: 20bb40e   Branch: develop
+      |   SHA-256  : D38FA1EDB951C285AA476D822ABFB99AD219916C77B856A1777D006393B2F44C
+      |   Info     : D:\_iman-terra-guarda-db25\20261022-171120-c7df919\e4-semente\installer\canonico\0.3.0-20bb40e\BUILD_INFO.txt
+      |   Vigente  : D:\_iman-terra-guarda-db25\20261022-171120-c7df919\e4-semente\installer\canonico\VIGENTE.txt
+      |   CANONICO: quem compilou commita na develop (P0.6):
+      |          installer/canonico/0.3.0-20bb40e/BUILD_INFO.txt
+      |          installer/canonico/VIGENTE.txt
+      |          Ate la a arvore fica suja, e nenhum outro build roda.
+
+  [PASS] estado 4 - nao ha canonico: o primeiro build do repo passa sem falso positivo
+         ok   o primeiro build do repo termina (exit 0)
+              antes : sem canonico
+              depois: exit 0
+         ok   o build publica Artefato e Info, e os dois existem
+              antes : -
+              depois: D:\_iman-terra-guarda-db25\20261022-171120-c7df919\e4-semente\installer\canonico\0.3.0-20bb40e\Instituto-IMAN-IMAN-Terra-Setup-0.3.0-20bb40e.exe | D:\_iman-terra-guarda-db25\20261022-171120-c7df919\e4-semente\installer\canonico\0.3.0-20bb40e\BUILD_INFO.txt
+         ok   o registro descreve o artefato ao lado (SHA-256 declarado == calculado)
+              antes : D38FA1EDB951C285AA476D822ABFB99AD219916C77B856A1777D006393B2F44C
+              depois: D38FA1EDB951C285AA476D822ABFB99AD219916C77B856A1777D006393B2F44C
+         ok   tamanho declarado == tamanho no disco
+              antes : 512830366
+              depois: 512830366
+         ok   o registro diz 'Build canonico: SIM'
+              antes : SIM
+              depois: SIM
+
+  semente : installer\canonico\0.3.0-20bb40e\Instituto-IMAN-IMAN-Terra-Setup-0.3.0-20bb40e.exe
+            SHA-256 D38FA1EDB951C285AA476D822ABFB99AD219916C77B856A1777D006393B2F44C
+  registro: installer\canonico\0.3.0-20bb40e\BUILD_INFO.txt   (SHA-256 dos bytes C9423E9408B1ADC3ABF1DC60428DF6E4329EF97D2D5FBF6DAEC1DD4312E03B27)
+  commit  : 557a750dff4f2dbbba3353e80a89f0ccafea1c83   (registro commitado, P0.6 simulada)
+
+  -- estado 1: ha canonico; build de branch com sucesso --
+    E.1 ok: o canonico de referencia confere antes da rodada
+            exe D38FA1EDB951C285AA476D822ABFB99AD219916C77B856A1777D006393B2F44C == cofre == declarado no registro
+            reg C9423E9408B1ADC3ABF1DC60428DF6E4329EF97D2D5FBF6DAEC1DD4312E03B27 == cofre
+
+    build [e1-build-de-branch] 17:27:29: build.ps1 -ExpectedBranch guarda/db25-branch -ReusarArvore -SemRede
+    build [e1-build-de-branch]: exit 0 em 833,8 s
+      Artefato publicado: D:\_iman-terra-guarda-db25\20261022-171120-c7df919\e1-branch-sucesso\installer\dist\nao-canonico\0.3.0-557a750-guarda-db25-branch\Instituto-IMAN-IMAN-Terra-Setup-0.3.0-557a750-nao-canonico.exe
+      Info publicado    : D:\_iman-terra-guarda-db25\20261022-171120-c7df919\e1-branch-sucesso\installer\dist\nao-canonico\0.3.0-557a750-guarda-db25-branch\BUILD_INFO.txt
+      | ==> Gravando a identidade do build (BUILD_ID.txt)
+      |     OK  BUILD_ID.txt: 0.3.0 / 557a750 / guarda/db25-branch (canonico: nao)
+      | ==> Localizando o compilador do Inno Setup
+      |     OK  Inno Setup 7.1.0  (C:\Program Files\Inno Setup 7\ISCC.exe)
+      | ==> Compilando
+      |     OK  Instituto-IMAN-IMAN-Terra-Setup-0.3.0-557a750-nao-canonico.exe (489.07 MB)
+      | ==> Gravando BUILD_INFO.txt
+      |   BUILD OK
+      |   Artefato : D:\_iman-terra-guarda-db25\20261022-171120-c7df919\e1-branch-sucesso\installer\dist\nao-canonico\0.3.0-557a750-guarda-db25-branch\Instituto-IMAN-IMAN-Terra-Setup-0.3.0-557a750-nao-canonico.exe
+      |   Versao   : 0.3.0   Commit: 557a750   Branch: guarda/db25-branch
+      |   SHA-256  : 250BD70A5B7E8F0A1E80104D1208D4C843E973F57581B533C14443DCB56C14DC
+      |   Info     : D:\_iman-terra-guarda-db25\20261022-171120-c7df919\e1-branch-sucesso\installer\dist\nao-canonico\0.3.0-557a750-guarda-db25-branch\BUILD_INFO.txt
+      |   AVISO: build NAO-CANONICO (branch 'guarda/db25-branch', esperado 'develop').
+      |          Serve para teste; o artefato de release sai de develop.
+
+  [PASS] estado 1 - ha canonico; build de branch com sucesso
+         ok   SHA-256 do .exe canonico inalterado
+              antes : D38FA1EDB951C285AA476D822ABFB99AD219916C77B856A1777D006393B2F44C
+              depois: D38FA1EDB951C285AA476D822ABFB99AD219916C77B856A1777D006393B2F44C
+         ok   SHA-256 dos bytes do registro canonico inalterado
+              antes : C9423E9408B1ADC3ABF1DC60428DF6E4329EF97D2D5FBF6DAEC1DD4312E03B27
+              depois: C9423E9408B1ADC3ABF1DC60428DF6E4329EF97D2D5FBF6DAEC1DD4312E03B27
+         ok   R1: o artefato de branch sai em OUTRO caminho
+              antes : D:\_iman-terra-guarda-db25\20261022-171120-c7df919\e1-branch-sucesso\installer\canonico\0.3.0-20bb40e\Instituto-IMAN-IMAN-Terra-Setup-0.3.0-20bb40e.exe
+              depois: D:\_iman-terra-guarda-db25\20261022-171120-c7df919\e1-branch-sucesso\installer\dist\nao-canonico\0.3.0-557a750-guarda-db25-branch\Instituto-IMAN-IMAN-Terra-Setup-0.3.0-557a750-nao-canonico.exe
+         ok   R1: canonico e branch se distinguem pelo NOME
+              antes : Instituto-IMAN-IMAN-Terra-Setup-0.3.0-20bb40e.exe
+              depois: Instituto-IMAN-IMAN-Terra-Setup-0.3.0-557a750-nao-canonico.exe
+         ok   R1: o nome do artefato de branch carrega versao e commit curto
+              antes : versao 0.3.0, commit 557a750
+              depois: Instituto-IMAN-IMAN-Terra-Setup-0.3.0-557a750-nao-canonico.exe
+
+  -- estado 2: ha canonico; build de branch que falha no ISCC --
+    E.1 ok: o canonico de referencia confere antes da rodada
+            exe D38FA1EDB951C285AA476D822ABFB99AD219916C77B856A1777D006393B2F44C == cofre == declarado no registro
+            reg C9423E9408B1ADC3ABF1DC60428DF6E4329EF97D2D5FBF6DAEC1DD4312E03B27 == cofre
+
+    build [e2-build-de-branch-iscc-falha] 17:41:25: build.ps1 -ExpectedBranch guarda/db25-falha -ReusarArvore -SemRede -IsccPath D:\_iman-terra-guarda-db25\20261022-171120-c7df919\iscc-que-falha.cmd
+    build [e2-build-de-branch-iscc-falha]: exit 4 em 20,9 s
+      Artefato publicado: 
+      Info publicado    : 
+      |   [V1] PASS  adulteracao: versao-motor nomeando o produto; o gerador tem de RECUSAR
+      |   [V2] PASS  adulteracao: texto-fonte com um espaco a mais; T2 tem de REPROVAR
+      |   7 de 7 asse rcoes passaram
+      |     OK  tradutor sobreposto gerado e conferido (7 de 7 asse rcoes, placar da guarda)
+      | ==> Gravando a identidade do build (BUILD_ID.txt)
+      |     OK  BUILD_ID.txt: 0.3.0 / 557a750 / guarda/db25-falha (canonico: nao)
+      | ==> Localizando o compilador do Inno Setup
+      |     OK  Inno Setup 7.1.0  (D:\_iman-terra-guarda-db25\20261022-171120-c7df919\iscc-que-falha.cmd)
+      | ==> Compilando
+      |   BUILD RECUSADO: o Inno Setup falhou (exit 1)
+      |     Artefato esperado: D:\_iman-terra-guarda-db25\20261022-171120-c7df919\e2-branch-falha-iscc\installer\dist\nao-canonico\0.3.0-557a750-guarda-db25-falha\Instituto-IMAN-IMAN-Terra-Setup-0.3.0-557a750-nao-canonico.exe
+      |     Removida so a pasta desta identidade; nenhum outro artefato foi tocado.
+      |     Rode sem /Q para ver o log completo:
+      |       & 'D:\_iman-terra-guarda-db25\20261022-171120-c7df919\iscc-que-falha.cmd' '/OD:\_iman-terra-guarda-db25\20261022-171120-c7df919\e2-branch-falha-iscc\installer\dist\nao-canonico\0.3.0-557a750-guarda-db25-falha' '/FInstituto-IMAN-IMAN-Terra-Setup-0.3.0-557a750-nao-canonico' 'D:\_iman-terra-guarda-db25\20261022-171120-c7df919\e2-branch-falha-iscc\installer\iman-terra.iss'
+    inducao confirmada: marcador presente, build exit 4
+
+  [PASS] estado 2 - ha canonico; build de branch que falha no ISCC
+         ok   SHA-256 do .exe canonico inalterado
+              antes : D38FA1EDB951C285AA476D822ABFB99AD219916C77B856A1777D006393B2F44C
+              depois: D38FA1EDB951C285AA476D822ABFB99AD219916C77B856A1777D006393B2F44C
+         ok   SHA-256 dos bytes do registro canonico inalterado
+              antes : C9423E9408B1ADC3ABF1DC60428DF6E4329EF97D2D5FBF6DAEC1DD4312E03B27
+              depois: C9423E9408B1ADC3ABF1DC60428DF6E4329EF97D2D5FBF6DAEC1DD4312E03B27
+
+  -- estado 3: ha canonico; segundo canonico da mesma versao --
+    E.1 ok: o canonico de referencia confere antes da rodada
+            exe D38FA1EDB951C285AA476D822ABFB99AD219916C77B856A1777D006393B2F44C == cofre == declarado no registro
+            reg C9423E9408B1ADC3ABF1DC60428DF6E4329EF97D2D5FBF6DAEC1DD4312E03B27 == cofre
+
+    build [e3-segundo-build-canonico] 17:41:48: build.ps1 -ReusarArvore -SemRede
+    build [e3-segundo-build-canonico]: exit 0 em 306,2 s
+      Artefato publicado: D:\_iman-terra-guarda-db25\20261022-171120-c7df919\e3-segundo-canonico\installer\canonico\0.3.0-e504511\Instituto-IMAN-IMAN-Terra-Setup-0.3.0-e504511.exe
+      Info publicado    : D:\_iman-terra-guarda-db25\20261022-171120-c7df919\e3-segundo-canonico\installer\canonico\0.3.0-e504511\BUILD_INFO.txt
+      |     OK  Inno Setup 7.1.0  (C:\Program Files\Inno Setup 7\ISCC.exe)
+      | ==> Compilando
+      |     OK  Instituto-IMAN-IMAN-Terra-Setup-0.3.0-e504511.exe (489.07 MB)
+      | ==> Gravando BUILD_INFO.txt
+      |   BUILD OK
+      |   Artefato : D:\_iman-terra-guarda-db25\20261022-171120-c7df919\e3-segundo-canonico\installer\canonico\0.3.0-e504511\Instituto-IMAN-IMAN-Terra-Setup-0.3.0-e504511.exe
+      |   Versao   : 0.3.0   Commit: e504511   Branch: develop
+      |   SHA-256  : 22A7ABBFE93924247B47CBB659C37BC0E8CE2449A76DEC65DEA85B44713C2F79
+      |   Info     : D:\_iman-terra-guarda-db25\20261022-171120-c7df919\e3-segundo-canonico\installer\canonico\0.3.0-e504511\BUILD_INFO.txt
+      |   Vigente  : D:\_iman-terra-guarda-db25\20261022-171120-c7df919\e3-segundo-canonico\installer\canonico\VIGENTE.txt
+      |   CANONICO: quem compilou commita na develop (P0.6):
+      |          installer/canonico/0.3.0-e504511/BUILD_INFO.txt
+      |          installer/canonico/VIGENTE.txt
+      |          Ate la a arvore fica suja, e nenhum outro build roda.
+
+  [PASS] estado 3 - ha canonico; segundo canonico da mesma versao
+         ok   SHA-256 do .exe canonico inalterado
+              antes : D38FA1EDB951C285AA476D822ABFB99AD219916C77B856A1777D006393B2F44C
+              depois: D38FA1EDB951C285AA476D822ABFB99AD219916C77B856A1777D006393B2F44C
+         ok   SHA-256 dos bytes do registro canonico inalterado
+              antes : C9423E9408B1ADC3ABF1DC60428DF6E4329EF97D2D5FBF6DAEC1DD4312E03B27
+              depois: C9423E9408B1ADC3ABF1DC60428DF6E4329EF97D2D5FBF6DAEC1DD4312E03B27
+         ok   R4: o registro do segundo canonico descreve o .exe dele
+              antes : 22A7ABBFE93924247B47CBB659C37BC0E8CE2449A76DEC65DEA85B44713C2F79
+              depois: 22A7ABBFE93924247B47CBB659C37BC0E8CE2449A76DEC65DEA85B44713C2F79
+         ok   R4: o segundo diz 'Build canonico: SIM'
+              antes : SIM
+              depois: SIM
+         ok   R4: os dois canonicos coexistem (caminhos distintos, os dois no disco)
+              antes : D:\_iman-terra-guarda-db25\20261022-171120-c7df919\e3-segundo-canonico\installer\canonico\0.3.0-20bb40e\Instituto-IMAN-IMAN-Terra-Setup-0.3.0-20bb40e.exe
+              depois: D:\_iman-terra-guarda-db25\20261022-171120-c7df919\e3-segundo-canonico\installer\canonico\0.3.0-e504511\Instituto-IMAN-IMAN-Terra-Setup-0.3.0-e504511.exe
+
+  MATRIZ - build.ps1 de c7df919cfdd47273fb6411cd940585426bde69d2
+    estado 4         PASS      nao ha canonico: o primeiro build do repo passa sem falso positivo
+    estado 1         PASS      ha canonico; build de branch com sucesso
+    estado 2         PASS      ha canonico; build de branch que falha no ISCC
+    estado 3         PASS      ha canonico; segundo canonico da mesma versao
+  logs: D:\_iman-terra-guarda-db25\20261022-171120-c7df919\logs
+
