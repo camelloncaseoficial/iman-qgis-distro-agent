@@ -1364,10 +1364,13 @@ def a15_provider_qgis_do_tema():
 
 def a16_icone_dos_dialogos():
     """#041 - dialogo sem icone proprio herda o emblema IMAN, nao o logo do QGIS"""
-    crit = ('o icone da APLICACAO e o de um QDialog novo, sem icone proprio, sao o '
-            'emblema IMAN (o .ico do produto) e nao o qgis-icon-60x60.png da arvore')
-    se_q = ('com o icone trocado so na janela principal, o A11 passa e cada dialogo '
-            'continua com o logo do QGIS na barra de titulo.')
+    crit = ('o icone da APLICACAO e o de um QDialog novo SEM PAI e sem icone proprio '
+            'sao o emblema IMAN (o .ico do produto) e nao o qgis-icon-60x60.png da arvore')
+    se_q = ('com o icone trocado so na janela principal, o A11 passa, os dialogos '
+            'filhos dela herdam o emblema, e toda janela SEM PAI (e o que nasce antes '
+            'do startup) continua com o logo do QGIS. Um dialogo filho da janela '
+            'principal nao serve de prova: ele herda o icone da janela (medido no '
+            '#041, primeira versao desta assercao), por isso o dialogo aqui nao tem pai.')
     try:
         from qgis.PyQt.QtWidgets import QDialog
         home = os.environ.get('IMAN_TERRA_HOME', '')
@@ -1375,8 +1378,8 @@ def a16_icone_dos_dialogos():
         logo = os.path.join(QgsApplication.pkgDataPath(), 'images', 'icons', 'qgis-icon-60x60.png')
         ref_iman = _img(QIcon(ico), 32) if ico and os.path.exists(ico) else QImage()
         ref_qgis = _img(QIcon(logo), 32) if os.path.exists(logo) else QImage()
-        dlg = QDialog(win())
-        dlg.setWindowTitle('#041 - dialogo sem icone proprio')
+        dlg = QDialog(None)
+        dlg.setWindowTitle('#041 - dialogo sem pai e sem icone proprio')
         img_dlg = _img(dlg.windowIcon(), 32)
         img_app = _img(QApplication.windowIcon(), 32)
         dlg.deleteLater()

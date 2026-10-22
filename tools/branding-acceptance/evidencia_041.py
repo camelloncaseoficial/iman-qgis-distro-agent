@@ -21,9 +21,10 @@ regioes que o briefing #041 pede e mede o que o laudo tabela:
   - o alcance do tradutor, mensagem a mensagem: o que a API devolve e o que a tela
     mostra onde a mensagem aparece.
 
-Cada foto sai duas vezes quando a moldura importa: `<nome>.png` (widget.grab, so o
-conteudo) e `<nome>-tela.png` (a tela na area da janela, com a barra de titulo
-nativa, onde o icone da janela aparece).
+Cada foto e `<nome>.png` (widget.grab, so o conteudo do proprio QGIS). Quando o
+icone da barra de titulo importa, sai tambem `<nome>-icone-da-janela.png`: o
+windowIcon() que a janela entrega ao Windows. A tela NUNCA e fotografada (ver
+foto_tela).
 
 Grava `descoberta.json` no fim (o orquestrador espera por ele).
 """
@@ -78,20 +79,20 @@ def foto(widget, nome):
 
 
 def foto_tela(widget, nome):
-    """A tela na area da janela de topo, com a moldura nativa (barra de titulo)."""
+    """O icone que a janela de topo entrega ao Windows para a barra de titulo.
+
+    NAO FOTOGRAFA A TELA, de proposito. A primeira versao desta sonda usava
+    grabWindow na area da janela e, numa bancada em uso, pegou o que estava na
+    frente (outro aplicativo, com dados de outra pessoa). A barra de titulo e
+    desenhada pelo Windows a partir do windowIcon() da janela, entao e ele que
+    se salva, a 32 px, ao lado da foto do conteudo (widget.grab)."""
     try:
         if widget is None:
             return ''
         topo = widget.window()
-        topo.raise_()
-        topo.activateWindow()
-        espera(500)
-        g = topo.frameGeometry()
-        tela = QApplication.primaryScreen()
-        pm = tela.grabWindow(0, g.x(), g.y(), g.width(), g.height())
         os.makedirs(SHOTS, exist_ok=True)
-        pm.save(os.path.join(SHOTS, nome + '-tela.png'))
-        return nome + '-tela.png'
+        topo.windowIcon().pixmap(32, 32).save(os.path.join(SHOTS, nome + '-icone-da-janela.png'))
+        return nome + '-icone-da-janela.png'
     except Exception:
         return ''
 
@@ -401,13 +402,6 @@ def regiao_ajuda():
     menu.popup(win().mapToGlobal(QPoint(int(win().width() * 0.6), 40)))
     espera(700)
     res['foto'] = foto(menu, '041-menu-ajuda')
-    g = menu.geometry()
-    try:
-        pm = QApplication.primaryScreen().grabWindow(0, g.x() - 4, g.y() - 4, g.width() + 8, g.height() + 8)
-        pm.save(os.path.join(SHOTS, '041-menu-ajuda-tela.png'))
-        res['tela'] = '041-menu-ajuda-tela.png'
-    except Exception:
-        pass
     menu.hide()
     espera(300)
 
@@ -448,10 +442,13 @@ def regiao_ajuda():
 
 
 def regiao_dialogo_sem_icone():
-    dlg = QDialog(win())
-    dlg.setWindowTitle('IMAN Terra #041 - dialogo sem icone proprio')
+    # SEM PAI de proposito: um dialogo filho da janela principal herda o icone
+    # DELA (que o startup ja trocava antes do #041). Sem pai, ele so herda o da
+    # aplicacao, que e o que o #041 troca.
+    dlg = QDialog(None)
+    dlg.setWindowTitle('IMAN Terra #041 - dialogo sem pai e sem icone proprio')
     lay = QVBoxLayout(dlg)
-    lay.addWidget(QLabel('Um QDialog novo, sem setWindowIcon: herda o icone da aplicacao.'))
+    lay.addWidget(QLabel('Um QDialog novo, sem pai e sem setWindowIcon: herda o icone da aplicacao.'))
     lay.addWidget(QPushButton('OK'))
     dlg.resize(520, 140)
     dlg.show()
@@ -463,6 +460,7 @@ def regiao_dialogo_sem_icone():
     doc['dialogo_sem_icone'] = {
         'semelhanca_iman': semelhanca(img(dlg.windowIcon(), 32), img(QIcon(ico), 32)) if os.path.exists(ico) else None,
         'semelhanca_qgis': semelhanca(img(dlg.windowIcon(), 32), img(QIcon(logo), 32)),
+        'foto': foto(dlg, '041-dialogo-sem-icone'),
         'tela': foto_tela(dlg, '041-dialogo-sem-icone'),
     }
     dlg.close()
