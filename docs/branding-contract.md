@@ -20,9 +20,11 @@ Declarado no topo, não escondido no rodapé:
 | **Ícone do executável** (`qgis-ltr-bin.exe`) | está compilado no binário | só Opção 2 (fork) — é o `DB-4`, e tem consequência de licença |
 | **Nome interno do processo** | idem | Opção 2 |
 | **About nativo do QGIS** | diálogo do core | Opção 2 — e **por BL-1 ele fica**, não se remove |
-| **Ícones de ação da toolbar** | vêm do tema de ícones do QGIS | o tema próprio **já existe e está ativo** (`#018`/`D12`); falta popular o `icons/` dele — ver §1.7 |
+| ~~**Ícones de ação da toolbar**~~ | **saiu do teto no `#041`** (`D-IMAN-039`): o QGIS pede cada ícone ao tema por nome, e um arquivo com o mesmo nome em `<perfil>/themes/IMAN Terra/icons/` vence o padrão, **desde que o tema esteja ativo antes da janela** (`[UI] UITheme` no template). A linha anterior dizia que eles "vinham do tema do QGIS" e esperavam o fork; não conferia com o binário | ver §1.7. Redesenhar os ~700 ícones genéricos **não** foi adotado (`D-IMAN-039`) |
 | **Agrupamento na barra de tarefas** | o shell do Windows lê o `AppUserModelID` no instante em que a janela nasce | depende de a identidade ser definida **antes** do processo criar a janela; hoje o startup roda via `--code`, tarde demais (`D11`) |
 | **Chrome pixel-idêntica ao comp** | QSS colore, não reestrutura layout | teto já declarado no `#006` |
+| **Ícones e textos que o QGIS lê por caminho compilado ou do binário** (`#041`, forense `S17`, `S41` a `S44`, `S50` a `S52`) | ícone do executável, logo dos `.qgs/.qgz/.qlr` no Navegador, ícone das Propriedades da camada, diálogos de perfil e de primeira execução, metadados de PDF, versão gravada no projeto, nome interno `QGIS3`, ids `native:`/`qgis:`, `qgis_process`, caixa "Error loading QGIS", crash handler, lista de atalhos | só Opção 2. O "Sobre" nativo fica por `BL-1` |
+| **Texto que o QGIS monta antes de o plugin de marca carregar** (`#041`) | o tradutor sobreposto só alcança o texto pedido **depois** de ele entrar; o splash e o que a janela traduz no construtor ficam com o texto do QGIS | o alcance é medido mensagem a mensagem no laudo do `#041`; o que não alcança fica registrado, sem outro caminho |
 
 **O contrato abaixo só fala do que está dentro do alcance.** Onde a asserção não consegue medir, a
 linha diz `N/E` e propõe o passo manual — nunca finge cobertura.
@@ -38,8 +40,26 @@ manuais com critério explícito.
 
 | o que a marca possui | o que é do QGIS e não se toca | a asserção que prova |
 |---|---|---|
-| Cor de fundo, cor do texto, realce do item ativo (`QMenuBar`, `QMenuBar::item`) | **Todos os menus nativos e suas ações** — `Projeto`, `Editar`, `Exibir`, `Camada`, `Configurações`, `Complementos`, `Vetor`, `Raster`, `Banco de Dados`, `Web`, `Malha`, `Processamento`, `Ajuda`. A camada de marca **acrescenta**, nunca remove nem renomeia | `A10` (presença do Sobre próprio no `Ajuda`, sem tirar o Sobre nativo) |
+| Cor de fundo, cor do texto, realce do item ativo (`QMenuBar`, `QMenuBar::item`) | **Todos os menus nativos e suas ações**: `Projeto`, `Editar`, `Exibir`, `Camada`, `Configurações`, `Complementos`, `Vetor`, `Raster`, `Banco de Dados`, `Web`, `Malha`, `Processamento`, `Ajuda`. A camada de marca **acrescenta**, nunca remove nem renomeia, **salvo as exceções nomeadas abaixo** | `A10` (presença do Sobre próprio no `Ajuda`, sem tirar o Sobre nativo) |
 | Uma entrada própria em `Complementos ▸ IMAN Terra` | A ordem e o conteúdo dos menus nativos | `A10` |
+
+> **EMENDA (`D-IMAN-039` item 5, fatia `#041`).** A regra "acrescenta, nunca remove nem renomeia"
+> ganha estas exceções, **e só elas**:
+>
+> 1. **Renomear:** "QGIS" vira o nome do produto nos textos que o tradutor sobreposto alcança, **só
+>    onde a palavra nomeia o aplicativo em uso** (`D-IMAN-039` regra 3): o nome dos provedores
+>    nativos do Processamento, "Página do QGIS", e os textos das Opções e do gerenciador de
+>    complementos em que "QGIS" é o aplicativo. Onde o valor exibido é a versão do QGIS, o texto diz
+>    **motor**, nunca "versão do IMAN Terra". A lista fechada está em `app/i18n/iman_terra_pt_BR.json`.
+> 2. **Remover:** o item `Ajuda ▸ Verificar a versão do QGIS` sai do menu (a checagem é do QGIS, e
+>    está desligada). É a única regra de customização de menu do produto, declarada em
+>    `app/profile-template/PERFIL-DO-PRODUTO.json` (`customization_rules`).
+>
+> **Continua intocado:** o "Sobre" nativo, os créditos, a licença, "Doe para o QGIS", "Envolva-se",
+> "Membros de Suporte do QGIS", "Contribuidores do QGIS" e o nome "Repositório Oficial de
+> Complementos do QGIS" (`BL-1`, `BL-2`). Esses três endereços e a ajuda F1 seguem apontando para o
+> QGIS; "Página do IMAN Terra", "Reportar um problema" e o suporte comercial apontam para o endereço
+> do produto (`brand.URL_SITE`).
 
 ### 1.2 Barras de ferramentas (`toolbars`)
 
@@ -126,10 +146,61 @@ manuais com critério explícito.
 > escrever lá sobrescreveria o QGIS do próprio usuário.
 >
 > **Estado em `#018`:** o tema **`IMAN Terra` existe no perfil e está ativo** — o `style.qss` dele é
-> o QSS de marca (movido para lá, fonte única, sem cópia). **Limite declarado:** o diretório
-> `icons/` do tema ainda está **vazio**. Um tema do QGIS usa `icons/` para sobrescrever a
-> iconografia de chrome (setas, fechar, olho, alças) — trocar esses SVGs é o passo seguinte e não
-> foi feito aqui: um `close.svg` malfeito reabriria o `D1`.
+> o QSS de marca (movido para lá, fonte única, sem cópia). ~~**Limite declarado:** o diretório
+> `icons/` do tema ainda está **vazio**.~~
+>
+> **Estado em `#041` (`D-IMAN-039`):** o tema entra **no arranque** (`[UI] UITheme=IMAN Terra` no
+> template; o `setUITheme` do startup ficou como redundância). Isso importa porque o QGIS guarda
+> cada ícone em cache na primeira leitura e a troca de tema depois da janela montada não o alcança.
+> O `icons/` passou a ter **dois** arquivos, e só eles:
+>
+> | arquivo | o que substitui | de onde vem |
+> |---|---|---|
+> | `icons/providerQgis.svg` | o logo do QGIS nos provedores `native`, `qgis`, `3d` e `pdal`, nos grupos de topo da caixa de Processamento, no modelador e em Opções ▸ Processamento ▸ Provedores | o símbolo IMAN, recortado do master vetorial `app/assets/splash-iman-terra.svg` por `app/assets/derive-theme-icons.py` (fonte única, `BL-4`) |
+> | `icons/mIconNetworkLogger.svg` | a lupa com o "Q" do logotipo nas Ferramentas de depuração | ícone genérico, sem logo |
+>
+> **Não se trocam** `mActionHelpAbout.svg` nem `mActionHelpSponsors.png`: eles representam o projeto
+> QGIS (`BL-1`, `BL-2`). Regra para todo arquivo novo em `icons/`, guardada por
+> `tools/test-theme-icons.ps1` (que também roda no build): o nome, com subpasta e extensão, existe no
+> tema padrão; o arquivo desenha a 16 e a 24 px; e imagem citada pelo `style.qss` leva o prefixo
+> `qss-` e não colide com nome de ícone. Um `close.svg` malfeito continuaria reabrindo o `D1`.
+
+### 1.11 Tema no arranque (`#041`)
+
+| a marca possui | do QGIS, não se toca | asserção |
+|---|---|---|
+| O tema de UI **ativo antes de a janela pedir os ícones** | O mecanismo de tema e o cache de ícones do QGIS | `A14` |
+| O `providerQgis.svg` que a caixa de Processamento exibe | Os ícones genéricos dos algoritmos (engrenagem e os `algorithms/*.svg`) | `A15` |
+
+> **CONTRATO EXPLÍCITO.** O ícone que o provedor nativo devolve (pedido ao tema quando a caixa foi
+> montada, antes do `--code`) é, **pelo pixel**, o `providerQgis.svg` do tema; e nenhum nó visível
+> da caixa exibe o logo do QGIS. `themeName()` sozinho não prova nada: ele diz "IMAN Terra" mesmo
+> quando o tema chegou tarde e o cache ficou com o logo.
+
+### 1.12 Ícone dos diálogos (`#041`)
+
+| a marca possui | do QGIS, não se toca | asserção |
+|---|---|---|
+| O ícone da **aplicação** (`QgsApplication.setWindowIcon`, o `.ico` de 16 a 256 px), herdado por todo diálogo sem ícone próprio | O `qgis-icon-60x60.png` da árvore (`RISCOS R6`) e o ícone que um formulário compilado declara (Propriedades da camada: teto) | `A16` |
+
+### 1.13 Tradutor sobreposto (`#041`)
+
+| a marca possui | do QGIS, não se toca | asserção |
+|---|---|---|
+| As 20 mensagens de `app/i18n/iman_terra_pt_BR.json`, num `QTranslator` instalado pelo plugin de marca depois do `qgis_pt_BR.qm` | O `qgis_pt_BR.qm` e todas as outras mensagens | `A17` (nome do provedor nativo e o log de versão do Processamento) · alcance por mensagem no laudo do `#041` |
+
+> **CONTRATO EXPLÍCITO.** O `.qm` é gerado no build (`installer/New-BrandTranslation.ps1`, `lrelease`
+> 5.15.2 fixado por SHA-256, não redistribuído) com o nome do produto lido de `brand.py`, e
+> conferido por `tools/test-brand-translation.ps1`: toda fonte existe no `qgis_pt_BR.qm` da árvore,
+> a precedência vale, e Sobre, doação, Membros de Suporte, repositório oficial e Contribuidores saem
+> com o texto do QGIS.
+
+### 1.14 Notícias, versão e endereços da Ajuda (`#041`)
+
+| a marca possui | do QGIS, não se toca | asserção |
+|---|---|---|
+| `[core] httpsfeedqgisorg\disabled=true`, `[qgis] checkVersion=false`, `[qgis] allowVersionCheck=false` no template; o item de versão fora do `Ajuda` | O feed e a checagem em si (só são desligados) | `M-041-REDE` (laudo: o registro de rede do QGIS, com controle positivo) |
+| `helpQgisHomePageUrl`, `reportaBugUrl`, `supportProvidersUrl` = `brand.URL_SITE`, gravados pelo plugin | `donate`, `getInvolved`, `qgisSponsorsUrl`, `help/helpSearchPath` | `M-041-AJUDA` (laudo: o clique em cada item, interceptado) |
 
 ### 1.8 Home (o miolo)
 
@@ -256,6 +327,10 @@ EOF
 | Sobre | `A10` | `D10` Sobre escondido | **PASS** |
 | ícone de janela/taskbar | `A11` + `M-D11` | `D11` ícone do QGIS na taskbar | **PASS (parcial) + N/E — BLOQUEADO EM A1** |
 | tema de ícones | `A12` | `D12` ícones do QGIS na UI | **PASS** |
+| tema no arranque | `A14` | `#041` o tema chega tarde e o cache fica com o logo | ver `docs/verify/041-tema-no-arranque/` |
+| caixa de Processamento | `A15` | `#041` logo do QGIS em cada provedor e grupo | idem |
+| ícone dos diálogos | `A16` | `#041` logo do QGIS em todo diálogo sem ícone próprio | idem |
+| tradutor sobreposto | `A17` | `#041` "QGIS" onde o texto nomeia o aplicativo; versão do QGIS dita como do produto | idem |
 
 **Estado em 2026-09-07 (`#018`): 12 asserções PASS, 0 FAIL, 1 N/E.** Onze dos doze defeitos
 consertados; o `D11` está **bloqueado na via A1** — não existe conserto honesto enquanto o `.exe`

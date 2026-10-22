@@ -33,6 +33,13 @@ futuro ser **find-replace guiado**, não caça a strings. Referenciado por `/bra
 - [ ] `app/.../iman_brand/metadata.txt` — `name=`, `description=`, `about=` (espelham `brand.py`).
 - [ ] `app/startup/iman_startup.py` — string de **fallback** `"IMAN Terra — powered by QGIS"` (linha ~117,
       usada só se `brand.py` não importar).
+- [ ] Nome do **tema de UI** (#041): a pasta `app/profile-template/iman-distro/themes/IMAN Terra/`, a chave
+      `[UI] UITheme=IMAN Terra` do `QGIS3.ini` do template, `TEMA_UI` em `iman_startup.py` e `TEMA_041` no
+      aceite, mais `arvores_do_produto` em `PERFIL-DO-PRODUTO.json`. Trocar o nome do tema e opcional (ele e
+      um identificador), mas os cinco andam juntos.
+- [ ] Tradutor sobreposto (#041): **nada a fazer**. `app/i18n/iman_terra_pt_BR.json` usa o token
+      `{PRODUCT_NAME}` e o build o troca pelo `PRODUCT_NAME` de `brand.py`. O nome do arquivo `.qm`
+      (`iman_terra_*`) e identificador, nao texto de marca.
 
 ### A3. Prosa de marca (verbatim — revisar à mão, não só find-replace)
 - [ ] `docs/BRANDING_AND_LICENSE.md` — bloco de créditos + nomenclatura.
