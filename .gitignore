@@ -69,8 +69,3 @@ tools/adulteracao/
 # Arvore privada do QGIS montada em tempo de build (fatia #019, via A1).
 # ~2,2 GB extraidos do payload; regeravel com installer\New-ArvoreQgis.ps1.
 installer/stage/
-
-# Ferramenta de build do tradutor sobreposto da marca (#041): lrelease 5.15.2 do
-# wheel qt5-applications, baixado e conferido por SHA-256 por
-# installer\New-BrandTranslation.ps1. Usada so na bancada; nao e redistribuida.
-installer/tools/

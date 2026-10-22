@@ -15,10 +15,15 @@
    A versao e a do Qt que o QGIS 3.44.13 embarcado usa (Qt 5.15): o formato do
    .qm e o que o QTranslator da arvore le.
 
- ONDE ELA FICA: installer\tools\qt5-applications-<versao>\ (fora do git). Se nao
- estiver la, o script baixa o wheel do PyPI, confere o SHA-256 e extrai so os 3
- arquivos que o lrelease precisa. -SemRede proibe o download; -Lrelease aponta
- um executavel explicito (a versao continua conferida).
+ ONDE ELA FICA: %LOCALAPPDATA%\InstitutoIMAN\build-tools\qt5-applications-<versao>\,
+ um cache DA BANCADA, fora de qualquer clone. Se nao estiver la, o script baixa o
+ wheel do PyPI, confere o SHA-256 e extrai so os 3 arquivos que o lrelease precisa.
+ -SemRede proibe o download; -Lrelease (ou %IMAN_LRELEASE%) aponta um executavel
+ explicito (a versao continua conferida); -ToolsDir troca o cache.
+ POR QUE FORA DO REPO: tools\test-build-preserva-canonico.ps1 compila de um
+ clone LIMPO com -SemRede. Com o cache dentro do repo (installer\tools, fora do
+ git), o clone nao o tinha e o build recusava (exit 9), medido no #041. A
+ ferramenta e da maquina, como o ISCC, e nao de um checkout.
 
  GUARDAS (a fonte e conferida antes de compilar, e o .qm depois):
    - rule "aplicativo"  : a traducao TEM o token do nome do produto;
@@ -48,7 +53,7 @@ $raizRepo   = (Get-Item (Join-Path $raizScript '..')).FullName
 if (-not $Fonte)    { $Fonte    = Join-Path $raizRepo 'app\i18n\iman_terra_pt_BR.json' }
 if (-not $Brand)    { $Brand    = Join-Path $raizRepo 'app\profile-template\iman-distro\python\plugins\iman_brand\brand.py' }
 if (-not $OutDir)   { $OutDir   = Join-Path $raizRepo 'installer\stage\i18n' }
-if (-not $ToolsDir) { $ToolsDir = Join-Path $raizRepo 'installer\tools' }
+if (-not $ToolsDir) { $ToolsDir = Join-Path $env:LOCALAPPDATA 'InstitutoIMAN\build-tools' }
 
 $WheelVersion = '5.15.2.2.3'
 $WheelName    = "qt5_applications-$WheelVersion-py3-none-win_amd64.whl"
