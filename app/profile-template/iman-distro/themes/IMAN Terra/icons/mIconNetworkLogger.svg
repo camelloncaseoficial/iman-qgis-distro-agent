@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- IMAN Terra: registro de rede (Ferramentas de depuracao). Substitui o original,
+     cuja lupa desenha o "Q" do logotipo do QGIS (forense do #041, S46). Icone
+     generico, sem logo: trafego de saida e de entrada. Cores da paleta da marca
+     (brand.py: COLOR_ACCENT e COLOR_PRIMARY). -->
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+<path fill="none" stroke="#2B8FD6" stroke-width="2.5" stroke-linecap="round" d="M3 7.5h12.5"/>
+<path fill="#2B8FD6" d="M15 3.5l6.5 4-6.5 4z"/>
+<path fill="none" stroke="#1E7A4D" stroke-width="2.5" stroke-linecap="round" d="M21 16.5H8.5"/>
+<path fill="#1E7A4D" d="M9 12.5l-6.5 4 6.5 4z"/>
+</svg>
