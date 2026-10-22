@@ -1,0 +1,188 @@
+{
+  "_leia": [
+    "IMAN Terra - FONTE do tradutor sobreposto da marca (#041, D-IMAN-039 regra 3).",
+    "",
+    "Cada mensagem traz o texto-fonte do QGIS (source, em ingles, a chave que o Qt procura),",
+    "a traducao que o QGIS 3.44.13 entrega hoje (qgis_pt_BR, de qgis_pt_BR.qm) e a nossa",
+    "(iman_terra). {PRODUCT_NAME} e trocado no build pelo PRODUCT_NAME de brand.py (BL-4):",
+    "o nome do produto nao e escrito aqui.",
+    "",
+    "REGRA (D-IMAN-039 item 3): QGIS vira o produto SO onde nomeia o aplicativo em uso",
+    "(rule = aplicativo). Onde o valor exibido e a versao do QGIS, o texto diz motor",
+    "(rule = versao-motor), nunca versao do produto. Nao entra: Sobre, creditos, licenca,",
+    "Doe/Envolva-se/Membros de Suporte, o nome do repositorio oficial de complementos,",
+    "versao do QGIS como requisito de complemento, formato de arquivo QGIS, comunidade.",
+    "",
+    "l08_index aponta a linha em ../iman-product-architect/docs/rea-iman-terra/evidencias/",
+    "locais/L-08_qm_ptBR_mensagens_com_QGIS.json, de onde source e qgis_pt_BR foram",
+    "copiados por script (sem redigitar), para o texto-fonte casar byte a byte.",
+    "",
+    "Quem gera o .qm: installer/New-BrandTranslation.ps1 (chamado pelo build.ps1 e pelo",
+    "tools/test-brand-translation.ps1), com lrelease 5.15.2 do wheel qt5-applications",
+    "5.15.2.2.3, SHA-256 fixado no script. A ferramenta NAO e redistribuida."
+  ],
+  "language": "pt_BR",
+  "product_token": "{PRODUCT_NAME}",
+  "messages": [
+    {
+      "l08_index": 186,
+      "context": "QgsNativeAlgorithms",
+      "source": "QGIS (native c++)",
+      "rule": "aplicativo",
+      "qgis_pt_BR": "QGIS (c++ nativo)",
+      "iman_terra": "{PRODUCT_NAME} (c++ nativo)"
+    },
+    {
+      "l08_index": 80,
+      "context": "Qgs3DAlgorithms",
+      "source": "QGIS (3D)",
+      "rule": "aplicativo",
+      "qgis_pt_BR": "QGIS (3D)",
+      "iman_terra": "{PRODUCT_NAME} (3D)"
+    },
+    {
+      "l08_index": 208,
+      "context": "QgsPdalAlgorithms",
+      "source": "QGIS (PDAL)",
+      "rule": "aplicativo",
+      "qgis_pt_BR": "QGIS (PDAL)",
+      "iman_terra": "{PRODUCT_NAME} (PDAL)"
+    },
+    {
+      "l08_index": 234,
+      "context": "QgsProcessingFeedback",
+      "source": "QGIS version: %1",
+      "rule": "versao-motor",
+      "qgis_pt_BR": "Versão do QGIS: %1",
+      "iman_terra": "Versão do motor: %1"
+    },
+    {
+      "l08_index": 233,
+      "context": "QgsProcessingFeedback",
+      "source": "QGIS code revision: %1",
+      "rule": "versao-motor",
+      "qgis_pt_BR": "Código de revisão do QGIS: %1",
+      "iman_terra": "Revisão do código do motor: %1"
+    },
+    {
+      "l08_index": 7,
+      "context": "MainWindow",
+      "source": "QGIS Home Page",
+      "rule": "aplicativo",
+      "qgis_pt_BR": "Página do QGIS",
+      "iman_terra": "Página do {PRODUCT_NAME}"
+    },
+    {
+      "l08_index": 190,
+      "context": "QgsOptions",
+      "source": "<h1>Default projection for new projects</h1>Select a projection that should be used for new projects that are created in QGIS.",
+      "rule": "aplicativo",
+      "qgis_pt_BR": "<h1>Projeção padrão para novos projetos</h1> Selecione uma projeção que deve ser usada para novos projetos criados no QGIS.",
+      "iman_terra": "<h1>Projeção padrão para novos projetos</h1> Selecione uma projeção que deve ser usada para novos projetos criados no {PRODUCT_NAME}."
+    },
+    {
+      "l08_index": 191,
+      "context": "QgsOptions",
+      "source": "Detected active locale on your system: %1",
+      "rule": "aplicativo",
+      "qgis_pt_BR": "%1 é o idioma atualmente ativo em seu QGIS",
+      "iman_terra": "%1 é o idioma atualmente ativo em seu {PRODUCT_NAME}"
+    },
+    {
+      "l08_index": 192,
+      "context": "QgsOptions",
+      "source": "One or more drivers have been disabled. This will only take effect after QGIS is restarted.",
+      "rule": "aplicativo",
+      "qgis_pt_BR": "Um ou mais drivers foram desativados. Isso só entrará em vigor depois que o QGIS for reiniciado.",
+      "iman_terra": "Um ou mais drivers foram desativados. Isso só entrará em vigor depois que o {PRODUCT_NAME} for reiniciado."
+    },
+    {
+      "l08_index": 196,
+      "context": "QgsOptions",
+      "source": "QGIS restart required",
+      "rule": "aplicativo",
+      "qgis_pt_BR": "Necessário reiniciar o QGIS",
+      "iman_terra": "Necessário reiniciar o {PRODUCT_NAME}"
+    },
+    {
+      "l08_index": 197,
+      "context": "QgsOptionsBase",
+      "source": "<b>Note:</b> Enabling / changing override on locale requires an application restart",
+      "rule": "aplicativo",
+      "qgis_pt_BR": "<b>Nota:</b> se ativar a sobreposição ou alterar o idioma tem de reiniciar o QGIS",
+      "iman_terra": "<b>Nota:</b> se ativar a sobreposição ou alterar o idioma tem de reiniciar o {PRODUCT_NAME}"
+    },
+    {
+      "l08_index": 198,
+      "context": "QgsOptionsBase",
+      "source": "<html><head/><body><p>Some of the internal C++ processing core algorithms and renderers can take advantage of an OpenCL compatible device to increase the performances.<br/><span style=\" font-weight:600;\">QGIS OpenCL support is highly experimental and can crash QGIS because of bugs in the underlying libraries, enable at your own risk!</span></p></body></html>",
+      "rule": "aplicativo",
+      "qgis_pt_BR": "<html><head/><body><p>Alguns dos algoritmos e processadores de processamento interno do C ++ podem tirar proveito de um dispositivo compatível com OpenCL para aumentar o desempenho. <br/><span style=\" font-weight:600;\">O suporte ao QGIS OpenCL é altamente experimental e pode travar o QGIS devido a erros nas bibliotecas subjacentes, ative por seu próprio risco!</span></p></body></html>",
+      "iman_terra": "<html><head/><body><p>Alguns dos algoritmos e processadores de processamento interno do C ++ podem tirar proveito de um dispositivo compatível com OpenCL para aumentar o desempenho. <br/><span style=\" font-weight:600;\">O suporte a OpenCL do {PRODUCT_NAME} é altamente experimental e pode travar o {PRODUCT_NAME} devido a erros nas bibliotecas subjacentes, ative por seu próprio risco!</span></p></body></html>"
+    },
+    {
+      "l08_index": 199,
+      "context": "QgsOptionsBase",
+      "source": "<html><head/><body><p>The connection cache stores all authentication connections data even when the connection fails.<br/>If you make any change to the authentication configurations or to the certification authorities, you should clear the authentication cache or<br/>restart QGIS. <br/>When this option is checked, the authentication cache will be automatically cleared every time an SSL error occurs and you choose to abort the connection.<br/></p></body></html>",
+      "rule": "aplicativo",
+      "qgis_pt_BR": "\nO cache de conexão armazena todos os dados de conexões de autenticação mesmo quando a conexão falha. Se você fizer qualquer alteração nas configurações de autenticação ou nas autoridades de certificação, deverá limpar o cache de autenticação ou reiniciar o QGIS. Quando esta opção estiver marcada, o cache de autenticação será automaticamente limpo toda vez que ocorrer um erro SSL e você escolher abortar a conexão.",
+      "iman_terra": "\nO cache de conexão armazena todos os dados de conexões de autenticação mesmo quando a conexão falha. Se você fizer qualquer alteração nas configurações de autenticação ou nas autoridades de certificação, deverá limpar o cache de autenticação ou reiniciar o {PRODUCT_NAME}. Quando esta opção estiver marcada, o cache de autenticação será automaticamente limpo toda vez que ocorrer um erro SSL e você escolher abortar a conexão."
+    },
+    {
+      "l08_index": 205,
+      "context": "QgsOptionsBase",
+      "source": "Style <i>(QGIS restart required)</i>",
+      "rule": "aplicativo",
+      "qgis_pt_BR": "Estilo <i>(necessário o reinício do QGIS)</i>",
+      "iman_terra": "Estilo <i>(necessário o reinício do {PRODUCT_NAME})</i>"
+    },
+    {
+      "l08_index": 206,
+      "context": "QgsOptionsBase",
+      "source": "The following OpenCL devices were found on this system (changing the default device requires QGIS to be restarted).",
+      "rule": "aplicativo",
+      "qgis_pt_BR": "Os seguintes dispositivos OpenCL foram encontrados neste sistema (alterar o dispositivo padrão requer que o QGIS seja reiniciado).",
+      "iman_terra": "Os seguintes dispositivos OpenCL foram encontrados neste sistema (alterar o dispositivo padrão requer que o {PRODUCT_NAME} seja reiniciado)."
+    },
+    {
+      "l08_index": 211,
+      "context": "QgsPluginInstaller",
+      "source": "If you haven't canceled the download manually, it might be caused by a timeout. In this case consider increasing the connection timeout value in QGIS options.",
+      "rule": "aplicativo",
+      "qgis_pt_BR": "Se você não tiver cancelado a ação baixar manualmente, ele pode ter sido causado por um esgotamento do tempo limite. Neste caso, considere aumentar o valor de tempo limite de conexão nas opções do QGIS.",
+      "iman_terra": "Se você não tiver cancelado a ação baixar manualmente, ele pode ter sido causado por um esgotamento do tempo limite. Neste caso, considere aumentar o valor de tempo limite de conexão nas opções do {PRODUCT_NAME}."
+    },
+    {
+      "l08_index": 212,
+      "context": "QgsPluginInstaller",
+      "source": "If you haven't canceled the download manually, it was most likely caused by a timeout. In this case consider increasing the connection timeout value in QGIS options window.",
+      "rule": "aplicativo",
+      "qgis_pt_BR": "Se você não tiver cancelado a ação baixar manualmente, isto provavelmente foi causado por esgotamento do tempo limite. Neste caso, considere aumentar o valor de tempo limite de conexão na janela de opções do QGIS.",
+      "iman_terra": "Se você não tiver cancelado a ação baixar manualmente, isto provavelmente foi causado por esgotamento do tempo limite. Neste caso, considere aumentar o valor de tempo limite de conexão na janela de opções do {PRODUCT_NAME}."
+    },
+    {
+      "l08_index": 215,
+      "context": "QgsPluginInstaller",
+      "source": "QGIS has detected an obsolete plugin that masks its more recent version shipped with this copy of QGIS. This is likely due to files associated with a previous installation of QGIS. Do you want to remove the old plugin right now and unmask the more recent version?",
+      "rule": "aplicativo",
+      "qgis_pt_BR": "O QGIS detectou um complemento obsoleto que mascara sua versão mais recente fornecido com esta cópia do QGIS. Isto provavelmente é devido a arquivos associados a uma instalação anterior do QGIS. Você quer remover o complemento antigo agora e desmascarar a versão mais recente?",
+      "iman_terra": "O {PRODUCT_NAME} detectou um complemento obsoleto que mascara sua versão mais recente fornecido com esta cópia do {PRODUCT_NAME}. Isto provavelmente é devido a arquivos associados a uma instalação anterior do {PRODUCT_NAME}. Você quer remover o complemento antigo agora e desmascarar a versão mais recente?"
+    },
+    {
+      "l08_index": 221,
+      "context": "QgsPluginManager",
+      "source": "<h3>All Plugins</h3><p>On the left you see the list of all plugins available for your QGIS, both installed and available for download. Some plugins come with your QGIS installation while most of them are made available via the plugin repositories.</p><p>You can temporarily enable or disable a plugin. To <i>enable</i> or <i>disable</i> a plugin, click its checkbox or double-click its name…</p><p>Plugins showing in <span style='color:red'>red</span> are not loaded because there is a problem. They are also listed on the 'Invalid' tab. Click on the plugin name to see more details, or to reinstall or uninstall this plugin.</p>",
+      "rule": "aplicativo",
+      "qgis_pt_BR": "<h3>Todos os módulos</h3><p>No lado esquerdo pode ver uma lista de todos os módulos disponíveis para o QGIS, ambos instalados e disponíveis para descarregar. Alguns módulos vêm com a instalação do QGIS enquanto a maioria deles ficam disponíveis através dos repositórios de módulos.</p><p>Pode temporariamente desativar ou ativar um módulo. Para <i>ativar</i> ou <i>desativar</i> um módulo, clique na caixa de verificação ou duplo clique no nome…</p><p>Os módulos mostrados a <span style='color:red'>vermelho</span> não estão carregados porque têm algum problema. Eles também estão na lista do separador 'Inválido'. Clique no nome do módulo para ver mais detalhes, ou para reinstalar ou desinstalar o módulo.</p>",
+      "iman_terra": "<h3>Todos os módulos</h3><p>No lado esquerdo pode ver uma lista de todos os módulos disponíveis para o {PRODUCT_NAME}, ambos instalados e disponíveis para descarregar. Alguns módulos vêm com a instalação do {PRODUCT_NAME} enquanto a maioria deles ficam disponíveis através dos repositórios de módulos.</p><p>Pode temporariamente desativar ou ativar um módulo. Para <i>ativar</i> ou <i>desativar</i> um módulo, clique na caixa de verificação ou duplo clique no nome…</p><p>Os módulos mostrados a <span style='color:red'>vermelho</span> não estão carregados porque têm algum problema. Eles também estão na lista do separador 'Inválido'. Clique no nome do módulo para ver mais detalhes, ou para reinstalar ou desinstalar o módulo.</p>"
+    },
+    {
+      "l08_index": 222,
+      "context": "QgsPluginManager",
+      "source": "<h3>Installed Plugins</h3><p>Here you only see plugins <b>installed on your QGIS</b>.</p><p>Click on the name to see details. </p><p>Click the checkbox or double-click the name to <i>activate</i> or <i>deactivate</i> the plugin.</p><p>You can change the sorting via the context menu (right click).</p>",
+      "rule": "aplicativo",
+      "qgis_pt_BR": "<h3>Módulos Instalados</h3><p>Aqui só vê módulos <b>instalados no seu QGIS</b>.</p><p>Clique no nome para ver mais detalhes. </p><p>Clique na caixa de verificação ou faça duplo clique no nome para <i>ativar</i> ou <i>desativar</i> o módulo.</p><p>Pode alterar a ordenação através do menu de contexto (clique direito do rato).</p>",
+      "iman_terra": "<h3>Módulos Instalados</h3><p>Aqui só vê módulos <b>instalados no seu {PRODUCT_NAME}</b>.</p><p>Clique no nome para ver mais detalhes. </p><p>Clique na caixa de verificação ou faça duplo clique no nome para <i>ativar</i> ou <i>desativar</i> o módulo.</p><p>Pode alterar a ordenação através do menu de contexto (clique direito do rato).</p>"
+    }
+  ]
+}

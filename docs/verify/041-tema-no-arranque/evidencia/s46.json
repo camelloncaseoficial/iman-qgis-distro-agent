@@ -1,0 +1,31 @@
+{
+ "tema_existe": true,
+ "getThemeIcon_vs_tema": 1.0,
+ "getThemeIcon_vs_padrao": 0.2326388888888889,
+ "abas": [
+  {
+   "texto": "",
+   "toolTip": "API Documentation",
+   "vs_tema": 0.12152777777777778,
+   "vs_padrao": 0.08680555555555555
+  },
+  {
+   "texto": "",
+   "toolTip": "Registrador de rede",
+   "vs_tema": 0.24305555555555555,
+   "vs_padrao": 0.13368055555555555
+  },
+  {
+   "texto": "",
+   "toolTip": "Registrador de Consultas",
+   "vs_tema": 0.09895833333333333,
+   "vs_padrao": 0.08159722222222222
+  },
+  {
+   "texto": "",
+   "toolTip": "Perfilador",
+   "vs_tema": 0.25,
+   "vs_padrao": 0.15625
+  }
+ ]
+}

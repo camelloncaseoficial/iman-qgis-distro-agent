@@ -1245,6 +1245,197 @@ def a12_logo_do_qgis_na_ui():
         falhou('A12', 'D12', 'tema de ícones', crit, se_q)
 
 
+# ============================================ #041 (D-IMAN-039) - A14 a A17
+# Regioes novas do contrato: o tema ativo ANTES da janela, o providerQgis.svg
+# vindo do tema, o icone IMAN nos dialogos e o alcance do tradutor sobreposto.
+# Todas comparam PIXEL ou TEXTO VIVO; nenhuma le arquivo de configuracao para
+# concluir. Rodadas sobre a develop (sem tema no arranque, sem icons/, sem
+# tradutor), as quatro tem de dar FAIL: e o "vista falhando" delas.
+TEMA_041 = 'IMAN Terra'
+PADRAO_PROVIDER = ':/images/themes/default/providerQgis.svg'
+
+
+def _img(icon, lado=24):
+    if icon is None or icon.isNull():
+        return QImage()
+    return icon.pixmap(lado, lado).toImage().convertToFormat(QImage.Format_ARGB32)
+
+
+def _semelhanca(a, b):
+    """Fracao de pixels identicos entre duas imagens do mesmo lado."""
+    if a.isNull() or b.isNull() or a.size() != b.size():
+        return None
+    w, h = a.width(), a.height()
+    iguais = sum(1 for y in range(h) for x in range(w) if a.pixel(x, y) == b.pixel(x, y))
+    return iguais / float(w * h)
+
+
+def _provider_do_tema():
+    """(caminho do providerQgis.svg do tema ativo ou None, imagem dele, imagem do padrao)."""
+    caminho = os.path.join(QgsApplication.userThemesFolder(), TEMA_041, 'icons', 'providerQgis.svg')
+    tema = _img(QIcon(caminho)) if os.path.exists(caminho) else QImage()
+    padrao = _img(QIcon(PADRAO_PROVIDER))
+    return (caminho if os.path.exists(caminho) else None), tema, padrao
+
+
+def _origem(img, tema, padrao):
+    """'tema', 'padrao' ou 'outro', pelo pixel."""
+    st = _semelhanca(img, tema)
+    sp = _semelhanca(img, padrao)
+    if st is not None and st >= 0.95 and (sp is None or st > sp):
+        return 'tema', st, sp
+    if sp is not None and sp >= 0.95:
+        return 'padrao', st, sp
+    return 'outro', st, sp
+
+
+def a14_tema_no_arranque():
+    """#041 - o tema IMAN Terra esta ativo ANTES de a janela pedir os icones"""
+    crit = ('o tema em uso e o IMAN Terra E o icone que o provedor nativo do '
+            'Processamento devolve (pedido ao tema quando a caixa foi montada, '
+            'antes do --code do startup) e o providerQgis.svg DO TEMA, pelo pixel')
+    se_q = ('sem [UI] UITheme no template, o tema so entra quando o startup chama '
+            'setUITheme, depois da janela montada. O QGIS guarda o icone em cache '
+            'na primeira leitura: o provedor continua devolvendo o logo do QGIS, '
+            'e themeName() diz IMAN Terra mesmo assim. Por isso o criterio e o '
+            'pixel do icone em cache, nao o nome do tema.')
+    try:
+        from qgis.core import QgsSettings
+        caminho, tema, padrao = _provider_do_tema()
+        nativo = QgsApplication.processingRegistry().providerById('native')
+        img = _img(nativo.icon()) if nativo else QImage()
+        origem, st, sp = _origem(img, tema, padrao)
+        nome_tema = QgsApplication.themeName()
+        chave = QgsSettings().value('UI/UITheme', '')
+        ok = (nome_tema == TEMA_041) and (chave == TEMA_041) and (origem == 'tema')
+        registra('A14', '#041', 'tema no arranque', crit, ok, {
+            'tema_em_uso': nome_tema,
+            'UI/UITheme_no_perfil': chave,
+            'providerQgis_svg_no_tema': caminho,
+            'icone_do_provedor_nativo_vem_de': origem,
+            'semelhanca_com_o_do_tema': st,
+            'semelhanca_com_o_padrao_do_qgis': sp,
+        }, se_q, '')
+    except Exception:
+        falhou('A14', '#041', 'tema no arranque', crit, se_q)
+
+
+def a15_provider_qgis_do_tema():
+    """#041 - os grupos de topo da caixa de Processamento mostram o simbolo do tema"""
+    crit = ('nenhum no visivel da caixa de Processamento exibe o providerQgis.svg '
+            'padrao (o logo do QGIS) e os grupos de topo exibem o do tema')
+    se_q = ('o logo do QGIS e um icone valido; uma assercao "a caixa tem icones" '
+            'passaria com o logo em cada grupo, que e o defeito que o sponsor viu.')
+    try:
+        from qgis.PyQt.QtWidgets import QTreeView
+        caminho, tema, padrao = _provider_do_tema()
+        dock = None
+        for d in win().findChildren(QDockWidget):
+            if d.objectName() == 'ProcessingToolbox' or 'Processamento' in d.windowTitle():
+                dock = d
+                break
+        if dock is None:
+            raise RuntimeError('dock da caixa de Processamento nao encontrado')
+        era_visivel = dock.isVisible()
+        dock.setVisible(True)
+        espera(600)
+        arvore = dock.findChild(QTreeView)
+        modelo = arvore.model()
+        nos = []
+        for r in range(modelo.rowCount()):
+            idx = modelo.index(r, 0)
+            icone = modelo.data(idx, Qt.DecorationRole)
+            img = _img(icone if isinstance(icone, QIcon) else QIcon(), 24)
+            origem, st, sp = _origem(img, tema, padrao)
+            nos.append({'texto': modelo.data(idx, Qt.DisplayRole), 'icone': origem})
+        com_logo = [n for n in nos if n['icone'] == 'padrao']
+        do_tema = [n for n in nos if n['icone'] == 'tema']
+        ok = (len(com_logo) == 0) and (len(do_tema) > 0)
+        registra('A15', '#041', 'providerQgis.svg do tema', crit, ok, {
+            'nos_de_topo': len(nos),
+            'com_o_logo_do_qgis': len(com_logo),
+            'com_o_simbolo_do_tema': len(do_tema),
+            'nos': nos[:30],
+        }, se_q, foto(dock, 'A15-caixa-de-processamento.png'))
+        dock.setVisible(era_visivel)
+    except Exception:
+        falhou('A15', '#041', 'providerQgis.svg do tema', crit, se_q)
+
+
+def a16_icone_dos_dialogos():
+    """#041 - dialogo sem icone proprio herda o emblema IMAN, nao o logo do QGIS"""
+    crit = ('o icone da APLICACAO e o de um QDialog novo SEM PAI e sem icone proprio '
+            'sao o emblema IMAN (o .ico do produto) e nao o qgis-icon-60x60.png da arvore')
+    se_q = ('com o icone trocado so na janela principal, o A11 passa, os dialogos '
+            'filhos dela herdam o emblema, e toda janela SEM PAI (e o que nasce antes '
+            'do startup) continua com o logo do QGIS. Um dialogo filho da janela '
+            'principal nao serve de prova: ele herda o icone da janela (medido no '
+            '#041, primeira versao desta assercao), por isso o dialogo aqui nao tem pai.')
+    try:
+        from qgis.PyQt.QtWidgets import QDialog
+        home = os.environ.get('IMAN_TERRA_HOME', '')
+        ico = os.path.join(home, 'assets', 'icon-iman-terra.ico') if home else ''
+        logo = os.path.join(QgsApplication.pkgDataPath(), 'images', 'icons', 'qgis-icon-60x60.png')
+        ref_iman = _img(QIcon(ico), 32) if ico and os.path.exists(ico) else QImage()
+        ref_qgis = _img(QIcon(logo), 32) if os.path.exists(logo) else QImage()
+        dlg = QDialog(None)
+        dlg.setWindowTitle('#041 - dialogo sem pai e sem icone proprio')
+        img_dlg = _img(dlg.windowIcon(), 32)
+        img_app = _img(QApplication.windowIcon(), 32)
+        dlg.deleteLater()
+        sd_iman, sd_qgis = _semelhanca(img_dlg, ref_iman), _semelhanca(img_dlg, ref_qgis)
+        sa_iman, sa_qgis = _semelhanca(img_app, ref_iman), _semelhanca(img_app, ref_qgis)
+        ok = (sd_iman is not None and sd_iman >= 0.95 and (sd_qgis or 0) < 0.9 and
+              sa_iman is not None and sa_iman >= 0.95)
+        registra('A16', '#041', 'icone dos dialogos', crit, ok, {
+            'referencia_iman': ico,
+            'referencia_qgis': logo,
+            'dialogo_semelhanca_iman': sd_iman,
+            'dialogo_semelhanca_qgis': sd_qgis,
+            'aplicacao_semelhanca_iman': sa_iman,
+            'aplicacao_semelhanca_qgis': sa_qgis,
+        }, se_q, '')
+    except Exception:
+        falhou('A16', '#041', 'icone dos dialogos', crit, se_q)
+
+
+def a17_alcance_do_tradutor():
+    """#041 - o tradutor sobreposto alcanca o nome do provedor e o log do algoritmo"""
+    crit = ('o tradutor da marca esta instalado; o nome do provedor nativo e '
+            '"<produto> (c++ nativo)"; e o log de versao do Processamento diz '
+            '"Versão do motor", nunca "Versão do QGIS" nem "Versão do <produto>"')
+    se_q = ('sem o tradutor o provedor se chama "QGIS (c++ nativo)" e o log diz '
+            '"Versão do QGIS"; um tradutor que nomeasse o produto na versao '
+            'afirmaria algo falso (D-IMAN-039 regra 3), e a assercao reprova isso.')
+    try:
+        from qgis.core import QgsProcessingFeedback
+        try:
+            from iman_brand import brand as _b
+            produto = _b.PRODUCT_NAME
+        except Exception:
+            produto = 'IMAN Terra'
+        try:
+            from iman_brand import translation as _t
+            estado = _t.status()
+        except Exception as e:
+            estado = {'installed': False, 'reason': 'modulo ausente: %r' % (e,)}
+        nativo = QgsApplication.processingRegistry().providerById('native')
+        nome = nativo.name() if nativo else None
+        fb = QgsProcessingFeedback()
+        fb.pushVersionInfo()
+        log = fb.textLog()
+        ok = (bool(estado.get('installed')) and nome == '%s (c++ nativo)' % produto and
+              'Versão do motor' in log and 'Versão do QGIS' not in log and
+              ('Versão do %s' % produto) not in log)
+        registra('A17', '#041', 'alcance do tradutor', crit, ok, {
+            'tradutor': estado,
+            'nome_do_provedor_nativo': nome,
+            'log_de_versao': log.strip().splitlines()[:3],
+        }, se_q, '')
+    except Exception:
+        falhou('A17', '#041', 'alcance do tradutor', crit, se_q)
+
+
 # ------------------------------------------------- fases que dirigem a UI
 def a05_a06_a07_ciclo_de_projeto():
     """D5 (titulo estatico) · D6 (novo projeto inerte) · D7 (home some)"""
@@ -1623,6 +1814,10 @@ def principal():
             a10_sobre_alcancavel()
             a11_icone_janela_e_taskbar()
             a12_logo_do_qgis_na_ui()
+            a14_tema_no_arranque()
+            a15_provider_qgis_do_tema()
+            a16_icone_dos_dialogos()
+            a17_alcance_do_tradutor()
             a05_a06_a07_ciclo_de_projeto()
             # POR ULTIMO: o A03 estoura a janela principal (medido: 1001 ->
             # 10413 px) e contaminaria tudo que rodasse depois dele.

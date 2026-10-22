@@ -67,7 +67,7 @@ em `docs/`; aqui viram a fonte única de asset da distro. Nada de raster de trab
 |---|---|
 | `splash-iman-terra.svg` | **Master vetorial** do splash — export do **CorelDRAW 2021** de **`IMAN Terra.cdr`** (2026-09-09 05:03), idêntico ao `IMAN Terra.svg` (05:04): MD5 `32a43bb2b8babae2d0868b89f27cfbe7`, 104.557 bytes. viewBox `26478×12720`, ≈2,082:1. Fonte legível da paleta. **Não é mais a entrada da rasterização** — ver a armadilha do QtSvg abaixo. **NÃO confundir com `IMAN.cdr`** (2025-06-30, 7,16 MB), que **não** é a fonte desta arte. |
 | `splash-iman-terra-master.png` | **Master raster**, 3128×1504, exportado pelo **próprio Corel**. É daqui que saem todos os rasters do splash. Existe porque nenhum rasterizador desta bancada renderiza o SVG fielmente. |
-| `iman-symbol.png` | **Símbolo** oficial (folha + globo), 512×512 transparente. Master dos ícones. **Não re-colorido** (sem master vetorial). Proveniência: **`docs/icons/android-chrome-512x512.png`**, do favicon set oficial do Instituto IMAN — ver nota abaixo. |
+| `iman-symbol.png` | **Símbolo** oficial (folha + globo), 512×512 transparente. Master dos ícones. **Não re-colorido**. O símbolo **também existe em vetor**, dentro do `splash-iman-terra.svg` (achado no #041): é de lá que sai o `providerQgis.svg` do tema. Proveniência: **`docs/icons/android-chrome-512x512.png`**, do favicon set oficial do Instituto IMAN (ver nota abaixo). |
 | `logo-iman.png` | Logo institucional (arte própria IMAN). |
 | `backgrounds/bg-iman-branco.jpeg` | Fundo institucional claro. |
 | `backgrounds/bg-iman-verde.jpeg` | Fundo institucional verde. |
@@ -129,6 +129,7 @@ em `docs/`; aqui viram a fonte única de asset da distro. Nada de raster de trab
 | `wizard-small.png` | símbolo sobre **fundo transparente** (alfa real, RGBA), 138×140 (`regenerate-brand-derivatives.py`) | `WizardSmallImageFile` (Inno), com `WizardImageAlphaFormat=defined` |
 | `../profile-template/iman-distro/python/plugins/iman_brand/resources/icon.png` | símbolo → 256×256 (`regenerate-icons.py`) | ícone do plugin/toolbar/Sobre |
 | `../profile-template/iman-distro/python/plugins/iman_brand/resources/splash.png` | master raster → 760×365 (`rasterize-splash.py`) | banner do dock de boas-vindas |
+| `../profile-template/iman-distro/themes/IMAN Terra/icons/providerQgis.svg` | o grupo do **símbolo em vetor**, recortado do `splash-iman-terra.svg` sem redesenho (`derive-theme-icons.py`, #041) | ícone do provedor nativo e dos grupos da caixa de Processamento, no lugar do logo do QGIS |
 
 **Regeneração:** os derivados são produzidos a partir dos masters com Pillow (PIL disponível no
 `python` do sistema — ver `.memory/reference_build_environment.md`). O `.ico` é multi-resolução e
@@ -139,6 +140,7 @@ regenerar os derivados a partir dele — não editar os derivados à mão.
 python app/assets/rasterize-splash.py             # splash 1000×480 + perfil + banner do dock
 python app/assets/regenerate-icons.py             # ícones (a partir de iman-symbol.png)
 python app/assets/regenerate-brand-derivatives.py # wizards
+python app/assets/derive-theme-icons.py           # providerQgis.svg do tema (--check so confere)
 ```
 
 > **Por que o `.ico` deixou de ter "respiro 10%" — e o que isso custa.**

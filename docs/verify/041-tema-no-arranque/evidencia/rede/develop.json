@@ -1,0 +1,20 @@
+{
+ "loggers": 1,
+ "pedidos": [
+  "1 GET https://feed.qgis.org/?after=1792696064&lang=pt",
+  "2 GET https://institutoiman.org.br/"
+ ],
+ "logNetworkRequests": {
+  "app/logNetworkRequests": "true",
+  "logNetworkRequests": "true"
+ },
+ "controle": {
+  "url": "https://institutoiman.org.br/",
+  "erro_de_rede": 3
+ },
+ "controle_no_registro": true,
+ "feed_qgis_org": [
+  "1 GET https://feed.qgis.org/?after=1792696064&lang=pt"
+ ],
+ "version_qgis_org": []
+}

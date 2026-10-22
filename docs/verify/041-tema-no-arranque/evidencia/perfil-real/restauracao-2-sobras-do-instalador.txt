@@ -1,0 +1,35 @@
+#041 - segunda restauracao do perfil real do sponsor (medido em 2026-10-22, noite)
+
+Contexto: depois das rodadas finais com o build da branch (0.3.0-a447168), o canonico 0.3.0-5f7a1cb
+foi instalado POR CIMA. O Inno funde e o [InstallDelete] so limpa {app}\qgis: ficaram em
+{app}\profile-template os 4 arquivos que so a branch tinha, e {app}\i18n.
+
+  \profile-template\iman-distro\python\plugins\iman_brand\product_links.py
+  \profile-template\iman-distro\python\plugins\iman_brand\translation.py
+  \profile-template\iman-distro\themes\IMAN Terra\icons\mIconNetworkLogger.svg
+  \profile-template\iman-distro\themes\IMAN Terra\icons\providerQgis.svg
+
+A conferencia do perfil real rodou o Sync-Perfil.ps1 do produto instalado e ele, lendo esse
+template misturado, COPIOU os 4 arquivos para o perfil real:
+  RECONCILIACAO=APLICADA
+  PLANO=arq+4 arq~0 arq-0 chave+0 chave~0 chave-0 pasta+0 splash+0 base+1
+
+Correcao: desinstalar (unins000.exe /VERYSILENT, {app} sumiu inteiro), instalar o canonico limpo
+(sem {app}\i18n, 0 sobras no template) e rodar a rotina do produto de novo:
+  --- passada 1
+  RECONCILIACAO=APLICADA
+  PLANO=arq+0 arq~0 arq-4 chave+0 chave~0 chave-0 pasta+0 splash+0 base+1
+    - python/plugins/iman_brand/product_links.py (sobra)
+    - python/plugins/iman_brand/translation.py (sobra)
+    - themes/IMAN Terra/icons/mIconNetworkLogger.svg (sobra)
+    - themes/IMAN Terra/icons/providerQgis.svg (sobra)
+  --- passada 2
+  RECONCILIACAO=NADA_A_FAZER
+
+Estado final do perfil real: plugin = __init__.py, brand.py, dashboard.py, iman_brand.py,
+metadata.txt, sobre.py; tema = style.qss; 0 chaves do #041 no QGIS3.ini. Atalhos do Menu Iniciar
+(IMAN Terra, Desinstalar IMAN Terra) presentes.
+
+Achado de produto (flag, nao corrigido nesta fatia): arquivo que uma versao NOVA acrescenta ao
+profile-template sobrevive em {app}\profile-template quando se instala uma versao que nao o tem, e o
+launcher o propaga ao perfil como "do produto". E a classe do DB-22, so que em {app}\profile-template.

@@ -1,0 +1,826 @@
+{
+  "notas": [],
+  "startup_real": "D:\\_scratch\\claude\\D---projetos-iman-webgeo-iman-qgis-distro-agent\\0031563d-1c7c-410f-96ee-81ea751ed4d9\\scratchpad\\wt-develop\\app\\startup\\iman_startup.py",
+  "quando": "2026-10-22T17:15:42.342444",
+  "qgis": "3.44.13-Solothurn",
+  "produto": "IMAN Terra",
+  "perfil": "C:\\Users\\Francisco\\AppData\\Local\\InstitutoIMAN\\_aceite017\\perfil\\profiles\\iman-distro/",
+  "tema": {
+    "themeName": "IMAN Terra",
+    "UI/UITheme": "",
+    "qgis/style": "fusion",
+    "activeThemePath": "C:/Users/FRANCI~1/AppData/Local/Programs/IMANTE~1/qgis/apps/qgis-ltr/./resources/themes\\IMAN Terra\\icons/",
+    "iconPath(providerQgis.svg)": ":/images/themes/default/providerQgis.svg",
+    "provedores": [
+      {
+        "id": "3d",
+        "nome": "QGIS (3D)",
+        "nome_longo": "QGIS (3D)",
+        "svgIconPath": ":/images/themes/default/providerQgis.svg",
+        "icone": "padrao"
+      },
+      {
+        "id": "gdal",
+        "nome": "GDAL",
+        "nome_longo": "GDAL (3.13.2)",
+        "svgIconPath": ":/images/themes/default/providerGdal.svg",
+        "icone": "outro"
+      },
+      {
+        "id": "grass",
+        "nome": "GRASS",
+        "nome_longo": "GRASS (8.5.0)",
+        "svgIconPath": ":/images/themes/default//providerGrass.svg",
+        "icone": "outro"
+      },
+      {
+        "id": "model",
+        "nome": "Modelos",
+        "nome_longo": "Modelos",
+        "svgIconPath": ":/images/themes/default/processingModel.svg",
+        "icone": "outro"
+      },
+      {
+        "id": "native",
+        "nome": "QGIS (c++ nativo)",
+        "nome_longo": "QGIS (c++ nativo)",
+        "svgIconPath": ":/images/themes/default/providerQgis.svg",
+        "icone": "padrao"
+      },
+      {
+        "id": "pdal",
+        "nome": "QGIS (PDAL)",
+        "nome_longo": "QGIS (PDAL)",
+        "svgIconPath": ":/images/themes/default/providerQgis.svg",
+        "icone": "padrao"
+      },
+      {
+        "id": "project",
+        "nome": "Modelos de projeto",
+        "nome_longo": "Modelos incorporados no projeto atual",
+        "svgIconPath": ":/images/themes/default/mIconQgsProjectFile.svg",
+        "icone": "outro"
+      },
+      {
+        "id": "qgis",
+        "nome": "QGIS",
+        "nome_longo": "QGIS",
+        "svgIconPath": ":/images/themes/default/providerQgis.svg",
+        "icone": "padrao"
+      },
+      {
+        "id": "script",
+        "nome": "Scripts",
+        "nome_longo": "Scripts",
+        "svgIconPath": ":/images/themes/default/processingScript.svg",
+        "icone": "outro"
+      }
+    ]
+  },
+  "janela": {
+    "titulo": "Projeto sem título - IMAN Terra",
+    "foto": "041-janela.png",
+    "tela": "041-janela-icone-da-janela.png"
+  },
+  "caixa": {
+    "objectName": "ProcessingToolbox",
+    "titulo": "Caixa de Ferramentas de Processamento",
+    "nos_de_topo": [
+      {
+        "texto": "Análise de dados Raster ",
+        "icone": "padrao"
+      },
+      {
+        "texto": "Análise de rede",
+        "icone": "padrao"
+      },
+      {
+        "texto": "Análise vetorial",
+        "icone": "padrao"
+      },
+      {
+        "texto": "Cartografia",
+        "icone": "padrao"
+      },
+      {
+        "texto": "Check geometry",
+        "icone": "padrao"
+      },
+      {
+        "texto": "Conversão da nuvem de pontos",
+        "icone": "padrao"
+      },
+      {
+        "texto": "Criação de raster",
+        "icone": "padrao"
+      },
+      {
+        "texto": "Criação de vetor",
+        "icone": "padrao"
+      },
+      {
+        "texto": "Database",
+        "icone": "padrao"
+      },
+      {
+        "texto": "Extração de Nuvem de Pontos",
+        "icone": "padrao"
+      },
+      {
+        "texto": "Ferramentas de arquivo",
+        "icone": "padrao"
+      },
+      {
+        "texto": "Ferramentas de camada",
+        "icone": "padrao"
+      },
+      {
+        "texto": "Ferramentas de metadados",
+        "icone": "padrao"
+      },
+      {
+        "texto": "Ferramentas raster",
+        "icone": "padrao"
+      },
+      {
+        "texto": "Fix geometry",
+        "icone": "padrao"
+      },
+      {
+        "texto": "Geometria do vetor",
+        "icone": "padrao"
+      },
+      {
+        "texto": "Gerenciamento de dados da nuvem de pontos",
+        "icone": "padrao"
+      },
+      {
+        "texto": "GPS",
+        "icone": "padrao"
+      },
+      {
+        "texto": "Interpolar",
+        "icone": "padrao"
+      },
+      {
+        "texto": "Malha",
+        "icone": "padrao"
+      },
+      {
+        "texto": "Mosaico vetor",
+        "icone": "padrao"
+      },
+      {
+        "texto": "Mosaicos 3D",
+        "icone": "padrao"
+      },
+      {
+        "texto": "Plots",
+        "icone": "padrao"
+      },
+      {
+        "texto": "Raster de análise do terreno",
+        "icone": "padrao"
+      },
+      {
+        "texto": "Selecionar vetor",
+        "icone": "padrao"
+      },
+      {
+        "texto": "Sobreposição de vetor",
+        "icone": "padrao"
+      },
+      {
+        "texto": "Tabela de vetores",
+        "icone": "padrao"
+      },
+      {
+        "texto": "Vector coverage",
+        "icone": "padrao"
+      },
+      {
+        "texto": "Vetor geral",
+        "icone": "padrao"
+      },
+      {
+        "texto": "GDAL",
+        "icone": "outro"
+      },
+      {
+        "texto": "GRASS",
+        "icone": "outro"
+      }
+    ],
+    "agrupada": "041-caixa-agrupada.png",
+    "abertos": [
+      "GDAL"
+    ],
+    "por_provedor": "041-caixa-grupo-e-provedor-abertos.png",
+    "busca": "041-caixa-busca-buffer.png"
+  },
+  "rede": {
+    "loggers": 1,
+    "pedidos": [],
+    "logNetworkRequests": {
+      "app/logNetworkRequests": null,
+      "logNetworkRequests": null
+    },
+    "controle": {
+      "url": "https://institutoiman.org.br/",
+      "erro_de_rede": 3
+    },
+    "controle_no_registro": false,
+    "feed_qgis_org": [],
+    "version_qgis_org": []
+  },
+  "depuracao": {
+    "titulo": "Ferramentas de Depuração/Desenvolvimento",
+    "foto": "041-ferramentas-de-depuracao.png"
+  },
+  "dialogo_sem_icone": {
+    "semelhanca_iman": 0.125625,
+    "semelhanca_qgis": 1.0,
+    "foto": "041-dialogo-sem-icone.png",
+    "tela": "041-dialogo-sem-icone-icone-da-janela.png"
+  },
+  "opcoes": {
+    "feito": true,
+    "resultado": {
+      "classe": "QgsOptions",
+      "icone_semelhanca_app": 0.16,
+      "tela": "041-opcoes-icone-da-janela.png",
+      "tela_provedores": "041-opcoes-processamento-provedores-icone-da-janela.png",
+      "paginas": [
+        {
+          "indice": 0,
+          "objectName": "mOptionsPageGeneral",
+          "foto": "041-opcoes-pagina-00.png"
+        },
+        {
+          "indice": 1,
+          "objectName": "mOptionsPageSystem"
+        },
+        {
+          "indice": 2,
+          "objectName": "QgsUserProfileOptionsWidgetBase"
+        },
+        {
+          "indice": 3,
+          "objectName": "mOptionsPageCRS"
+        },
+        {
+          "indice": 4,
+          "objectName": "mOptionsPageTransformations"
+        },
+        {
+          "indice": 5,
+          "objectName": "QgsCustomProjectionOptionsWidget"
+        },
+        {
+          "indice": 6,
+          "objectName": "mOptionsPageDataSources"
+        },
+        {
+          "indice": 7,
+          "objectName": "mOptionsPageGDAL"
+        },
+        {
+          "indice": 8,
+          "objectName": "QgsRenderingOptionsWidgetBase"
+        },
+        {
+          "indice": 9,
+          "objectName": "QgsVectorRenderingOptionsWidgetBase"
+        },
+        {
+          "indice": 10,
+          "objectName": "QgsRasterRenderingOptionsWidgetBase"
+        },
+        {
+          "indice": 11,
+          "objectName": "mOptionsPageMapCanvas"
+        },
+        {
+          "indice": 12,
+          "objectName": "mOptionsPageMapTools"
+        },
+        {
+          "indice": 13,
+          "objectName": "mOptionsPageDigitizing"
+        },
+        {
+          "indice": 14,
+          "objectName": "QgsElevationOptionsWidgetBase"
+        },
+        {
+          "indice": 15,
+          "objectName": "Qgs3DOptionsBase"
+        },
+        {
+          "indice": 16,
+          "objectName": "mOptionsPageColors"
+        },
+        {
+          "indice": 17,
+          "objectName": "QgsFontOptionsWidgetBase"
+        },
+        {
+          "indice": 18,
+          "objectName": "mOptionsPageComposer"
+        },
+        {
+          "indice": 19,
+          "objectName": "mOptionsPageVariables"
+        },
+        {
+          "indice": 20,
+          "objectName": "mOptionsPageAuth"
+        },
+        {
+          "indice": 21,
+          "objectName": "mOptionsPageNetwork",
+          "foto": "041-opcoes-pagina-21.png"
+        },
+        {
+          "indice": 22,
+          "objectName": "mGpsOptions"
+        },
+        {
+          "indice": 23,
+          "objectName": "QgsGpsDeviceWidgetBase"
+        },
+        {
+          "indice": 24,
+          "objectName": "mOptionsLocatorSettings"
+        },
+        {
+          "indice": 25,
+          "objectName": "mOptionsPageAcceleration",
+          "foto": "041-opcoes-pagina-25.png"
+        },
+        {
+          "indice": 26,
+          "objectName": "processingOptions",
+          "provedores": [
+            "GDAL",
+            "GRASS"
+          ],
+          "foto_provedores": "041-opcoes-processamento-provedores.png"
+        },
+        {
+          "indice": 27,
+          "objectName": "QgsIdeOptionsWidgetBase"
+        },
+        {
+          "indice": 28,
+          "objectName": "QgsCodeEditorSettingsBase"
+        },
+        {
+          "indice": 29,
+          "objectName": "consoleOptions"
+        },
+        {
+          "indice": 30,
+          "objectName": "QgsAdvancedSettingsWidgetBase"
+        }
+      ]
+    },
+    "erro": null
+  },
+  "ajuda": {
+    "acoes_no_menu": [
+      {
+        "objectName": "mActionHelpContents",
+        "texto": "Conteúdo da Ajuda",
+        "visivel": true,
+        "no_menu": true
+      },
+      {
+        "objectName": "mActionHelpAPI",
+        "texto": "Documentação de API do C++",
+        "visivel": true,
+        "no_menu": true
+      },
+      {
+        "objectName": "mActionHelpPyQgisAPI",
+        "texto": "Documentação de API do PyQGIS",
+        "visivel": true,
+        "no_menu": true
+      },
+      {
+        "objectName": "",
+        "texto": "",
+        "visivel": true,
+        "no_menu": true
+      },
+      {
+        "objectName": "",
+        "texto": "Complementos",
+        "visivel": true,
+        "no_menu": true
+      },
+      {
+        "objectName": "",
+        "texto": "",
+        "visivel": true,
+        "no_menu": true
+      },
+      {
+        "objectName": "mActionReportaBug",
+        "texto": "Reportar um problema",
+        "visivel": true,
+        "no_menu": true
+      },
+      {
+        "objectName": "mActionDonate",
+        "texto": "Doe para o QGIS",
+        "visivel": true,
+        "no_menu": true
+      },
+      {
+        "objectName": "mActionGetInvolved",
+        "texto": "Envolva-se",
+        "visivel": true,
+        "no_menu": true
+      },
+      {
+        "objectName": "mActionNeedSupport",
+        "texto": "Precisa de Suporte Comercial?",
+        "visivel": true,
+        "no_menu": true
+      },
+      {
+        "objectName": "mActionSponsors",
+        "texto": "Membros de Suporte do QGIS",
+        "visivel": true,
+        "no_menu": true
+      },
+      {
+        "objectName": "",
+        "texto": "",
+        "visivel": true,
+        "no_menu": true
+      },
+      {
+        "objectName": "mActionQgisHomePage",
+        "texto": "Página do QGIS",
+        "visivel": true,
+        "no_menu": true
+      },
+      {
+        "objectName": "mActionCheckQgisVersion",
+        "texto": "Verificar a versão do QGIS",
+        "visivel": true,
+        "no_menu": true
+      },
+      {
+        "objectName": "",
+        "texto": "",
+        "visivel": true,
+        "no_menu": true
+      },
+      {
+        "objectName": "mActionAbout",
+        "texto": "Sobre",
+        "visivel": true,
+        "no_menu": true
+      },
+      {
+        "objectName": "",
+        "texto": "Sobre o IMAN Terra",
+        "visivel": true,
+        "no_menu": true
+      }
+    ],
+    "mActionCheckQgisVersion_no_menu": true,
+    "foto": "041-menu-ajuda.png",
+    "cliques": [
+      {
+        "objectName": "mActionReportaBug",
+        "texto": "Reportar um problema",
+        "abriria": [
+          "https://qgis.org/resources/support/bug-reporting/"
+        ]
+      },
+      {
+        "objectName": "mActionDonate",
+        "texto": "Doe para o QGIS",
+        "abriria": [
+          "https://qgis.org/funding/donate/"
+        ]
+      },
+      {
+        "objectName": "mActionGetInvolved",
+        "texto": "Envolva-se",
+        "abriria": [
+          "https://qgis.org/community/involve/"
+        ]
+      },
+      {
+        "objectName": "mActionNeedSupport",
+        "texto": "Precisa de Suporte Comercial?",
+        "abriria": [
+          "https://qgis.org/resources/support/commercial-support/"
+        ]
+      },
+      {
+        "objectName": "mActionSponsors",
+        "texto": "Membros de Suporte do QGIS",
+        "abriria": [
+          "https://qgis.org/funding/membership/members/"
+        ]
+      },
+      {
+        "objectName": "mActionQgisHomePage",
+        "texto": "Página do QGIS",
+        "abriria": [
+          "https://qgis.org"
+        ]
+      }
+    ],
+    "chaves": {
+      "qgis/helpQgisHomePageUrl": null,
+      "qgis/reportaBugUrl": null,
+      "qgis/supportProvidersUrl": null,
+      "qgis/donate": null,
+      "qgis/getInvolved": null,
+      "qgis/qgisSponsorsUrl": null,
+      "help/helpSearchPath": "https://docs.qgis.org/$qgis_short_version/$qgis_locale/docs/user_manual/"
+    }
+  },
+  "complementos": {
+    "feito": true,
+    "resultado": {
+      "classe": "QgsPluginManager",
+      "abas": [
+        {
+          "aba": "Tudo",
+          "foto": "041-complementos-tudo.png"
+        },
+        {
+          "aba": "Instalados",
+          "foto": "041-complementos-instalados.png"
+        }
+      ]
+    },
+    "erro": null
+  },
+  "algoritmo": {
+    "classe": "AlgorithmDialog",
+    "titulo": "Geometria do vetor - Buffer",
+    "parametros": "041-algoritmo-parametros.png",
+    "parametros_tela": "041-algoritmo-parametros-icone-da-janela.png",
+    "log": [
+      "Buffer\nEsse algoritmo calcula uma área de buffer para todas as feições em uma camada de entrada, usando uma distância fixa ou dinâmica.\nO parâmetro segmentos controla o número de segmentos de linha a serem usados para aproximar um quarto de círculo ao criar deslocamentos arredondados.\nO parâmetro de estilo de limite final controla como os finais de linha são manipulados no buffer.\nO parâmetro de estilo de junção especifica se as junções redondas, mitra ou chanfradas devem ser usadas ao compensar cantos em uma linha.\nO parâmetro de limite de mitra é aplicável apenas para estilos de junção de mitra e controla a distância máxima da curva de deslocamento a ser usada ao criar uma junção com mitre.\nThis algorithm may drop existing primary keys or FID values and regenerate them in output layers, depending on the input parameters.",
+      "Versão do QGIS: 3.44.13-Solothurn\nCódigo de revisão do QGIS: 2c8a7782a96\nVersão do Qt: 5.15.13\nVersão do Python: 3.12.13\nVersão do GDAL: 3.13.2\nVersão do GEOS: 3.14.1-CAPI-1.20.5\nVersão do PROJ: Rel. 9.8.1, April 10th, 2026\nVersão PDAL: 2.10.0 (git-version: eb9126)\nAlgoritmo iniciado as: 2026-10-22T17:16:15\nAlgoritmo 'Buffer' iniciando…\nEntrada de parâmetros:\n{ 'DISSOLVE' : False, 'DISTANCE' : 10, 'END_CAP_STYLE' : 0, 'INPUT' : 'memory://Point?crs=EPSG:31984&field=nome:string&uid={23f4fdb2-4ea3-42a2-890b-33eacac56a69}', 'JOIN_STYLE' : 0, 'MITER_LIMIT' : 2, 'OUTPUT' : 'TEMPORARY_OUTPUT', 'SEGMENTS' : 5, 'SEPARATE_DISJOINT' : False }\n\nA execução concluída em 0.02 segundos\nResultados:\n  OUTPUT: Bordeada_fa75cacf_e469_49fd_b145_73a72f29ac43\n\nCarregando camada resultante\nAlgoritmo 'Buffer' finalizado"
+    ],
+    "log_foto": "041-algoritmo-log.png",
+    "log_tela": "041-algoritmo-log-icone-da-janela.png"
+  },
+  "modelador": {
+    "foto": "041-modelador.png",
+    "tela": "041-modelador-icone-da-janela.png"
+  },
+  "propriedades": {
+    "feito": true,
+    "resultado": {
+      "classe": "QgsVectorLayerProperties",
+      "tela": "041-propriedades-da-camada-icone-da-janela.png",
+      "foto": "041-propriedades-da-camada.png"
+    },
+    "erro": null
+  },
+  "tradutor": {
+    "estado": {
+      "installed": false,
+      "reason": "ImportError(\"cannot import name 'translation' from 'iman_brand' (C:\\\\Users\\\\Francisco\\\\AppData\\\\Local\\\\InstitutoIMAN\\\\_aceite017\\\\perfil\\\\profiles\\\\iman-distro/python/plugins\\\\iman_brand\\\\__init__.py)\")"
+    },
+    "mensagens": [
+      {
+        "l08_index": 186,
+        "contexto": "QgsNativeAlgorithms",
+        "fonte": "QGIS (native c++)",
+        "esperado": "IMAN Terra (c++ nativo)",
+        "api": "antigo",
+        "tela": [
+          {
+            "onde": "QgsProcessingProvider.name() (caixa e Opcoes)",
+            "mostra": "antigo"
+          }
+        ]
+      },
+      {
+        "l08_index": 80,
+        "contexto": "Qgs3DAlgorithms",
+        "fonte": "QGIS (3D)",
+        "esperado": "IMAN Terra (3D)",
+        "api": "antigo",
+        "tela": [
+          {
+            "onde": "QgsProcessingProvider.name() (caixa e Opcoes)",
+            "mostra": "antigo"
+          }
+        ]
+      },
+      {
+        "l08_index": 208,
+        "contexto": "QgsPdalAlgorithms",
+        "fonte": "QGIS (PDAL)",
+        "esperado": "IMAN Terra (PDAL)",
+        "api": "antigo",
+        "tela": [
+          {
+            "onde": "QgsProcessingProvider.name() (caixa e Opcoes)",
+            "mostra": "antigo"
+          }
+        ]
+      },
+      {
+        "l08_index": 234,
+        "contexto": "QgsProcessingFeedback",
+        "fonte": "QGIS version: %1",
+        "esperado": "Versão do motor: %1",
+        "api": "antigo",
+        "tela": [
+          {
+            "onde": "dialogo do algoritmo, aba Log",
+            "mostra": "antigo"
+          }
+        ]
+      },
+      {
+        "l08_index": 233,
+        "contexto": "QgsProcessingFeedback",
+        "fonte": "QGIS code revision: %1",
+        "esperado": "Revisão do código do motor: %1",
+        "api": "antigo",
+        "tela": [
+          {
+            "onde": "dialogo do algoritmo, aba Log",
+            "mostra": "antigo"
+          }
+        ]
+      },
+      {
+        "l08_index": 7,
+        "contexto": "MainWindow",
+        "fonte": "QGIS Home Page",
+        "esperado": "Página do IMAN Terra",
+        "api": "antigo",
+        "tela": [
+          {
+            "onde": "menu Ajuda",
+            "mostra": "antigo"
+          }
+        ]
+      },
+      {
+        "l08_index": 190,
+        "contexto": "QgsOptions",
+        "fonte": "<h1>Default projection for new projects</h1>Select a projection that should be used for ne",
+        "esperado": "<h1>Projeção padrão para novos projetos</h1> Selecione uma projeção que deve ser usada para novos projetos criados no IM",
+        "api": "antigo",
+        "tela": []
+      },
+      {
+        "l08_index": 191,
+        "contexto": "QgsOptions",
+        "fonte": "Detected active locale on your system: %1",
+        "esperado": "%1 é o idioma atualmente ativo em seu IMAN Terra",
+        "api": "antigo",
+        "tela": [
+          {
+            "onde": "Opcoes, pagina 0 (mOptionsPageGeneral)",
+            "mostra": "antigo"
+          }
+        ]
+      },
+      {
+        "l08_index": 192,
+        "contexto": "QgsOptions",
+        "fonte": "One or more drivers have been disabled. This will only take effect after QGIS is restarted",
+        "esperado": "Um ou mais drivers foram desativados. Isso só entrará em vigor depois que o IMAN Terra for reiniciado.",
+        "api": "antigo",
+        "tela": []
+      },
+      {
+        "l08_index": 196,
+        "contexto": "QgsOptions",
+        "fonte": "QGIS restart required",
+        "esperado": "Necessário reiniciar o IMAN Terra",
+        "api": "antigo",
+        "tela": [
+          {
+            "onde": "Opcoes, pagina 0 (mOptionsPageGeneral)",
+            "mostra": "antigo"
+          }
+        ]
+      },
+      {
+        "l08_index": 197,
+        "contexto": "QgsOptionsBase",
+        "fonte": "<b>Note:</b> Enabling / changing override on locale requires an application restart",
+        "esperado": "<b>Nota:</b> se ativar a sobreposição ou alterar o idioma tem de reiniciar o IMAN Terra",
+        "api": "antigo",
+        "tela": [
+          {
+            "onde": "Opcoes, pagina 0 (mOptionsPageGeneral)",
+            "mostra": "antigo"
+          }
+        ]
+      },
+      {
+        "l08_index": 198,
+        "contexto": "QgsOptionsBase",
+        "fonte": "<html><head/><body><p>Some of the internal C++ processing core algorithms and renderers ca",
+        "esperado": "<html><head/><body><p>Alguns dos algoritmos e processadores de processamento interno do C ++ podem tirar proveito de um ",
+        "api": "antigo",
+        "tela": [
+          {
+            "onde": "Opcoes, pagina 25 (mOptionsPageAcceleration)",
+            "mostra": "antigo"
+          }
+        ]
+      },
+      {
+        "l08_index": 199,
+        "contexto": "QgsOptionsBase",
+        "fonte": "<html><head/><body><p>The connection cache stores all authentication connections data even",
+        "esperado": "\nO cache de conexão armazena todos os dados de conexões de autenticação mesmo quando a conexão falha. Se você fizer qual",
+        "api": "antigo",
+        "tela": [
+          {
+            "onde": "Opcoes, pagina 21 (mOptionsPageNetwork)",
+            "mostra": "antigo"
+          }
+        ]
+      },
+      {
+        "l08_index": 205,
+        "contexto": "QgsOptionsBase",
+        "fonte": "Style <i>(QGIS restart required)</i>",
+        "esperado": "Estilo <i>(necessário o reinício do IMAN Terra)</i>",
+        "api": "antigo",
+        "tela": [
+          {
+            "onde": "Opcoes, pagina 0 (mOptionsPageGeneral)",
+            "mostra": "antigo"
+          }
+        ]
+      },
+      {
+        "l08_index": 206,
+        "contexto": "QgsOptionsBase",
+        "fonte": "The following OpenCL devices were found on this system (changing the default device requir",
+        "esperado": "Os seguintes dispositivos OpenCL foram encontrados neste sistema (alterar o dispositivo padrão requer que o IMAN Terra s",
+        "api": "antigo",
+        "tela": [
+          {
+            "onde": "Opcoes, pagina 25 (mOptionsPageAcceleration)",
+            "mostra": "antigo"
+          }
+        ]
+      },
+      {
+        "l08_index": 211,
+        "contexto": "QgsPluginInstaller",
+        "fonte": "If you haven't canceled the download manually, it might be caused by a timeout. In this ca",
+        "esperado": "Se você não tiver cancelado a ação baixar manualmente, ele pode ter sido causado por um esgotamento do tempo limite. Nes",
+        "api": "antigo",
+        "tela": []
+      },
+      {
+        "l08_index": 212,
+        "contexto": "QgsPluginInstaller",
+        "fonte": "If you haven't canceled the download manually, it was most likely caused by a timeout. In ",
+        "esperado": "Se você não tiver cancelado a ação baixar manualmente, isto provavelmente foi causado por esgotamento do tempo limite. N",
+        "api": "antigo",
+        "tela": []
+      },
+      {
+        "l08_index": 215,
+        "contexto": "QgsPluginInstaller",
+        "fonte": "QGIS has detected an obsolete plugin that masks its more recent version shipped with this ",
+        "esperado": "O IMAN Terra detectou um complemento obsoleto que mascara sua versão mais recente fornecido com esta cópia do IMAN Terra",
+        "api": "antigo",
+        "tela": []
+      },
+      {
+        "l08_index": 221,
+        "contexto": "QgsPluginManager",
+        "fonte": "<h3>All Plugins</h3><p>On the left you see the list of all plugins available for your QGIS",
+        "esperado": "<h3>Todos os módulos</h3><p>No lado esquerdo pode ver uma lista de todos os módulos disponíveis para o IMAN Terra, ambos",
+        "api": "antigo",
+        "tela": []
+      },
+      {
+        "l08_index": 222,
+        "contexto": "QgsPluginManager",
+        "fonte": "<h3>Installed Plugins</h3><p>Here you only see plugins <b>installed on your QGIS</b>.</p><",
+        "esperado": "<h3>Módulos Instalados</h3><p>Aqui só vê módulos <b>instalados no seu IMAN Terra</b>.</p><p>Clique no nome para ver mais",
+        "api": "antigo",
+        "tela": []
+      }
+    ]
+  }
+}

@@ -1,0 +1,13 @@
+RECONCILIACAO=APLICADA
+PLANO=arq+0 arq~2 arq-4 chave+0 chave~0 chave-4 pasta+0 splash+1 base+1
+MS=1345
+  ~ python/plugins/iman_brand/__init__.py
+  ~ python/plugins/iman_brand/brand.py
+  - python/plugins/iman_brand/product_links.py (sobra)
+  - python/plugins/iman_brand/translation.py (sobra)
+  - themes/IMAN Terra/icons/mIconNetworkLogger.svg (sobra)
+  - themes/IMAN Terra/icons/providerQgis.svg (sobra)
+  - core/httpsfeedqgisorg\disabled (o produto deixou de declarar)
+  - qgis/allowVersionCheck (o produto deixou de declarar)
+  - qgis/checkVersion (o produto deixou de declarar)
+  - UI/UITheme (o produto deixou de declarar)

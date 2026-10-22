@@ -1,0 +1,3 @@
+[Customization]
+splashpath=C:/Users/Francisco/AppData/Local/InstitutoIMAN/_aceite017/perfil/profiles/iman-distro/QGIS/
+Menus\mHelpMenu\mActionCheckQgisVersion=false

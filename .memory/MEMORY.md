@@ -3,7 +3,7 @@
 Uma linha por arquivo da raiz de `.memory/`. O `/start-session` le este indice, os `feedback_*.md` e o
 `reference_build_environment.md`; os demais sao lidos sob demanda.
 
-- [Stack do projeto](project_stack.md) - stack, gate a confirmar e convencoes de diretorio; carregada pelo CLAUDE.md (@import).
+- [Stack do projeto](project_stack.md) - stack, gate e convencoes de diretorio; carregada pelo CLAUDE.md (@import).
 - [project_iman_qgis_distro.md](project_iman_qgis_distro.md) — tese, fases (Opção 1 → Opção 2), escopo e non-goals da distro.
 - [feedback_branding_license_guardrails.md](feedback_branding_license_guardrails.md) — invariantes de marca/licença do QGIS (BL-1…BL-7); nunca remover créditos, perfil isolado, marca em fonte única.
 - [reference_qgis_profile_and_packaging.md](reference_qgis_profile_and_packaging.md) — paths de perfil no Windows, launcher (o launcher SEMEIA **e RECONCILIA** o perfil desde a #030/DB-26, com a fronteira num lugar so e a base do 3-way por conteudo), Inno Setup (o Inno FUNDE: `[InstallDelete]` limpa `{app}\qgis` antes da cópia — DB-22), aceite x build com exigências opostas, limites do no-fork vs. fork.

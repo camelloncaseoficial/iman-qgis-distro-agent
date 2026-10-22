@@ -114,14 +114,17 @@ porque é isso que existe numa VM limpa. **Quem executa a VM é o sponsor**, nã
 | Alcançado nesta fatia (sem fork, verificado por screenshot) | Só com fork (Opção 2) |
 |---|---|
 | Título da janela (startup + plugin) | **Splash nativo de boot** ("QGIS x.y Bratislava LTR") |
-| **Ícone da janela/taskbar** (emblema IMAN) | **Ícones de ação da toolbar** do QGIS |
+| **Ícone da janela/taskbar** (emblema IMAN) e de todo diálogo sem ícone próprio (#041) | Ícone das Propriedades da camada e logo dos `.qgs/.qgz/.qlr` no Navegador (caminho compilado) |
+| Ícones de ação por nome, pelo tema do perfil no arranque (#041: só o `providerQgis.svg` e o `mIconNetworkLogger.svg` foram trocados) | Texto que o QGIS monta antes de o plugin carregar (o tradutor sobreposto do #041 não o alcança) |
 | Tema/cores da UI (menubar/menus/status/docks/abas) | Ícone do executável `qgis-bin.exe` |
 | Plugin de marca (menu/toolbar/painel/Sobre) | About dialog nativo |
 | Ícone + nome do atalho e do instalador; CRS/idioma | Nome interno da aplicação |
 
-> O ícone da janela e o tema são aplicados em runtime pelo startup/plugin. O **splash nativo** e os
-> **ícones de ação** da toolbar são do core do QGIS (C++) e permanecem — trocá-los exige fork (Opção 2),
-> documentado como limite, **não** contornado por hack frágil (ex.: um 2º splash sobreposto).
+> O ícone da janela e o tema são aplicados em runtime pelo startup/plugin. Desde o #041 o tema entra
+> no arranque (`[UI] UITheme` no template), e os **ícones de ação** deixaram de ser limite: o QGIS os
+> pede ao tema por nome. A afirmação anterior, de que eles exigiam fork, não conferia com o binário.
+> O que exige fork é o que o QGIS lê por caminho compilado, documentado como limite, **não**
+> contornado por hack frágil (ex.: um 2º splash sobreposto). Ver `docs/branding-contract.md`.
 
 ## Créditos
 

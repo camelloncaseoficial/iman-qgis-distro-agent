@@ -81,6 +81,24 @@
     "Quem remover arquivo do template acrescenta o caminho velho a esta lista."
   ],
 
+  "customization_rules":
+  [
+    "Menus\\mHelpMenu\\mActionCheckQgisVersion=false"
+  ],
+  "_customization_rules":
+  [
+    "Linhas que o produto poe na secao [Customization] do QGISCUSTOMIZATION3.ini,",
+    "logo depois do splashpath. O arquivo inteiro e DERIVADO (o splashpath e",
+    "absoluto e por-instalacao), entao ele nao vive no template: o Sync-Perfil.ps1",
+    "o escreve so quando o conteudo difere, como sempre fez com o splash.",
+    "Formato do QSettings: grupo Customization/Menus/<menu>/<acao> vira a chave",
+    "Menus\\<menu>\\<acao> dentro de [Customization]. A customizacao so ESCONDE.",
+    "  mHelpMenu\\mActionCheckQgisVersion - 'Verificar a versao do QGIS' (#041,",
+    "                                      D-IMAN-039 item 4). A checagem e do",
+    "                                      QGIS, e esta desligada no template.",
+    "Regras minimas e declaradas aqui, e so aqui (RISCOS R11 da forense do #041)."
+  ],
+
   "ini_do_produto": "QGIS/QGIS3.ini",
   "chaves_do_produto": "toda chave declarada por ini_do_produto no template",
   "_chaves":

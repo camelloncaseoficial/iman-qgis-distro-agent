@@ -1,0 +1,14 @@
+
+  #019 - guarda de integridade do launcher
+  arvore    : D:\_projetos\iman-webgeo\iman-qgis-distro-agent\installer\stage\qgis\QGIS 3.44.13
+  manifesto : D:\_projetos\iman-webgeo\iman-qgis-distro-agent\installer\stage\qgis-manifest.txt
+
+  [PASS] T1  arvore integra -> abre
+  [PASS] T2  share\proj AUSENTE -> recusa
+  [PASS] T3  apps\gdal\share\gdal TRUNCADO em 1 arquivo -> recusa
+  [PASS] T4  proj.db ALTERADO (mesmo tamanho) -> recusa pelo SHA-256
+  [PASS] T5  manifesto AUSENTE -> recusa
+  [PASS] T6  caminho longo demais -> diagnostico proprio, nao "corrompida"
+
+  6 de 6 casos passaram.
+  A guarda recusa abrir em toda arvore quebrada, e diz por que.

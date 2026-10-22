@@ -67,6 +67,16 @@ Fatos não óbvios do ambiente onde a distro é montada/verificada. Complementa
   artefato ↔ commit ↔ versão ↔ SHA-256 (canônico em `installer/canonico/<versão>-<commit>/`, branch em
   `installer/dist/nao-canonico/`; desde a #029, DB-25).
 
+## lrelease (tradutor sobreposto da marca, #041)
+
+- O `lrelease` NAO vem na arvore do QGIS. O build usa o **5.15.2** de dentro do wheel
+  `qt5-applications==5.15.2.2.3` (PyPI, SHA-256 `5156CC71...FDF0B` fixado em
+  `installer\New-BrandTranslation.ps1`), so `lrelease.exe` + `Qt5Core.dll` + `Qt5Xml.dll`.
+- Cache **da bancada**, fora de qualquer clone: `%LOCALAPPDATA%\InstitutoIMAN\build-tools\qt5-applications-5.15.2.2.3\`
+  (baixado uma vez; `-SemRede` exige que ele ja esteja la). Ele ja esteve em `installer\tools\` e isso
+  quebrava o `test-build-preserva-canonico.ps1`, que compila de clone limpo com `-SemRede` (exit 9).
+- Nao redistribuido: so o `.qm` gerado entra no instalador (`{app}\i18n\`).
+
 ## PowerShell
 
 - Bancada do dev: **PowerShell 5.1** (`5.1.26100.x`).

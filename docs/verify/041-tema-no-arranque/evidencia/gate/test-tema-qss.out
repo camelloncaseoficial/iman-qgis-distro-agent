@@ -1,0 +1,13 @@
+
+  #022 - guarda estatica do tema
+  qss : D:\_projetos\iman-webgeo\iman-qgis-distro-agent\app\profile-template\iman-distro\themes\IMAN Terra\style.qss
+
+  [1] border-radius : 18 declaracoes, 0 fora de 2px
+  [2] QMenuBar::item : padding '3px 4px'
+  [3] QStatusBar     : 0 declaracao(oes) de padding
+  [4] QDockWidget::title : 0 declaracao(oes) de padding vertical
+  [5] cantos da aba  : 2 declaracoes, 0 fora de 2px
+  [6] raio inline em Python : 0 ocorrencia(s)
+
+  6 de 6 asse rcoes passaram. O tema esta como o sponsor arbitrou, e num lugar so.
+

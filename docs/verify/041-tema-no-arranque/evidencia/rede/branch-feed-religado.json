@@ -1,0 +1,22 @@
+{
+ "loggers": 1,
+ "pedidos": [
+  "1 GET https://feed.qgis.org/?lang=pt",
+  "2 GET https://feed.qgis.org/media/feedimages/2026/10/13/screenshot-2026-10-13_12-23-51.jpg",
+  "3 GET https://institutoiman.org.br/"
+ ],
+ "logNetworkRequests": {
+  "app/logNetworkRequests": "true",
+  "logNetworkRequests": "true"
+ },
+ "controle": {
+  "url": "https://institutoiman.org.br/",
+  "erro_de_rede": 3
+ },
+ "controle_no_registro": true,
+ "feed_qgis_org": [
+  "1 GET https://feed.qgis.org/?lang=pt",
+  "2 GET https://feed.qgis.org/media/feedimages/2026/10/13/screenshot-2026-10-13_12-23-51.jpg"
+ ],
+ "version_qgis_org": []
+}

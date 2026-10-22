@@ -20,10 +20,12 @@ iman-qgis-distro-agent/
 │   │   └── <perfil>/        # perfil QGIS isolado versionado
 │   │       ├── QGIS/
 │   │       ├── python/plugins/<plugin_de_marca>/
+│   │       ├── themes/<tema>/   # style.qss + icons/ (tema de UI, ativo no arranque desde o #041)
 │   │       ├── processing/
 │   │       ├── project_templates/
 │   │       └── symbology-style.db
 │   ├── demo/                # welcome.qgz
+│   ├── i18n/                # fonte do tradutor sobreposto da marca (o .qm sai do build, #041)
 │   ├── assets/              # símbolo/logo/.ico/splash oficial (fonte única de marca; ver assets/README.md)
 │   └── notices/             # LICENSE, THIRD_PARTY_NOTICES.md, SOURCE_CODE.md
 ├── installer/               # *.iss (Inno Setup) + canonico/ (candidato: .exe + BUILD_INFO rastreado + VIGENTE.txt) + dist/ + payload/ (MSI do QGIS, fora do git)
@@ -172,6 +174,9 @@ nome interno). Documentado em `docs/BUILD_WINDOWS.md`/`RELEASE_PROCESS.md` quand
 | Plugin de marca (menu/toolbar/painel) | — |
 | Ícone + nome do atalho e do instalador | — |
 | Ícone da janela/taskbar (startup, runtime) | — |
+| Ícone dos diálogos sem ícone próprio (`QgsApplication.setWindowIcon`, #041) | Ícone de formulário compilado (Propriedades da camada) |
+| Ícones de ação por nome, pelo tema do perfil ativo no arranque (#041) | Ícones lidos por caminho `:/` direto (projetos no Navegador, perfil, primeira execução) |
+| "QGIS" trocado pelo nome do produto onde nomeia o aplicativo (tradutor sobreposto, #041) | Texto montado antes de o plugin carregar (splash, partes da janela) |
 | **Splash NATIVO de boot** (customização do perfil) | — |
 | About próprio (plugin, coexiste com o nativo) | — |
 | Projeto demo, templates, notices | — |
