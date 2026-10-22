@@ -14,7 +14,7 @@ captured_at: 2026-10-19
 | Instalador | Inno Setup 7 | D-IMAN-030 |
 | Testes | `tools/test-*.ps1`, aceite da marca (`tools/branding-acceptance`), checklist do BL-7 na VM (`tools/bl7`) | `tools/` |
 | Smoke | VM Windows limpa (BL-7) | CLAUDE.md anterior |
-| Gate | a confirmar | - |
+| Gate | `tools/test-*.ps1` em sequencia | sponsor 2026-10-22 |
 | Branching | develop-based (base de PR = `develop`); build canonico commita direto na `develop` (P0.6) | D-IMAN-012, preflight P0.6 |
 | Distribuicao | GitHub Releases, candidato registrado em `installer/canonico/VIGENTE.txt` | CLAUDE.md anterior, D-IMAN-032 |
 | Arquiteto | `../iman-product-architect` (briefings em `.memory/briefings/`) | CLAUDE.md anterior |
