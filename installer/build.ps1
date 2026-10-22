@@ -42,6 +42,9 @@
    5  payload do QGIS (ausente, download falhou ou SHA-256 nao confere)
    6  guarda de integridade (o launcher nao recusa arvore do QGIS truncada)
    7  guarda estatica do tema (style.qss fora do que o sponsor arbitrou)
+   8  guarda do tema de icones (icone que o QGIS nao pede, nao desenha ou
+      colide com imagem do QSS; #041)
+   9  tradutor sobreposto da marca nao gerado ou nao conferido (#041)
 
  REQUISITOS: PowerShell 5.1, git no PATH, Inno Setup 7 ou 6 (D-IMAN-030).
  (Este script roda na BANCADA do dev, nao na VM limpa. Os helpers que vao para a
@@ -742,6 +745,71 @@ if ((-not $TemaPlacar.Success) -or
 
 Write-Ok ("o tema esta como o sponsor arbitrou ({0} de {1} asse rcoes, placar da guarda)" -f
           $TemaPlacar.Groups[1].Value, $TemaPlacar.Groups[2].Value)
+
+# --- guarda do tema de ICONES e tradutor sobreposto (#041, D-IMAN-039) -------
+#
+# Desde o #041 o tema entra no arranque e a pasta icons\ dele substitui icones do
+# QGIS por nome; o QGIS so testa se o arquivo existe (RISCOS R2, R3, R4). E o
+# produto passa a levar um tradutor sobreposto ({app}\i18n\*.qm), que falha em
+# silencio se a tabela do .qm sair errada (R7). As duas guardas rodam AQUI, no
+# Python da arvore recem-estagiada, antes de compilar: o que elas medem e o que
+# o instalador vai entregar.
+
+function Invoke-GuardaComPlacar([string]$Script, [string[]]$Argumentos, [int]$Codigo, [string]$Titulo, [string[]]$Explica) {
+    & $PsExe -NoProfile -ExecutionPolicy Bypass -File $Script @Argumentos | Tee-Object -Variable GuardaSaida | Out-Host
+    $rc = $LASTEXITCODE
+    $texto = if (Get-Variable -Name GuardaSaida -Scope Local -ErrorAction SilentlyContinue) { @($GuardaSaida) -join "`n" } else { '' }
+    $placar = [regex]::Match($texto, '(\d+) de (\d+) asse rcoes passaram')
+    if ($rc -ne 0) {
+        Fail $Codigo "$Titulo REPROVOU" (@("Teste : $Script   (exit $rc)", "As reprovacoes estao logo acima.", "") + $Explica)
+    }
+    if ((-not $placar.Success) -or ($placar.Groups[1].Value -ne $placar.Groups[2].Value) -or
+        ([int]$placar.Groups[2].Value -lt 1)) {
+        Fail $Codigo "$Titulo saiu 0 sem declarar placar completo" @(
+            "Teste : $Script   (exit $rc)",
+            "Esperada na saida acima uma linha 'N de N asse rcoes passaram'."
+        )
+    }
+    return ("{0} de {1}" -f $placar.Groups[1].Value, $placar.Groups[2].Value)
+}
+
+Write-Step "Rodando a GUARDA DO TEMA DE ICONES (#041)"
+$IconesTest = Join-Path $RepoRoot 'tools\test-theme-icons.ps1'
+if (-not (Test-Path -LiteralPath $IconesTest)) {
+    Fail 2 "guarda do tema de icones nao encontrada" @("Esperado em: $IconesTest")
+}
+$IconesPlacar = Invoke-GuardaComPlacar $IconesTest @('-Qgis', $QgisTreeRoot) 8 "a guarda do tema de icones" @(
+    "Um icone do tema que o QGIS nao pede, que nao desenha ou que colide com",
+    "uma imagem do QSS chegaria ao usuario como botao vazio ou interface",
+    "misturada, sem erro nenhum. Corrija o arquivo nomeado acima."
+)
+Write-Ok "os icones do tema sao nomes do QGIS e desenham ($IconesPlacar asse rcoes, placar da guarda)"
+
+Write-Step "Gerando o TRADUTOR SOBREPOSTO da marca (#041)"
+$TraducaoGerador = Join-Path $RepoRoot 'installer\New-BrandTranslation.ps1'
+$TraducaoDir     = Join-Path $RepoRoot 'installer\stage\i18n'
+if (-not (Test-Path -LiteralPath $TraducaoGerador)) {
+    Fail 2 "gerador do tradutor sobreposto nao encontrado" @("Esperado em: $TraducaoGerador")
+}
+$argsTraducao = @('-OutDir', $TraducaoDir)
+if ($SemRede) { $argsTraducao += '-SemRede' }
+$TraducaoSaida = (& $PsExe -NoProfile -ExecutionPolicy Bypass -File $TraducaoGerador @argsTraducao 2>&1 | Out-String)
+$TraducaoExit = $LASTEXITCODE
+Write-Host $TraducaoSaida.TrimEnd()
+$TraducaoQm = [regex]::Match($TraducaoSaida, '(?m)^QM=(.+?)\s*$')
+if ($TraducaoExit -ne 0 -or $TraducaoSaida -notmatch 'TRADUCAO=OK' -or -not $TraducaoQm.Success) {
+    Fail 9 "o tradutor sobreposto nao foi gerado" @(
+        "Gerador : installer\New-BrandTranslation.ps1   (exit $TraducaoExit)",
+        "O MOTIVO esta na saida acima. Sem o .qm o produto abre com os textos",
+        "do QGIS, e o .iss recusa compilar sem ele."
+    )
+}
+$TraducaoPlacar = Invoke-GuardaComPlacar (Join-Path $RepoRoot 'tools\test-brand-translation.ps1') `
+    @('-Qgis', $QgisTreeRoot, '-Qm', $TraducaoQm.Groups[1].Value) 9 "a guarda do tradutor sobreposto" @(
+    "O .qm que o instalador entregaria nao traduz o que a fonte declara, ou",
+    "vaza para mensagens que a regra 3 do D-IMAN-039 manda nao trocar."
+)
+Write-Ok "tradutor sobreposto gerado e conferido ($TraducaoPlacar asse rcoes, placar da guarda)"
 
 # --- BUILD_ID.txt: a identidade que VIAJA DENTRO do produto (DB-24) ----------
 #

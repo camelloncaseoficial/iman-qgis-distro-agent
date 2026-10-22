@@ -52,6 +52,9 @@
 #define QgisManifest "stage\qgis-manifest.txt"
 ; DB-24 - identidade do build, gerada pelo build.ps1 antes de compilar.
 #define BuildId "stage\BUILD_ID.txt"
+; #041 (D-IMAN-039) - tradutor sobreposto da marca, gerado pelo build.ps1
+; (installer\New-BrandTranslation.ps1) a partir de app\i18n\iman_terra_pt_BR.json.
+#define BrandQm "stage\i18n\iman_terra_pt_BR.qm"
 
 ; Guarda de compilacao: sem a arvore o .exe sairia "com o QGIS embarcado" mas
 ; vazio - e o defeito so apareceria na VM. Falhar aqui e barato; falhar la, nao.
@@ -68,6 +71,11 @@
 ; commit nenhum. Falhar aqui e barato.
 #if !FileExists(AddBackslash(SourcePath) + BuildId)
   #error Identidade do build ausente (stage\BUILD_ID.txt). Ela e gerada por installer\build.ps1 - chamar o ISCC na mao pula essa etapa.
+#endif
+; #041: sem o .qm o produto abre com "QGIS" onde o D-IMAN-039 manda o nome do
+; produto, sem erro nenhum. Falhar aqui e barato.
+#if !FileExists(AddBackslash(SourcePath) + BrandQm)
+  #error Tradutor sobreposto ausente (stage\i18n\iman_terra_pt_BR.qm). Ele e gerado por installer\build.ps1 - chamar o ISCC na mao pula essa etapa.
 #endif
 
 [Setup]
@@ -183,6 +191,10 @@ Source: "{#QgisManifest}"; DestDir: "{app}"; DestName: "qgis-manifest.txt"; Flag
 ; nessa hora (versao, commit, branch, SHA-256 do PAYLOAD). O SHA-256 do proprio
 ; .exe NAO esta nele, e nao pode estar: ele so existe depois desta compilacao.
 Source: "{#BuildId}"; DestDir: "{app}"; DestName: "BUILD_ID.txt"; Flags: ignoreversion
+; #041: o tradutor sobreposto vai para {app}\i18n\, ao lado da fonte versionada
+; (app\i18n\iman_terra_pt_BR.json, que chega pela linha de app\* abaixo). O
+; plugin de marca o procura ali (iman_brand\translation.py).
+Source: "{#BrandQm}"; DestDir: "{app}\i18n"; Flags: ignoreversion
 
 ; Camada de marca completa (app/*), preservando a arvore.
 Source: "..\app\*"; DestDir: "{app}"; Excludes: "*.pyc,__pycache__,.gitkeep"; Flags: recursesubdirs createallsubdirs ignoreversion
