@@ -151,6 +151,15 @@ def textos_de(raiz):
                 out.append(w.toPlainText())
             except Exception:
                 pass
+        # QgsWebView (o painel de detalhes do gerenciador de complementos): o
+        # texto mora na pagina, nao no widget.
+        if hasattr(w, 'page') and callable(getattr(w, 'page')):
+            try:
+                quadro = w.page().mainFrame()
+                out.append(quadro.toHtml())
+                out.append(quadro.toPlainText())
+            except Exception:
+                pass
     return out
 
 
@@ -229,12 +238,28 @@ def marca_na_tela(fonte, textos, onde):
     """Para cada mensagem, se a tela mostra o texto novo ou o antigo."""
     if not fonte:
         return
-    corpo = [normaliza(t) for t in textos]
+    def sem_marcacao(t):
+        return normaliza(re.sub(r'<[^>]+>', ' ', t or ''))
+
+    corpo = [normaliza(t) for t in textos] + [sem_marcacao(t) for t in textos]
+
+    def casa(modelo):
+        # %1..%9 chegam a tela ja substituidos: cada pedaco entre marcadores
+        # tem de aparecer, nessa ordem. E o HTML pode chegar reformatado (o
+        # QgsWebView reescreve as marcas), entao tambem se compara sem marcacao.
+        for forma in (normaliza(modelo), sem_marcacao(modelo)):
+            pedacos = [p for p in re.split(r'%\d', forma) if p.strip()]
+            if not pedacos:
+                continue
+            rx = re.compile('.*?'.join(re.escape(p.strip()) for p in pedacos), re.S)
+            if any(rx.search(t) for t in corpo):
+                return True
+        return False
+
     for m in fonte['messages']:
-        novo, velho = normaliza(m['esperado']), normaliza(m['qgis_pt_BR'])
-        if any(novo and novo in t for t in corpo):
+        if casa(m['esperado']):
             m.setdefault('tela', []).append({'onde': onde, 'mostra': 'novo'})
-        elif any(velho and velho in t for t in corpo):
+        elif casa(m['qgis_pt_BR']):
             m.setdefault('tela', []).append({'onde': onde, 'mostra': 'antigo'})
 
 
@@ -520,6 +545,28 @@ def regiao_propriedades(lyr, fonte):
                                      topo_da_classe('LayerProperties'), agir)
 
 
+def regiao_complementos(fonte):
+    """Gerenciador de complementos: as abas Todos e Instalados mostram, no painel
+    de detalhes, os textos 221 e 222 da fonte."""
+    def agir(dlg):
+        dlg.resize(1100, 720)
+        espera(1500)
+        r = {'classe': dlg.metaObject().className(), 'abas': []}
+        from qgis.PyQt.QtWidgets import QListWidget
+        lista = dlg.findChild(QListWidget, 'mOptionsListWidget') or dlg.findChild(QListWidget)
+        for i in range(lista.count() if lista else 0):
+            texto = lista.item(i).text()
+            if texto not in ('Tudo', 'Todos', 'Instalados', 'All', 'Installed'):
+                continue
+            lista.setCurrentRow(i)
+            espera(1200)
+            marca_na_tela(fonte, textos_de(dlg), 'gerenciador de complementos, aba %s' % texto)
+            r['abas'].append({'aba': texto, 'foto': foto(dlg, '041-complementos-%s' % texto.lower())})
+        return r
+    acao = iface.actionManagePlugins()
+    doc['complementos'] = abre_e_age(acao.trigger, topo_da_classe('QgsPluginManager'), agir, limite=30000)
+
+
 def regiao_depuracao():
     alvo = None
     for d in win().findChildren(QDockWidget):
@@ -626,7 +673,8 @@ def principal():
                 f()
             except Exception:
                 doc[nome] = {'excecao': traceback.format_exc(limit=4)}
-        for nome, f in (('opcoes', lambda: regiao_opcoes(fonte)), ('ajuda', regiao_ajuda)):
+        for nome, f in (('opcoes', lambda: regiao_opcoes(fonte)), ('ajuda', regiao_ajuda),
+                        ('complementos', lambda: regiao_complementos(fonte))):
             try:
                 f()
             except Exception:
