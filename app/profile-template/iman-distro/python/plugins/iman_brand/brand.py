@@ -149,7 +149,10 @@ COLOR_SECONDARY = COLOR_PRIMARY_DEEP
 # Pergunta explícita: o domínio oficial é `institutoiman.org.br`? Há URL de docs
 # pública distinta? Enquanto não confirmado, mantém-se este palpite sinalizado — não
 # se cunha decisão de produto aqui (a crew consome D-IDs, não os cria).
-URL_SITE = "https://institutoiman.org.br"   # STOP-AND-FLAG: confirmar domínio oficial
+# URL_SITE confirmado por D-IMAN-039 item 4 (2026-10-22): "o único endereço do produto
+# que existe". É também o destino de Página, Relatar um problema e Suporte comercial no
+# menu Ajuda (product_links.py, #041).
+URL_SITE = "https://institutoiman.org.br"
 URL_DOCS = "https://institutoiman.org.br"   # STOP-AND-FLAG: confirmar URL de docs pública
 
 # --- Crédito ao QGIS (BL-1/BL-2) — verbatim de docs/BRANDING_AND_LICENSE.md -----
