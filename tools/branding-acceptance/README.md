@@ -86,7 +86,8 @@ reconciliação. Sem isso, dois `aceite.json` - um de perfil novo, outro de perf
 | arquivo | papel |
 |---|---|
 | `Invoke-Aceite.ps1` | orquestrador: monta o perfil novo, **semeia um recente real**, sobe o QGIS **do produto** com `--code`, confere a procedência do processo, espera a saída, encerra |
-| `acceptance_probe.py` | as asserções `A01…A12` + `M-D11`, rodando dentro do QGIS |
+| `acceptance_probe.py` | as asserções `A01…A17` + `M-D11`, rodando dentro do QGIS (`A14` a `A17` desde o `#041`: tema no arranque, `providerQgis.svg` do tema na caixa de Processamento, ícone dos diálogos, alcance do tradutor) |
+| `evidencia_041.py` | sonda de evidência do laudo do `#041`: fotografa caixa de Processamento, Opções, diálogo e log de algoritmo, modelador, menu Ajuda e diálogo sem ícone; intercepta o clique de cada endereço da Ajuda; lê o registro de rede do QGIS com um pedido de controle; mede o alcance do tradutor por mensagem. Não assere |
 | `discover.py` | passada de descoberta — nomes de objeto, docks, status bar, menus |
 | `vitrine.py` | arruma a UI para **uma** tomada de evidência (título, menus, menu aberto, dock, diálogo), sempre maximizada - o enquadramento do antes e do depois tem de ser o mesmo |
 
