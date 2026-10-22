@@ -5,9 +5,11 @@ Executado pelo QGIS via `--code app/startup/iman_startup.py`. Responsabilidades
 LEVES (a experiência maior mora no plugin de marca `iman_brand`):
 
 1. Ativar o TEMA DE UI próprio (`themes/IMAN Terra` no perfil isolado) — D12.
+   Desde o #041 ele já vem ativo do arranque; aqui é redundância.
 2. Aplicar o tema QSS institucional à janela principal, ANEXANDO ao stylesheet do
    QGIS (não substitui os estilos nativos) e reaplicando após a UI assentar.
-3. Trocar o ícone da janela/taskbar para o emblema IMAN.
+3. Trocar o ícone da APLICAÇÃO (todas as janelas e diálogos sem ícone próprio) e
+   o da janela principal/taskbar para o emblema IMAN.
 
 O TÍTULO DA JANELA NÃO É ESCRITO AQUI (D5, fatia #018). Ele tinha duas fontes —
 esta e `iman_brand.py::_apply_title` — e as duas cravavam a mesma string
@@ -16,9 +18,18 @@ projeto aberto. Agora existe uma fonte só: o gancho `windowTitleChanged` do
 plugin de marca, que troca apenas o SUFIXO. Não reintroduza `setWindowTitle`
 neste arquivo.
 
-Limite honesto (BL-5): o **splash nativo de boot** ("QGIS x.y Bratislava LTR") e os
-**ícones de ação da toolbar** são do core do QGIS e só mudam na Opção 2 (fork) —
-documentados como limite, não contornados por hack frágil (ex.: um 2º splash flash).
+O TEMA ENTRA NO ARRANQUE (#041, D-IMAN-039). O `[UI] UITheme=IMAN Terra` do
+template do perfil faz o QGIS aplicar o tema ANTES de montar a janela. Os icones
+de acao da toolbar NAO sao limite da Opcao 2: o QGIS os pede ao tema por nome
+(`getThemeIcon`), e um arquivo com o mesmo nome em `<perfil>/themes/IMAN Terra/
+icons/` vence o padrao. O que impedia isso era o momento: o QGIS guarda cada
+icone em cache na primeira leitura, e o `setUITheme` daqui, que roda depois da
+janela montada, nao limpa esse cache. A chamada abaixo fica como redundancia.
+
+Limite honesto (BL-5): o que so muda com fork e o que o QGIS le por caminho
+compilado (`:/images/...`) ou do binario: icone do executavel, logo dos projetos
+no Navegador, icone das Propriedades da camada, o Sobre nativo (que fica por
+BL-1). Documentado como limite, nao contornado por hack fragil.
 
 Roda no perfil isolado `iman-distro` — não toca o perfil do usuário (BL-3) — e não
 se apresenta como QGIS oficial (BL-1/BL-2).
@@ -139,6 +150,10 @@ def _icon_path():
     home = _app_home()
     candidates = []
     if home:
+        # O .ico primeiro (#041): ele traz 16 a 256 px, e o Qt escolhe o tamanho
+        # de cada uso (barra de titulo, Alt-Tab, taskbar em alta densidade). O
+        # PNG de 512 px e um tamanho so, reduzido pelo Qt.
+        candidates.append(os.path.join(home, "assets", "icon-iman-terra.ico"))
         candidates.append(os.path.join(home, "assets", "icon-iman-terra.png"))
     candidates.append(os.path.join(
         _profile_dir(), "python", "plugins", "iman_brand",
@@ -149,9 +164,25 @@ def _icon_path():
     return None
 
 
+def _apply_app_icon():
+    """Icone da APLICACAO (#041, forense S16).
+
+    O QGIS chama `setWindowIcon(appIconPath())` no main.cpp, com o PNG 60x60 do
+    logo do QGIS que mora na arvore. Todo dialogo sem icone proprio herda o da
+    aplicacao, entao trocar so o da janela principal deixava o logo do QGIS em
+    cada dialogo. Trocar aqui alcanca os dialogos criados daqui em diante, sem
+    tocar o `qgis-icon-60x60.png` da arvore (RISCOS R6).
+    """
+    path = _icon_path()
+    if path:
+        icon = QIcon(path)
+        if not icon.isNull():
+            QgsApplication.setWindowIcon(icon)
+
+
 def _apply_window_icon(win):
-    """Troca o icone da janela/taskbar (no-fork). Os icones de ACAO da toolbar
-    continuam do QGIS (baked no core) — isso e limite da Opcao 2."""
+    """Troca o icone da janela principal/taskbar (no-fork). Os icones de ACAO da
+    toolbar vem do tema do perfil (#041); este e so o da janela."""
     path = _icon_path()
     if path:
         icon = QIcon(path)
@@ -175,6 +206,7 @@ def main():
     win = iface.mainWindow()
     brand = _brand()
 
+    _apply_app_icon()
     _set_app_user_model_id()
     _aplica_tema_ui()
 
