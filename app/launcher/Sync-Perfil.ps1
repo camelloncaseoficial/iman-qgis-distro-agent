@@ -344,7 +344,15 @@ $chavesRemover = New-Object System.Collections.ArrayList   # K
 # Ate a #029 o launcher o reescrevia a CADA execucao - o que, sozinho, fazia a
 # segunda abertura escrever no perfil e tornaria o R5 impossivel de cumprir.
 # Aqui ele e escrito so quando o conteudo difere.
+#
+# #041: o mesmo arquivo carrega as regras de customizacao do produto, declaradas
+# em PERFIL-DO-PRODUTO.json (customization_rules) e em nenhum outro lugar. Elas
+# entram no conteudo-alvo, entao uma regra nova chega a perfil existente pela
+# mesma comparacao de conteudo, e a segunda abertura continua sem escrever.
 $splashAlvo = ("[Customization]`r`nsplashpath={0}/QGIS/`r`n" -f ($Perfil -replace '\\', '/'))
+foreach ($regra in @($decl.customization_rules)) {
+    if ($regra) { $splashAlvo += ([string]$regra + "`r`n") }
+}
 $splashArq  = Join-Path $Perfil 'QGIS\QGISCUSTOMIZATION3.ini'
 $splashPrecisa = $true
 if (Test-Path -LiteralPath $splashArq) {
